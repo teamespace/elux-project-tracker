@@ -1,14 +1,4 @@
 name = "elux-project-tracker"
+pages_build_output_dir = "dist"
 compatibility_date = "2025-06-17"
 compatibility_flags = ["nodejs_compat"]
-
-[[d1_databases]]
-binding = "DB"
-database_name = "elux-tracker"
-database_id = ""
-
-[env.production]
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "elux-tracker-prod"
-database_id = ""
