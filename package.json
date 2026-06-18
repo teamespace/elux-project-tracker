@@ -1,0 +1,40 @@
+{
+  "name": "elux-project-tracker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "test": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 execute elux-tracker --local --file",
+    "db:migrate:prod": "wrangler d1 execute elux-tracker --file",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@iconify-json/ph": "^1.2.2",
+    "@nuxt/icon": "^1.10.0",
+    "@nuxt/ui": "^3.3.0",
+    "@nuxthub/core": "^0.8.0",
+    "drizzle-orm": "^0.36.0",
+    "nuxt": "^4.0.0",
+    "nuxt-auth-utils": "^0.5.0",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.7.0",
+    "@nuxt/eslint-config": "^1.16.0",
+    "@nuxt/fonts": "^0.10.0",
+    "drizzle-kit": "^0.28.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "wrangler": "^3.100.0"
+  }
+}
