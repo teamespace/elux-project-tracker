@@ -1,3 +1,5 @@
+import { getAvatar } from './avatar'
+
 export type TaskStatus = 'todo' | 'in-progress' | 'in-review' | 'done'
 export type TaskPriority = 'high' | 'medium' | 'low'
 
@@ -5,6 +7,7 @@ export interface Assignee {
   id: string
   initials: string
   name: string
+  avatar?: string
 }
 
 export interface Task {
@@ -68,7 +71,7 @@ export const tasks: Task[] = [
     statusLabel: 'In Review',
     priority: 'high',
     priorityLabel: 'High',
-    assignee: { id: 'user-1', initials: 'R', name: 'Rasya' },
+    assignee: { id: 'user-1', initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
     epicId: 'epic-1',
     epicName: 'Auth',
     projectId: 'project-1',
@@ -87,7 +90,7 @@ export const tasks: Task[] = [
     statusLabel: 'In Progress',
     priority: 'high',
     priorityLabel: 'High',
-    assignee: { id: 'user-2', initials: 'D', name: 'Dito' },
+    assignee: { id: 'user-2', initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
     epicId: 'epic-1',
     epicName: 'Auth',
     projectId: 'project-1',
@@ -106,7 +109,7 @@ export const tasks: Task[] = [
     statusLabel: 'To Do',
     priority: 'medium',
     priorityLabel: 'Medium',
-    assignee: { id: 'user-3', initials: 'M', name: 'Maya' },
+    assignee: { id: 'user-3', initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
     epicId: 'epic-1',
     epicName: 'Auth',
     projectId: 'project-1',
@@ -125,7 +128,7 @@ export const tasks: Task[] = [
     statusLabel: 'To Do',
     priority: 'low',
     priorityLabel: 'Low',
-    assignee: { id: 'user-4', initials: 'R', name: 'Rara' },
+    assignee: { id: 'user-4', initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
     epicId: 'epic-1',
     epicName: 'Auth',
     projectId: 'project-1',
@@ -144,7 +147,7 @@ export const tasks: Task[] = [
     statusLabel: 'In Progress',
     priority: 'medium',
     priorityLabel: 'Medium',
-    assignee: { id: 'user-1', initials: 'R', name: 'Rasya' },
+    assignee: { id: 'user-1', initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
     epicId: 'epic-2',
     epicName: 'Settings',
     projectId: 'project-2',
@@ -163,7 +166,7 @@ export const tasks: Task[] = [
     statusLabel: 'To Do',
     priority: 'low',
     priorityLabel: 'Low',
-    assignee: { id: 'user-4', initials: 'R', name: 'Rara' },
+    assignee: { id: 'user-4', initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
     epicId: 'epic-2',
     epicName: 'Settings',
     projectId: 'project-2',
@@ -182,7 +185,7 @@ export const tasks: Task[] = [
     statusLabel: 'To Do',
     priority: 'medium',
     priorityLabel: 'Medium',
-    assignee: { id: 'user-3', initials: 'M', name: 'Maya' },
+    assignee: { id: 'user-3', initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
     epicId: 'epic-2',
     epicName: 'Settings',
     projectId: 'project-2',
@@ -201,7 +204,7 @@ export const tasks: Task[] = [
     statusLabel: 'Done',
     priority: 'high',
     priorityLabel: 'High',
-    assignee: { id: 'user-3', initials: 'M', name: 'Maya' },
+    assignee: { id: 'user-3', initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
     epicId: 'epic-3',
     epicName: 'API',
     projectId: 'project-3',
@@ -220,7 +223,7 @@ export const tasks: Task[] = [
     statusLabel: 'In Review',
     priority: 'medium',
     priorityLabel: 'Medium',
-    assignee: { id: 'user-3', initials: 'M', name: 'Maya' },
+    assignee: { id: 'user-3', initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
     epicId: 'epic-3',
     epicName: 'API',
     projectId: 'project-3',
@@ -239,7 +242,7 @@ export const tasks: Task[] = [
     statusLabel: 'In Progress',
     priority: 'low',
     priorityLabel: 'Low',
-    assignee: { id: 'user-4', initials: 'R', name: 'Rara' },
+    assignee: { id: 'user-4', initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
     epicId: 'epic-3',
     epicName: 'API',
     projectId: 'project-3',
@@ -258,7 +261,7 @@ export const tasks: Task[] = [
     statusLabel: 'Done',
     priority: 'low',
     priorityLabel: 'Low',
-    assignee: { id: 'user-1', initials: 'R', name: 'Rasya' },
+    assignee: { id: 'user-1', initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
     epicId: 'epic-4',
     epicName: 'Core',
     projectId: 'project-4',
@@ -277,7 +280,7 @@ export const tasks: Task[] = [
     statusLabel: 'To Do',
     priority: 'medium',
     priorityLabel: 'Medium',
-    assignee: { id: 'user-2', initials: 'D', name: 'Dito' },
+    assignee: { id: 'user-2', initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
     epicId: 'epic-4',
     epicName: 'Core',
     projectId: 'project-4',

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getAvatar } from '~/shared/avatar'
+
 definePageMeta({
   layout: 'default',
   title: 'Dashboard',
@@ -23,7 +25,7 @@ interface Project {
   atRiskTasks: number
   dueDate: string
   createdDate?: string
-  assignees: { initials: string }[]
+  assignees: { initials: string; name: string; avatar: string }[]
 }
 
 interface CriticalIssue {
@@ -39,7 +41,7 @@ interface CriticalIssue {
 
 interface ActivityItem {
   id: string
-  actor: { initials: string; name: string }
+  actor: { initials: string; name: string; avatar?: string }
   action: string
   target: string
   time: string
@@ -56,12 +58,19 @@ const projects: Project[] = [
   {
     id: 'proj-1', name: 'Alpha Project', status: 'at-risk', statusLabel: 'AT RISK',
     description: 'Redesigning core product UX', progress: 62, openTasks: 14, atRiskTasks: 2,
-    dueDate: 'Aug 30, 2026', assignees: [{ initials: 'R' }, { initials: 'D' }, { initials: 'M' }],
+    dueDate: 'Aug 30, 2026', assignees: [
+      { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
+      { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
+      { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
+    ],
   },
   {
     id: 'proj-2', name: 'Beta Launch', status: 'on-track', statusLabel: 'ON TRACK',
     description: 'Public launch milestone Q3', progress: 78, openTasks: 9, atRiskTasks: 0,
-    dueDate: 'Jul 15, 2026', assignees: [{ initials: 'M' }, { initials: 'D' }],
+    dueDate: 'Jul 15, 2026', assignees: [
+      { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
+      { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
+    ],
   },
   {
     id: 'proj-3', name: 'Internal Tools', status: 'not-started', statusLabel: 'NOT STARTED',
@@ -77,11 +86,11 @@ const criticalIssues: CriticalIssue[] = [
 ]
 
 const activity: ActivityItem[] = [
-  { id: 'a-1', actor: { initials: 'R', name: 'Rasya' }, action: 'moved', target: '\u201CLogin flow\u201D to In Review', time: '10m ago' },
-  { id: 'a-2', actor: { initials: 'M', name: 'Maya' }, action: 'created epic', target: '\u201CAnalytics v2\u201D', time: '1h ago' },
-  { id: 'a-3', actor: { initials: 'D', name: 'Dito' }, action: 'completed', target: '\u201CDB schema review\u201D', time: '2h ago' },
-  { id: 'a-4', actor: { initials: 'R', name: 'Rasya' }, action: 'commented on', target: '\u201CFigma export spec\u201D', time: '3h ago' },
-  { id: 'a-5', actor: { initials: 'R', name: 'Rasya' }, action: 'added comment on', target: '\u201CFigma export spec\u201D', time: '1d ago' },
+  { id: 'a-1', actor: { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') }, action: 'moved', target: '\u201CLogin flow\u201D to In Review', time: '10m ago' },
+  { id: 'a-2', actor: { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') }, action: 'created epic', target: '\u201CAnalytics v2\u201D', time: '1h ago' },
+  { id: 'a-3', actor: { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') }, action: 'completed', target: '\u201CDB schema review\u201D', time: '2h ago' },
+  { id: 'a-4', actor: { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') }, action: 'commented on', target: '\u201CFigma export spec\u201D', time: '3h ago' },
+  { id: 'a-5', actor: { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') }, action: 'added comment on', target: '\u201CFigma export spec\u201D', time: '1d ago' },
   { id: 'a-6', actor: { initials: 'S', name: 'System' }, action: 'ended', target: 'Sprint 4', time: '1d ago' },
 ]
 

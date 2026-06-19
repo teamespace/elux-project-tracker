@@ -115,12 +115,12 @@ const priorityClass = (priority: Task['priority']) => {
           </div>
 
           <div class="flex shrink-0 items-center gap-2">
-            <div
-              class="flex size-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
+            <UAvatar
+              :src="task.assignee.avatar"
+              :text="task.assignee.initials"
+              size="xs"
               :title="task.assignee.name"
-            >
-              {{ task.assignee.initials }}
-            </div>
+            />
           </div>
 
           <span

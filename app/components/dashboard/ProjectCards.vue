@@ -10,7 +10,7 @@ interface Project {
   atRiskTasks: number
   dueDate: string
   createdDate?: string
-  assignees: { initials: string }[]
+  assignees: { initials: string; name: string; avatar: string }[]
 }
 
 const props = defineProps<{
@@ -96,13 +96,14 @@ const progressColor = (pct: number) => {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="flex -space-x-1.5">
-              <div
+              <UAvatar
                 v-for="(a, i) in project.assignees.slice(0, 3)"
                 :key="i"
-                class="flex size-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white ring-2 ring-white"
-              >
-                {{ a.initials }}
-              </div>
+                :src="a.avatar"
+                :text="a.initials"
+                size="xs"
+                class="ring-2 ring-white"
+              />
               <div
                 v-if="project.assignees.length > 3"
                 class="flex size-6 items-center justify-center rounded-full bg-gray-100 text-[10px] font-medium text-gray-500 ring-2 ring-white"

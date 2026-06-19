@@ -30,9 +30,11 @@ definePageMeta({
             </h3>
             <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
               <span class="inline-flex items-center gap-1.5">
-                <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white">
-                  {{ goal.owner.initials }}
-                </span>
+                <UAvatar
+                  :src="goal.owner.avatar"
+                  :text="goal.owner.initials"
+                  size="xs"
+                />
                 {{ goal.owner.name }}
               </span>
               <span>{{ goal.kpis.length }} KPIs</span>

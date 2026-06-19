@@ -119,11 +119,11 @@ const progressColor = (progress: number) => {
             </td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-2">
-                <div
-                  class="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
-                >
-                  {{ task.assignee.initials }}
-                </div>
+                <UAvatar
+                  :src="task.assignee.avatar"
+                  :text="task.assignee.initials"
+                  size="xs"
+                />
                 <span class="truncate text-[13px] text-gray-700">
                   {{ task.assignee.name }}
                 </span>

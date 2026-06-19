@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { notifications, unreadCount, markAllRead } from '~/shared/notifications'
+import { getAvatar } from '~/shared/avatar'
 
 definePageMeta({
   layout: 'default',
@@ -15,15 +16,6 @@ const filtered = computed(() => {
   return notifications.value
 })
 
-function iconForType(type: string) {
-  const map: Record<string, string> = {
-    mention: 'ph:at',
-    assignment: 'ph:user-plus',
-    status: 'ph:arrow-right',
-    comment: 'ph:chat-circle',
-  }
-  return map[type] ?? 'ph:bell'
-}
 </script>
 
 <template>
@@ -59,9 +51,11 @@ function iconForType(type: string) {
         class="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-colors hover:border-gray-300"
         :class="{ 'bg-blue-50/30': !notif.read }"
       >
-        <div class="flex size-8 shrink-0 items-center justify-center rounded-full" :class="notif.read ? 'bg-gray-100 text-gray-500' : 'bg-blue-100 text-blue-600'">
-          <UIcon :name="iconForType(notif.type)" class="size-4" />
-        </div>
+        <UAvatar
+          :src="getAvatar(notif.actor.name)"
+          :text="notif.actor.name.charAt(0)"
+          size="sm"
+        />
         <div class="min-w-0 flex-1">
           <p class="text-[13px] text-gray-900">
             <span class="font-medium">{{ notif.actor.name }}</span>

@@ -198,9 +198,11 @@ function save() {
                 </h3>
                 <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
                   <span class="inline-flex items-center gap-1.5">
-                    <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white">
-                      {{ (findPerson(form.ownerName) ?? people[0] ?? { initials: 'R' }).initials }}
-                    </span>
+                    <UAvatar
+                      :src="(findPerson(form.ownerName) ?? people[0] ?? { avatar: undefined }).avatar"
+                      :text="(findPerson(form.ownerName) ?? people[0] ?? { initials: 'R' }).initials"
+                      size="xs"
+                    />
                     {{ form.ownerName }}
                   </span>
                   <span>{{ form.quarter }}</span>

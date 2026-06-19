@@ -17,7 +17,7 @@ const docs: Record<string, {
   type: string
   epicId: string
   epicName: string
-  author: { initials: string; name: string }
+  author: { initials: string; name: string; avatar?: string }
   createdAt: string
   updatedAt: string
   readTime: string
@@ -31,7 +31,7 @@ const docs: Record<string, {
     type: 'Spec',
     epicId: 'epic-1',
     epicName: 'Auth & Onboarding Redesign',
-    author: { initials: 'R', name: 'Rasya' },
+    author: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
     createdAt: 'Jun 10, 2026',
     updatedAt: 'Jun 15, 2026',
     readTime: '3 min read',
@@ -71,7 +71,7 @@ This document outlines the authentication flow for the redesigned product. The g
     type: 'Notes',
     epicId: 'epic-1',
     epicName: 'Auth & Onboarding Redesign',
-    author: { initials: 'D', name: 'Dito' },
+    author: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
     createdAt: 'Jun 12, 2026',
     updatedAt: 'Jun 14, 2026',
     readTime: '1 min read',
@@ -105,7 +105,7 @@ Design tokens have been updated to match the new brand palette.
     type: 'Brief',
     epicId: 'epic-2',
     epicName: 'Core Dashboard v2',
-    author: { initials: 'M', name: 'Maya' },
+    author: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
     createdAt: 'Jun 8, 2026',
     updatedAt: 'Jun 8, 2026',
     readTime: '5 min read',
@@ -144,7 +144,7 @@ Widgets are the primary building block:
     type: 'Notes',
     epicId: 'epic-2',
     epicName: 'Core Dashboard v2',
-    author: { initials: 'R', name: 'Rara' },
+    author: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' },
     createdAt: 'Jun 14, 2026',
     updatedAt: 'Jun 16, 2026',
     readTime: '2 min read',
@@ -208,7 +208,11 @@ function statusClasses(status: string) {
           {{ doc.type }}
         </span>
         <span class="inline-flex items-center gap-1">
-          <span class="flex size-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-semibold text-white">{{ doc.author.initials }}</span>
+          <UAvatar
+            :src="doc.author.avatar"
+            :text="doc.author.initials"
+            size="xs"
+          />
           {{ doc.author.name }}
         </span>
         <span>Created {{ doc.createdAt }}</span>

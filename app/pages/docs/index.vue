@@ -7,6 +7,7 @@ definePageMeta({
 interface Uploader {
   initials: string
   name: string
+  avatar?: string
 }
 
 interface ProjectFolder {
@@ -49,71 +50,71 @@ const items: HubItem[] = [
   {
     id: 'doc-1', projectId: 'proj-1', kind: 'document',
     name: 'Auth Flow Spec', type: 'PDF', size: '1.2 MB',
-    uploader: { initials: 'R', name: 'Rasya' }, updatedAt: 'Jun 15, 2026',
+    uploader: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, updatedAt: 'Jun 15, 2026',
   },
   {
     id: 'doc-2', projectId: 'proj-1', kind: 'document',
     name: 'Figma Handoff Notes', type: 'FIG', size: '4.5 MB',
-    uploader: { initials: 'D', name: 'Dito' }, updatedAt: 'Jun 14, 2026',
+    uploader: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, updatedAt: 'Jun 14, 2026',
   },
   {
     id: 'doc-4', projectId: 'proj-1', kind: 'document',
     name: 'Component Audit', type: 'XLSX', size: '845 KB',
-    uploader: { initials: 'R', name: 'Rara' }, updatedAt: 'Jun 16, 2026',
+    uploader: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' }, updatedAt: 'Jun 16, 2026',
   },
   {
     id: 'link-1', projectId: 'proj-1', kind: 'link',
     title: 'Figma — Auth Flows', url: 'https://figma.com/file/alpha-auth',
-    addedBy: { initials: 'D', name: 'Dito' }, addedAt: 'Jun 12, 2026',
+    addedBy: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, addedAt: 'Jun 12, 2026',
   },
   {
     id: 'link-2', projectId: 'proj-1', kind: 'link',
     title: 'Notion — Alpha PRD', url: 'https://notion.so/alpha-prd',
-    addedBy: { initials: 'R', name: 'Rasya' }, addedAt: 'Jun 10, 2026',
+    addedBy: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, addedAt: 'Jun 10, 2026',
   },
 
   // Beta Launch
   {
     id: 'doc-3', projectId: 'proj-2', kind: 'document',
     name: 'Dashboard Design Brief', type: 'DOCX', size: '2.1 MB',
-    uploader: { initials: 'M', name: 'Maya' }, updatedAt: 'Jun 8, 2026',
+    uploader: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, updatedAt: 'Jun 8, 2026',
   },
   {
     id: 'doc-5', projectId: 'proj-2', kind: 'document',
     name: 'API Rate Limit Spec', type: 'PDF', size: '890 KB',
-    uploader: { initials: 'D', name: 'Dito' }, updatedAt: 'Jun 17, 2026',
+    uploader: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, updatedAt: 'Jun 17, 2026',
   },
   {
     id: 'link-3', projectId: 'proj-2', kind: 'link',
     title: 'Swagger — API Docs', url: 'https://swagger.io/beta-api',
-    addedBy: { initials: 'M', name: 'Maya' }, addedAt: 'Jun 11, 2026',
+    addedBy: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, addedAt: 'Jun 11, 2026',
   },
   {
     id: 'link-4', projectId: 'proj-2', kind: 'link',
     title: 'Launch Timeline', url: 'https://docs.google.com/spreadsheets/beta-launch',
-    addedBy: { initials: 'D', name: 'Dito' }, addedAt: 'Jun 9, 2026',
+    addedBy: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, addedAt: 'Jun 9, 2026',
   },
 
   // Internal Tools
   {
     id: 'doc-6', projectId: 'proj-3', kind: 'document',
     name: 'Tracker Schema', type: 'PDF', size: '1.5 MB',
-    uploader: { initials: 'M', name: 'Maya' }, updatedAt: 'Jun 13, 2026',
+    uploader: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, updatedAt: 'Jun 13, 2026',
   },
   {
     id: 'doc-7', projectId: 'proj-3', kind: 'document',
     name: 'Design System Tokens', type: 'JSON', size: '12 KB',
-    uploader: { initials: 'R', name: 'Rara' }, updatedAt: 'Jun 18, 2026',
+    uploader: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' }, updatedAt: 'Jun 18, 2026',
   },
   {
     id: 'link-5', projectId: 'proj-3', kind: 'link',
     title: 'GitHub — elux-tracker', url: 'https://github.com/elux/elux-tracker',
-    addedBy: { initials: 'M', name: 'Maya' }, addedAt: 'Jun 14, 2026',
+    addedBy: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, addedAt: 'Jun 14, 2026',
   },
   {
     id: 'link-6', projectId: 'proj-3', kind: 'link',
     title: 'Linear — Internal Tools', url: 'https://linear.app/elux/internal-tools',
-    addedBy: { initials: 'R', name: 'Rara' }, addedAt: 'Jun 16, 2026',
+    addedBy: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' }, addedAt: 'Jun 16, 2026',
   },
 ]
 
@@ -312,9 +313,11 @@ function clearFilters() {
                   {{ item.type }} · {{ item.size }}
                 </p>
                 <div class="mt-2 flex items-center gap-2">
-                  <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-semibold text-white">
-                    {{ item.uploader.initials }}
-                  </span>
+                  <UAvatar
+                    :src="item.uploader.avatar"
+                    :text="item.uploader.initials"
+                    size="xs"
+                  />
                   <span class="truncate text-[11px] text-gray-500">{{ item.uploader.name }}</span>
                 </div>
               </div>
@@ -340,9 +343,11 @@ function clearFilters() {
                   {{ item.url }}
                 </p>
                 <div class="mt-2 flex items-center gap-2">
-                  <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-semibold text-white">
-                    {{ item.addedBy.initials }}
-                  </span>
+                  <UAvatar
+                    :src="item.addedBy.avatar"
+                    :text="item.addedBy.initials"
+                    size="xs"
+                  />
                   <span class="truncate text-[11px] text-gray-500">{{ item.addedBy.name }}</span>
                   <UIcon name="ph:arrow-square-out" class="ml-auto size-3.5 text-gray-400" />
                 </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface ActivityItem {
   id: string
-  actor: { initials: string; name: string }
+  actor: { initials: string; name: string; avatar?: string }
   action: string
   target: string
   time: string
@@ -43,17 +43,14 @@ const isSystem = (name: string) => name.toLowerCase() === 'system'
           class="flex gap-3 pb-4 last:pb-0"
         >
           <div class="flex flex-col items-center">
-            <div
-              v-if="isSystem(item.actor.name)"
-              class="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-500"
-            >
+            <UAvatar
+              v-if="!isSystem(item.actor.name)"
+              :src="item.actor.avatar"
+              :text="item.actor.initials"
+              size="xs"
+            />
+            <div v-else class="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-500">
               <UIcon name="ph:gear" class="size-3.5 text-white" />
-            </div>
-            <div
-              v-else
-              class="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
-            >
-              {{ item.actor.initials }}
             </div>
             <div
               v-if="index < displayedItems.length - 1"

@@ -189,12 +189,12 @@ const onDrop = (status: Status) => {
           </div>
 
           <div class="flex items-center justify-between gap-2 pt-1">
-            <div
-              class="flex size-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
+            <UAvatar
+              :src="task.assignee.avatar"
+              :text="task.assignee.initials"
+              size="xs"
               :title="task.assignee.name"
-            >
-              {{ task.assignee.initials }}
-            </div>
+            />
 
             <div class="flex items-center gap-3 text-[11px] text-gray-500">
               <span

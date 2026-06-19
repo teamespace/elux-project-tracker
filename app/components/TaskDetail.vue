@@ -12,6 +12,7 @@ import {
   type TaskPriority,
   type TaskStatus,
 } from '~/shared/board'
+import { getAvatar } from '~/shared/avatar'
 
 interface Comment {
   id: string
@@ -694,12 +695,12 @@ function onSubmit() {
                 :key="comment.id"
                 class="flex gap-3"
               >
-                <div
-                  class="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                <UAvatar
+                  :src="comment.author.avatar || getAvatar(comment.author.name)"
+                  :text="comment.author.initials"
+                  size="sm"
                   :class="findUser(comment.author.name).color"
-                >
-                  {{ comment.author.initials }}
-                </div>
+                />
                 <div class="min-w-0 flex-1">
                   <div class="flex items-baseline gap-2">
                     <span class="text-sm font-semibold text-gray-900">{{ comment.author.name }}</span>
@@ -716,9 +717,12 @@ function onSubmit() {
               </div>
 
               <div class="flex items-start gap-3">
-                <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-700 text-[11px] font-semibold text-white">
-                  Y
-                </div>
+                <UAvatar
+                  :src="getAvatar('Rasya')"
+                  text="Y"
+                  size="sm"
+                  class="shrink-0"
+                />
                 <UInput
                   v-model="newComment"
                   size="sm"
@@ -743,12 +747,12 @@ function onSubmit() {
                 :key="activity.id"
                 class="flex items-start gap-3"
               >
-                <div
-                  class="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                <UAvatar
+                  :src="activity.actor.avatar || getAvatar(activity.actor.name)"
+                  :text="activity.actor.initials"
+                  size="sm"
                   :class="findUser(activity.actor.name).color"
-                >
-                  {{ activity.actor.initials }}
-                </div>
+                />
                 <div class="min-w-0 flex-1">
                   <p class="text-sm text-gray-700">
                     <span class="font-medium text-gray-900">{{ activity.actor.name }}</span>
