@@ -12,18 +12,18 @@ defineProps<{
   <NuxtLink
     :to="to"
     :title="collapsed ? label : undefined"
-    class="flex h-9 items-center rounded-lg text-[14px] font-medium transition-colors"
+    class="group flex h-9 items-center rounded-md text-[13px] font-medium transition-colors"
     :class="[
       active
-        ? 'bg-gray-100 text-gray-900'
-        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-      collapsed ? 'justify-center px-2' : 'gap-2 px-3',
+        ? 'bg-neutral-100 text-neutral-900'
+        : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900',
+      collapsed ? 'justify-center px-2' : 'gap-2.5 px-3',
     ]"
   >
     <UIcon
       :name="icon"
-      class="size-4 shrink-0"
-      :class="active ? 'text-gray-900' : 'text-gray-500'"
+      class="size-[18px] shrink-0 transition-colors"
+      :class="active ? 'text-neutral-900' : 'text-neutral-400 group-hover:text-neutral-600'"
     />
     <span v-if="!collapsed">{{ label }}</span>
   </NuxtLink>
