@@ -321,21 +321,6 @@ function onSubmit() {
 
     <!-- PAGE MODE — Linear two-panel layout -->
     <template v-else-if="mode === 'page'">
-      <!-- Breadcrumb bar -->
-      <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-6 py-3">
-        <div class="flex items-center gap-1.5 text-[13px]">
-          <NuxtLink to="/projects" class="text-gray-400 hover:text-gray-700 transition-colors">Projects</NuxtLink>
-          <UIcon name="ph:caret-right" class="size-3 text-gray-300" />
-          <span class="font-medium text-gray-900">{{ form.name || 'Untitled project' }}</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <UButton variant="outline" color="neutral" size="sm" @click="onClose">Cancel</UButton>
-          <UButton color="primary" size="sm" @click="onSubmit">
-            {{ isCreate ? 'Create project' : 'Save changes' }}
-          </UButton>
-        </div>
-      </div>
-
       <!-- Two-column body -->
       <div class="flex min-h-0 flex-1 overflow-hidden">
         <!-- LEFT: main content -->
@@ -483,6 +468,14 @@ function onSubmit() {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Save / Cancel -->
+          <div class="mb-6 flex items-center gap-2">
+            <UButton color="primary" size="sm" @click="onSubmit">
+              {{ isCreate ? 'Create project' : 'Save changes' }}
+            </UButton>
+            <UButton variant="ghost" color="neutral" size="sm" @click="onClose">Cancel</UButton>
           </div>
 
           <!-- Bottom tabs: Comments / Activities / Attachments -->
