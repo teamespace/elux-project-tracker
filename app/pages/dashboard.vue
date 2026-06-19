@@ -22,6 +22,8 @@ interface Project {
   name: string
   status: 'on-track' | 'at-risk' | 'delayed' | 'not-started'
   statusLabel: string
+  priority: 'high' | 'medium' | 'low'
+  priorityLabel: string
   description: string
   progress: number
   openTasks: number
@@ -58,7 +60,7 @@ const stats: StatCard[] = [
 
 const projects: Project[] = [
   {
-    id: 'proj-1', name: 'Alpha Project', status: 'at-risk', statusLabel: 'AT RISK',
+    id: 'proj-1', name: 'Alpha Project', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', priorityLabel: 'High',
     description: 'Redesigning core product UX', progress: 62, openTasks: 14, atRiskTasks: 2,
     dueDate: 'Aug 30, 2026', assignees: [
       { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
@@ -67,7 +69,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 'proj-2', name: 'Beta Launch', status: 'on-track', statusLabel: 'ON TRACK',
+    id: 'proj-2', name: 'Beta Launch', status: 'on-track', statusLabel: 'On Track', priority: 'medium', priorityLabel: 'Medium',
     description: 'Public launch milestone Q3', progress: 78, openTasks: 9, atRiskTasks: 0,
     dueDate: 'Jul 15, 2026', assignees: [
       { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
@@ -75,7 +77,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 'proj-3', name: 'Internal Tools', status: 'not-started', statusLabel: 'NOT STARTED',
+    id: 'proj-3', name: 'Internal Tools', status: 'not-started', statusLabel: 'Not Started', priority: 'low', priorityLabel: 'Low',
     description: 'Tracker revamp, design system', progress: 0, openTasks: 0, atRiskTasks: 0,
     dueDate: 'Sep 10, 2026', createdDate: 'Jun 20, 2026', assignees: [],
   },
@@ -102,11 +104,10 @@ const activity: ActivityItem[] = [
   <div class="space-y-6">
     <DashboardStatCards :stats="stats" />
 
-    <DashboardProjectCards :projects="projects" />
+    <DashboardCriticalIssues :issues="criticalIssues" />
 
-    <!-- Critical Issues + Activity -->
     <div class="flex gap-6">
-      <DashboardCriticalIssues :issues="criticalIssues" class="flex-[3]" />
+      <DashboardProjectCards :projects="projects" class="flex-[3]" />
       <DashboardRecentActivity :activity="activity" class="flex-[2]" />
     </div>
   </div>
