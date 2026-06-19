@@ -27,7 +27,6 @@ interface Form {
   priorityLabel: string
   createdDate: string
   dueDate: string
-  type: string
   labels: string
   links: Project['links']
   category: string
@@ -67,6 +66,8 @@ const newChildTaskAssignee = ref('')
 const fileError = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const newAttachmentUrl = ref('')
+const editingTaskId = ref<string | null>(null)
+const editingTitle = ref('')
 
 const tabItems = computed(() => [
   { label: 'Comments', value: 'comments', icon: 'ph:chat-circle', slot: 'comments', badge: comments.length || undefined },
@@ -106,7 +107,6 @@ function emptyForm(): Form {
     priorityLabel: 'Medium',
     createdDate: '',
     dueDate: '',
-    type: '',
     labels: '',
     links: { attach: '', notion: '', figma: '' },
     category: '',
@@ -131,7 +131,6 @@ function loadData() {
       priorityLabel: p.priorityLabel,
       createdDate: p.createdDate,
       dueDate: p.dueDate,
-      type: p.type,
       labels: p.labels,
       links: { ...p.links },
       category: p.category,
@@ -199,6 +198,26 @@ function cancelChildTask() {
 function deleteChildTask(id: string) {
   const index = childTasks.findIndex(t => t.id === id)
   if (index !== -1) childTasks.splice(index, 1)
+}
+
+function startEditTask(taskId: string, currentTitle: string) {
+  editingTaskId.value = taskId
+  editingTitle.value = currentTitle
+}
+
+function saveEditTask() {
+  if (!editingTaskId.value) return
+  const task = childTasks.find(t => t.id === editingTaskId.value)
+  if (task && editingTitle.value.trim()) {
+    task.title = editingTitle.value.trim()
+  }
+  editingTaskId.value = null
+  editingTitle.value = ''
+}
+
+function cancelEditTask() {
+  editingTaskId.value = null
+  editingTitle.value = ''
 }
 
 function addComment() {
@@ -278,7 +297,6 @@ function onSubmit() {
     priorityLabel: form.priorityLabel,
     createdDate: form.createdDate,
     dueDate: form.dueDate,
-    type: form.type,
     labels: form.labels,
     links: { ...form.links },
     category: form.category,
@@ -302,20 +320,10 @@ function onSubmit() {
 
     <div v-else class="flex flex-col gap-6">
       <!-- Top action bar -->
-      <div class="flex items-center justify-between">
+      <div v-if="mode === 'slide-over'" class="flex items-center justify-end">
         <UButton
           variant="ghost"
-          color="neutral"
-          size="sm"
-          square
-          :icon="mode === 'slide-over' ? 'ph:x' : 'ph:arrow-left'"
-          :title="mode === 'slide-over' ? 'Close' : 'Back to projects'"
-          @click="onClose"
-        />
-        <UButton
-          v-if="mode === 'slide-over'"
-          variant="ghost"
-          color="neutral"
+          color="primary"
           size="sm"
           square
           icon="ph:arrow-square-out"
@@ -409,14 +417,6 @@ function onSubmit() {
 
           <div class="flex items-center gap-3 py-1.5">
             <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
-              <UIcon name="ph:lightning" class="size-4 shrink-0" />
-              <span>Type</span>
-            </div>
-            <UInput v-model="form.type" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
-          </div>
-
-          <div class="flex items-center gap-3 py-1.5">
-            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
               <UIcon name="ph:tag" class="size-4 shrink-0" />
               <span>Labels</span>
             </div>
@@ -484,11 +484,11 @@ function onSubmit() {
         />
       </div>
 
-      <!-- Child tasks -->
+      <!-- Sub tasks -->
       <div>
         <div class="mb-3 flex items-center justify-between">
           <h3 class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            Child tasks
+            Sub tasks
           </h3>
           <span class="text-[12px] text-gray-500">
             {{ childTaskProgress.done }} / {{ childTaskProgress.total }} done · {{ childTaskProgress.pct }}%
@@ -510,17 +510,43 @@ function onSubmit() {
             class="group flex items-center gap-3 rounded-md border border-gray-200 bg-white px-3 py-2 hover:border-gray-300"
           >
             <UCheckbox v-model="task.done" size="sm" />
-            <span
-              class="min-w-0 flex-1 truncate text-[13px]"
-              :class="task.done ? 'text-gray-400 line-through' : 'text-gray-900'"
-            >
-              {{ task.title }}
-            </span>
+
+            <template v-if="editingTaskId === task.id">
+              <UInput
+                v-model="editingTitle"
+                size="sm"
+                class="min-w-0 flex-1"
+                @keyup.enter="saveEditTask"
+                @keyup.escape="cancelEditTask"
+                @blur="saveEditTask"
+              />
+            </template>
+            <template v-else>
+              <span
+                class="min-w-0 flex-1 truncate text-[13px] cursor-pointer"
+                :class="task.done ? 'text-gray-400 line-through' : 'text-gray-900'"
+                @click="startEditTask(task.id, task.title)"
+              >
+                {{ task.title }}
+              </span>
+            </template>
+
+            <UButton
+              v-if="editingTaskId !== task.id"
+              variant="ghost"
+              color="primary"
+              size="xs"
+              square
+              icon="ph:pencil"
+              class="shrink-0 opacity-0 group-hover:opacity-100"
+              @click="startEditTask(task.id, task.title)"
+            />
+
             <UInput v-model="task.dueDate" type="date" size="sm" class="w-32 shrink-0" />
             <USelect v-model="task.assignee" :items="assigneeOptions" placeholder="—" size="sm" class="w-32 shrink-0" />
             <UButton
               variant="ghost"
-              color="neutral"
+              color="primary"
               size="xs"
               square
               icon="ph:trash"
@@ -532,20 +558,20 @@ function onSubmit() {
           <UButton
             v-if="!showChildTaskForm"
             variant="ghost"
-            color="neutral"
+            color="primary"
             size="sm"
             icon="ph:plus"
             class="mt-1 w-full justify-start"
             @click="showChildTaskForm = true"
           >
-            Add child task
+            Add sub task
           </UButton>
 
           <div v-else class="mt-1 flex flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3">
             <UInput
               v-model="newChildTaskTitle"
               size="sm"
-              placeholder="Child task title"
+              placeholder="Sub task title"
               @keydown.enter.prevent="addChildTask"
             />
             <div class="flex items-center gap-2">
@@ -692,14 +718,14 @@ function onSubmit() {
                     <p v-else class="text-[11px] text-gray-500">URL</p>
                   </div>
                 </div>
-                <UButton
-                  variant="ghost"
-                  color="neutral"
-                  size="xs"
-                  square
-                  icon="ph:x"
-                  @click="deleteAttachment(file.id)"
-                />
+            <UButton
+              variant="ghost"
+              color="primary"
+              size="xs"
+              square
+              icon="ph:x"
+              @click="deleteAttachment(file.id)"
+            />
               </div>
 
               <div v-if="attachments.length === 0" class="text-[13px] text-gray-500">

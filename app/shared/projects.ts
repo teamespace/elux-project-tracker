@@ -58,7 +58,6 @@ export interface Project {
   color: string
   priority: ProjectPriority
   priorityLabel: string
-  type: string
   labels: string
   links: ProjectLinks
   category: string
@@ -99,7 +98,6 @@ export const projects: Project[] = [
     color: 'bg-blue-500',
     priority: 'high',
     priorityLabel: 'High',
-    type: 'Product redesign',
     labels: 'UX, Q3',
     links: {
       attach: 'https://example.com/alpha-brief',
@@ -147,7 +145,6 @@ export const projects: Project[] = [
     color: 'bg-green-500',
     priority: 'medium',
     priorityLabel: 'Medium',
-    type: 'Go-to-market',
     labels: 'Launch',
     links: {
       attach: '',
@@ -187,7 +184,6 @@ export const projects: Project[] = [
     color: 'bg-purple-500',
     priority: 'low',
     priorityLabel: 'Low',
-    type: 'Internal initiative',
     labels: '',
     links: {
       attach: '',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { tasks } from '~/shared/board'
 
 definePageMeta({
   layout: false,
@@ -8,12 +9,7 @@ definePageMeta({
 
 const route = useRoute()
 const id = computed(() => route.params.id as string)
-
-const taskKey = computed(() => {
-  const num = Number.parseInt(id.value.split('-').pop() || '', 10)
-  if (Number.isNaN(num)) return id.value.toUpperCase()
-  return `ELX-${String(num).padStart(3, '0')}`
-})
+const task = computed(() => tasks.find(t => t.id === id.value))
 </script>
 
 <template>
@@ -26,7 +22,7 @@ const taskKey = computed(() => {
               Tasks
             </NuxtLink>
             <UIcon name="ph:caret-right" class="size-3.5 text-gray-400" />
-            <span class="font-medium text-gray-900">{{ taskKey }}</span>
+            <span class="font-medium text-gray-900">{{ task?.title || id }}</span>
           </div>
         </AppHeader>
       </template>

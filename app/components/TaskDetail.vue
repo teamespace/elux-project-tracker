@@ -469,9 +469,6 @@ function onSubmit() {
         <p class="mt-3 text-base text-gray-500">
           Task not found
         </p>
-        <UButton to="/my-work" variant="link" class="mt-2">
-          Back to My Work
-        </UButton>
       </div>
     </template>
 

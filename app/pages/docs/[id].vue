@@ -195,6 +195,14 @@ function statusClasses(status: string) {
     </div>
 
     <template v-else>
+      <div class="mt-4 flex items-center gap-2 text-[15px] font-semibold">
+        <NuxtLink to="/docs" class="text-gray-500 transition-colors hover:text-gray-700">
+          Docs
+        </NuxtLink>
+        <UIcon name="ph:caret-right" class="size-3.5 text-gray-400" />
+        <span class="truncate text-gray-900">{{ doc.title }}</span>
+      </div>
+
       <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-gray-500">
         <span class="inline-flex items-center rounded-full border border-gray-200 px-2 py-0.5 text-[11px] font-medium text-gray-500">
           {{ doc.type }}
