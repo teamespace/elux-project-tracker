@@ -52,18 +52,15 @@ export interface Project {
   openTasks: number
   atRiskTasks: number
   dueDate: string
-  startDate: string
+  createdDate: string
   owner: Person
   assignees: Person[]
   color: string
   priority: ProjectPriority
   priorityLabel: string
   type: string
-  team: string
-  project: string
   labels: string
   links: ProjectLinks
-  industry: string
   category: string
   childTasks: ProjectChildTask[]
   comments: ProjectComment[]
@@ -92,7 +89,7 @@ export const projects: Project[] = [
     openTasks: 14,
     atRiskTasks: 2,
     dueDate: '2026-08-30',
-    startDate: '2026-06-01',
+    createdDate: '2026-06-01',
     owner: { initials: 'R', name: 'Rasya' },
     assignees: [
       { initials: 'R', name: 'Rasya' },
@@ -103,15 +100,12 @@ export const projects: Project[] = [
     priority: 'high',
     priorityLabel: 'High',
     type: 'Product redesign',
-    team: 'Product & Engineering',
-    project: 'Alpha Program',
     labels: 'UX, Q3',
     links: {
       attach: 'https://example.com/alpha-brief',
       notion: 'https://notion.so/alpha-brief',
       figma: 'https://figma.com/alpha',
     },
-    industry: 'SaaS',
     category: 'Core product',
     childTasks: [
       { id: 'st-1', title: 'Finalize user research synthesis', done: true, dueDate: '2026-06-10', assignee: 'Rasya' },
@@ -144,7 +138,7 @@ export const projects: Project[] = [
     openTasks: 9,
     atRiskTasks: 0,
     dueDate: '2026-07-15',
-    startDate: '2026-05-20',
+    createdDate: '2026-05-20',
     owner: { initials: 'M', name: 'Maya' },
     assignees: [
       { initials: 'M', name: 'Maya' },
@@ -154,15 +148,12 @@ export const projects: Project[] = [
     priority: 'medium',
     priorityLabel: 'Medium',
     type: 'Go-to-market',
-    team: 'Marketing & Product',
-    project: 'Beta Program',
     labels: 'Launch',
     links: {
       attach: '',
       notion: 'https://notion.so/beta-launch',
       figma: '',
     },
-    industry: 'SaaS',
     category: 'Launch',
     childTasks: [
       { id: 'st-5', title: 'Publish press kit', done: true, dueDate: '2026-06-20', assignee: 'Maya' },
@@ -190,22 +181,19 @@ export const projects: Project[] = [
     openTasks: 0,
     atRiskTasks: 0,
     dueDate: '2026-09-10',
-    startDate: '2026-06-20',
+    createdDate: '2026-06-20',
     owner: { initials: 'D', name: 'Dito' },
     assignees: [],
     color: 'bg-purple-500',
     priority: 'low',
     priorityLabel: 'Low',
     type: 'Internal initiative',
-    team: 'Internal Product',
-    project: 'Operations',
     labels: '',
     links: {
       attach: '',
       notion: '',
       figma: '',
     },
-    industry: 'SaaS',
     category: 'Operations',
     childTasks: [],
     comments: [],

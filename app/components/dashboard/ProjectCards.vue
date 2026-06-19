@@ -9,7 +9,7 @@ interface Project {
   openTasks: number
   atRiskTasks: number
   dueDate: string
-  startDate?: string
+  createdDate?: string
   assignees: { initials: string }[]
 }
 
@@ -125,7 +125,7 @@ const progressColor = (pct: number) => {
             <span class="flex items-center gap-1 text-[11px] text-gray-500">
               <UIcon name="ph:calendar-blank" class="size-3" />
               <span v-if="project.dueDate">Due {{ project.dueDate }}</span>
-              <span v-else-if="project.startDate">Start {{ project.startDate }}</span>
+              <span v-else-if="project.createdDate">Created {{ project.createdDate }}</span>
             </span>
           </div>
         </div>

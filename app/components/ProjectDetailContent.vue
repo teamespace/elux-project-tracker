@@ -6,7 +6,6 @@ import {
   type ProjectActivity,
   type ProjectAttachment,
   people,
-  projectOptions,
   statusOptions,
   priorityOptions,
   projectById,
@@ -14,6 +13,7 @@ import {
   priorityColor,
   progressColor,
   avatarColor,
+  findPerson,
   formatFileSize,
 } from '~/shared/projects'
 
@@ -25,14 +25,11 @@ interface Form {
   owner: string
   priority: Project['priority']
   priorityLabel: string
-  startDate: string
+  createdDate: string
   dueDate: string
   type: string
-  team: string
-  project: string
   labels: string
   links: Project['links']
-  industry: string
   category: string
 }
 
@@ -89,11 +86,7 @@ const assigneeOptions = computed(() =>
   ),
 )
 
-const programOptions = computed(() =>
-  [{ label: 'None', value: '' }].concat(
-    projectOptions.map(p => ({ label: p, value: p })),
-  ),
-)
+const ownerPerson = computed(() => findPerson(form.owner))
 
 const childTaskProgress = computed(() => {
   const total = childTasks.length
@@ -111,14 +104,11 @@ function emptyForm(): Form {
     owner: '',
     priority: 'medium',
     priorityLabel: 'Medium',
-    startDate: '',
+    createdDate: '',
     dueDate: '',
     type: '',
-    team: '',
-    project: '',
     labels: '',
     links: { attach: '', notion: '', figma: '' },
-    industry: '',
     category: '',
   }
 }
@@ -139,14 +129,11 @@ function loadData() {
       owner: p.owner.name,
       priority: p.priority,
       priorityLabel: p.priorityLabel,
-      startDate: p.startDate,
+      createdDate: p.createdDate,
       dueDate: p.dueDate,
       type: p.type,
-      team: p.team,
-      project: p.project,
       labels: p.labels,
       links: { ...p.links },
-      industry: p.industry,
       category: p.category,
     })
     replaceArray(childTasks, p.childTasks.map(t => ({ ...t })))
@@ -275,14 +262,32 @@ function addAttachmentUrl() {
   newAttachmentUrl.value = ''
 }
 
+function openUrl(url: string) {
+  if (!url) return
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
+
 function onSubmit() {
-  console.log(isCreate.value ? 'Create project' : 'Save project', {
-    ...form,
+  const payload = {
+    name: form.name,
+    description: form.description,
+    status: form.status,
+    statusLabel: form.statusLabel,
+    owner: form.owner,
+    priority: form.priority,
+    priorityLabel: form.priorityLabel,
+    createdDate: form.createdDate,
+    dueDate: form.dueDate,
+    type: form.type,
+    labels: form.labels,
+    links: { ...form.links },
+    category: form.category,
     childTasks,
     comments,
     activities,
     attachments,
-  })
+  }
+  console.log(isCreate.value ? 'Create project' : 'Save project', payload)
   emit('close')
 }
 </script>
@@ -319,7 +324,7 @@ function onSubmit() {
         />
       </div>
 
-      <!-- Title + key/status -->
+      <!-- Title + meta -->
       <div>
         <UInput
           v-model="form.name"
@@ -329,11 +334,30 @@ function onSubmit() {
           class="w-full text-[26px] font-bold text-gray-900 placeholder:text-gray-400"
           :ui="{ base: 'focus:ring-0' }"
         />
-        <div class="mt-2 flex flex-wrap items-center gap-2">
-          <span v-if="project?.key" class="rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-gray-600">{{ project.key }}</span>
+        <div class="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
+          <div v-if="ownerPerson" class="flex items-center gap-1.5">
+            <UAvatar
+              :text="ownerPerson.initials"
+              size="xs"
+              :class="avatarColor(people.findIndex(p => p.name === ownerPerson?.name))"
+            />
+            <span class="text-gray-700">{{ ownerPerson?.name }}</span>
+          </div>
+          <div v-else class="flex items-center gap-1.5 text-gray-500">
+            <UIcon name="ph:user" class="size-3.5" />
+            <span>Unassigned</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-gray-500">
+            <UIcon name="ph:calendar-plus" class="size-3.5" />
+            <span>{{ form.createdDate || 'No created date' }}</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-gray-500">
+            <UIcon name="ph:calendar-check" class="size-3.5" />
+            <span>{{ form.dueDate || 'No due date' }}</span>
+          </div>
           <UBadge :label="form.statusLabel" :color="statusColor(form.status)" variant="outline" size="sm" />
           <UBadge :label="form.priorityLabel" :color="priorityColor(form.priority)" variant="outline" size="sm" />
-          <span v-if="project" class="text-[12px] text-gray-500">{{ project.progress }}% progress</span>
+          <span v-if="project" class="text-gray-500">{{ project.progress }}% progress</span>
         </div>
       </div>
 
@@ -342,7 +366,7 @@ function onSubmit() {
         <h3 class="mb-3 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
           Properties
         </h3>
-        <div class="flex flex-col gap-1">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-1 md:grid-cols-2">
           <div class="flex items-center gap-3 py-1.5">
             <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
               <UIcon name="ph:traffic-signal" class="size-4 shrink-0" />
@@ -370,9 +394,9 @@ function onSubmit() {
           <div class="flex items-center gap-3 py-1.5">
             <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
               <UIcon name="ph:calendar-blank" class="size-4 shrink-0" />
-              <span>Start date</span>
+              <span>Created Date</span>
             </div>
-            <UInput v-model="form.startDate" type="date" size="sm" class="min-w-0 flex-1" />
+            <UInput v-model="form.createdDate" type="date" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -393,14 +417,6 @@ function onSubmit() {
 
           <div class="flex items-center gap-3 py-1.5">
             <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
-              <UIcon name="ph:folder" class="size-4 shrink-0" />
-              <span>Program</span>
-            </div>
-            <USelect v-model="form.project" :items="programOptions" placeholder="None" size="sm" class="min-w-0 flex-1" />
-          </div>
-
-          <div class="flex items-center gap-3 py-1.5">
-            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
               <UIcon name="ph:tag" class="size-4 shrink-0" />
               <span>Labels</span>
             </div>
@@ -409,26 +425,48 @@ function onSubmit() {
 
           <div class="flex items-center gap-3 py-1.5">
             <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
-              <UIcon name="ph:users" class="size-4 shrink-0" />
-              <span>Team</span>
-            </div>
-            <UInput v-model="form.team" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
-          </div>
-
-          <div class="flex items-center gap-3 py-1.5">
-            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
-              <UIcon name="ph:buildings" class="size-4 shrink-0" />
-              <span>Industry</span>
-            </div>
-            <UInput v-model="form.industry" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
-          </div>
-
-          <div class="flex items-center gap-3 py-1.5">
-            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
               <UIcon name="ph:stack" class="size-4 shrink-0" />
               <span>Category</span>
             </div>
             <UInput v-model="form.category" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
+          </div>
+
+          <div class="flex items-center gap-3 py-1.5">
+            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
+              <UIcon name="ph:figma-logo" class="size-4 shrink-0" />
+              <span>Figma URL</span>
+            </div>
+            <UInput v-model="form.links.figma" type="url" size="sm" placeholder="Empty" class="min-w-0 flex-1">
+              <template #trailing>
+                <UButton
+                  v-if="form.links.figma"
+                  icon="ph:arrow-square-out"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click="openUrl(form.links.figma)"
+                />
+              </template>
+            </UInput>
+          </div>
+
+          <div class="flex items-center gap-3 py-1.5">
+            <div class="flex w-28 shrink-0 items-center gap-2 text-[12px] text-gray-500">
+              <UIcon name="ph:notion-logo" class="size-4 shrink-0" />
+              <span>Notion URL</span>
+            </div>
+            <UInput v-model="form.links.notion" type="url" size="sm" placeholder="Empty" class="min-w-0 flex-1">
+              <template #trailing>
+                <UButton
+                  v-if="form.links.notion"
+                  icon="ph:arrow-square-out"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click="openUrl(form.links.notion)"
+                />
+              </template>
+            </UInput>
           </div>
         </div>
       </div>
@@ -546,19 +584,16 @@ function onSubmit() {
               No comments yet.
             </div>
 
-            <div class="flex items-start gap-3 pt-2">
-              <UAvatar text="Y" size="sm" class="bg-gray-700" />
+            <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-3 transition-colors focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
+              <UAvatar text="Y" size="sm" class="bg-gray-700 shrink-0" />
               <UInput
                 v-model="newComment"
-                size="sm"
+                variant="none"
                 placeholder="Add a comment..."
                 class="min-w-0 flex-1"
                 @keydown.enter.prevent="addComment"
-              >
-                <template #trailing>
-                  <UButton size="xs" color="primary" @click="addComment">Post</UButton>
-                </template>
-              </UInput>
+              />
+              <UButton icon="ph:paper-plane-right" color="primary" size="sm" square @click="addComment" />
             </div>
           </div>
         </template>
@@ -592,7 +627,7 @@ function onSubmit() {
 
         <template #attachments>
           <div class="flex flex-col gap-4 pt-2">
-            <div class="grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
               <div class="flex flex-col gap-1.5">
                 <label class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
                   <UIcon name="ph:link" class="size-3.5" />
@@ -610,20 +645,6 @@ function onSubmit() {
                     <UButton size="xs" icon="ph:plus" color="primary" @click="addAttachmentUrl" />
                   </template>
                 </UInput>
-              </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                  <UIcon name="ph:notebook" class="size-3.5" />
-                  Notion URL
-                </label>
-                <UInput v-model="form.links.notion" type="url" size="sm" placeholder="https://notion.so/..." class="w-full" />
-              </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                  <UIcon name="ph:paint-brush" class="size-3.5" />
-                  Figma URL
-                </label>
-                <UInput v-model="form.links.figma" type="url" size="sm" placeholder="https://figma.com/..." class="w-full" />
               </div>
             </div>
 

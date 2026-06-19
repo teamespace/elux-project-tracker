@@ -22,7 +22,7 @@ interface Project {
   openTasks: number
   atRiskTasks: number
   dueDate: string
-  startDate?: string
+  createdDate?: string
   assignees: { initials: string }[]
 }
 
@@ -66,7 +66,7 @@ const projects: Project[] = [
   {
     id: 'proj-3', name: 'Internal Tools', status: 'not-started', statusLabel: 'NOT STARTED',
     description: 'Tracker revamp, design system', progress: 0, openTasks: 0, atRiskTasks: 0,
-    dueDate: 'Sep 10, 2026', startDate: 'Jun 20, 2026', assignees: [],
+    dueDate: 'Sep 10, 2026', createdDate: 'Jun 20, 2026', assignees: [],
   },
 ]
 
