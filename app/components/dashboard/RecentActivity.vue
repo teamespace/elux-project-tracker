@@ -11,36 +11,36 @@ const props = defineProps<{
   activity: ActivityItem[]
 }>()
 
-const displayedItems = computed(() => props.activity.slice(0, 5))
+const displayedItems = computed(() => props.activity.slice(0, 4))
 
 const isSystem = (name: string) => name.toLowerCase() === 'system'
 </script>
 
 <template>
-  <div class="flex flex-col rounded-xl border border-neutral-200 bg-white">
-    <div class="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
-      <h3 class="text-[15px] font-semibold tracking-tight text-neutral-900">Recent Activity</h3>
+  <div class="flex flex-col rounded-lg border border-gray-200 bg-white">
+    <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
+      <h3 class="text-[16px] font-semibold text-gray-900">Recent Activity</h3>
       <NuxtLink
         to="/my-work"
-        class="text-[13px] font-medium text-neutral-500 transition-colors hover:text-neutral-900"
+        class="text-[13px] font-medium text-gray-500 transition-colors hover:text-gray-700"
       >
         View All
       </NuxtLink>
     </div>
 
-    <div class="flex flex-1 flex-col p-5">
+    <div class="flex flex-1 flex-col p-4">
       <div
         v-if="displayedItems.length === 0"
-        class="flex flex-1 items-center justify-center py-10"
+        class="flex flex-1 items-center justify-center"
       >
-        <p class="text-[13px] text-neutral-500">No recent activity</p>
+        <p class="text-[13px] text-gray-500">No recent activity</p>
       </div>
 
       <div v-else class="flex flex-col">
         <div
           v-for="(item, index) in displayedItems"
           :key="item.id"
-          class="group flex gap-3 pb-4 last:pb-0"
+          class="flex gap-3 pb-4 last:pb-0"
         >
           <div class="flex flex-col items-center">
             <UAvatar
@@ -48,27 +48,23 @@ const isSystem = (name: string) => name.toLowerCase() === 'system'
               :src="item.actor.avatar"
               :text="item.actor.initials"
               size="xs"
-              class="ring-2 ring-white"
             />
-            <div
-              v-else
-              class="flex size-7 shrink-0 items-center justify-center rounded-full bg-neutral-100"
-            >
-              <UIcon name="ph:gear" class="size-3.5 text-neutral-500" />
+            <div v-else class="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-500">
+              <UIcon name="ph:gear" class="size-3.5 text-white" />
             </div>
             <div
               v-if="index < displayedItems.length - 1"
-              class="mt-2 w-px flex-1 bg-neutral-100"
+              class="mt-1.5 w-px flex-1 bg-gray-200"
             />
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="text-[13px] leading-snug text-neutral-900">
-              <span class="font-medium">{{ item.actor.name }}</span>
-              <span class="text-neutral-600">{{ item.action }}</span>
-              <span class="font-medium text-neutral-900">{{ item.target }}</span>
+            <p class="text-[13px] font-medium leading-snug text-gray-900">
+              {{ item.actor.name }}
+              <span class="font-normal text-gray-600">{{ item.action }}</span>
+              {{ item.target }}
             </p>
-            <p class="mt-0.5 text-[11px] text-neutral-400">{{ item.time }}</p>
+            <p class="mt-0.5 text-[11px] text-gray-500">{{ item.time }}</p>
           </div>
         </div>
       </div>
