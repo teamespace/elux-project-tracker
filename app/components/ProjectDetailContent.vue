@@ -348,7 +348,7 @@ function onSubmit() {
               <UIcon name="ph:traffic-signal" class="size-4 shrink-0" />
               <span>Status</span>
             </div>
-            <USelect v-model="form.status" :items="statusOptions" size="sm" class="w-44" />
+            <USelect v-model="form.status" :items="statusOptions" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -356,7 +356,7 @@ function onSubmit() {
               <UIcon name="ph:user" class="size-4 shrink-0" />
               <span>Owner</span>
             </div>
-            <USelect v-model="form.owner" :items="ownerOptions" placeholder="Unassigned" size="sm" class="w-44" />
+            <USelect v-model="form.owner" :items="ownerOptions" placeholder="Unassigned" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -364,7 +364,7 @@ function onSubmit() {
               <UIcon name="ph:flag" class="size-4 shrink-0" />
               <span>Priority</span>
             </div>
-            <USelect v-model="form.priority" :items="priorityOptions" size="sm" class="w-44" />
+            <USelect v-model="form.priority" :items="priorityOptions" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -372,7 +372,7 @@ function onSubmit() {
               <UIcon name="ph:calendar-blank" class="size-4 shrink-0" />
               <span>Start date</span>
             </div>
-            <UInput v-model="form.startDate" type="date" size="sm" class="w-44" />
+            <UInput v-model="form.startDate" type="date" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -380,7 +380,7 @@ function onSubmit() {
               <UIcon name="ph:calendar" class="size-4 shrink-0" />
               <span>End date</span>
             </div>
-            <UInput v-model="form.dueDate" type="date" size="sm" class="w-44" />
+            <UInput v-model="form.dueDate" type="date" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -388,7 +388,7 @@ function onSubmit() {
               <UIcon name="ph:lightning" class="size-4 shrink-0" />
               <span>Type</span>
             </div>
-            <UInput v-model="form.type" size="sm" placeholder="Empty" class="w-44" />
+            <UInput v-model="form.type" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -396,7 +396,7 @@ function onSubmit() {
               <UIcon name="ph:folder" class="size-4 shrink-0" />
               <span>Program</span>
             </div>
-            <USelect v-model="form.project" :items="programOptions" placeholder="None" size="sm" class="w-44" />
+            <USelect v-model="form.project" :items="programOptions" placeholder="None" size="sm" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -404,7 +404,7 @@ function onSubmit() {
               <UIcon name="ph:tag" class="size-4 shrink-0" />
               <span>Labels</span>
             </div>
-            <UInput v-model="form.labels" size="sm" placeholder="Empty" class="w-44" />
+            <UInput v-model="form.labels" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -412,7 +412,7 @@ function onSubmit() {
               <UIcon name="ph:users" class="size-4 shrink-0" />
               <span>Team</span>
             </div>
-            <UInput v-model="form.team" size="sm" placeholder="Empty" class="w-44" />
+            <UInput v-model="form.team" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -420,7 +420,7 @@ function onSubmit() {
               <UIcon name="ph:buildings" class="size-4 shrink-0" />
               <span>Industry</span>
             </div>
-            <UInput v-model="form.industry" size="sm" placeholder="Empty" class="w-44" />
+            <UInput v-model="form.industry" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
           </div>
 
           <div class="flex items-center gap-3 py-1.5">
@@ -428,7 +428,7 @@ function onSubmit() {
               <UIcon name="ph:stack" class="size-4 shrink-0" />
               <span>Category</span>
             </div>
-            <UInput v-model="form.category" size="sm" placeholder="Empty" class="w-44" />
+            <UInput v-model="form.category" size="sm" placeholder="Empty" class="min-w-0 flex-1" />
           </div>
         </div>
       </div>
