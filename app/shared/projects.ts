@@ -1,6 +1,7 @@
 export interface Person {
   initials: string
   name: string
+  avatar?: string
 }
 
 export interface ProjectLinks {
@@ -68,10 +69,10 @@ export interface Project {
 }
 
 export const people: Person[] = [
-  { initials: 'R', name: 'Rasya' },
-  { initials: 'D', name: 'Dito' },
-  { initials: 'M', name: 'Maya' },
-  { initials: 'Ra', name: 'Rara' },
+  { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
+  { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
+  { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
+  { initials: 'Ra', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' },
 ]
 
 export const projectOptions: string[] = ['Alpha Project', 'Beta Launch', 'Internal Tools']
@@ -89,11 +90,11 @@ export const projects: Project[] = [
     atRiskTasks: 2,
     dueDate: '2026-08-30',
     createdDate: '2026-06-01',
-    owner: { initials: 'R', name: 'Rasya' },
+    owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
     assignees: [
-      { initials: 'R', name: 'Rasya' },
-      { initials: 'D', name: 'Dito' },
-      { initials: 'M', name: 'Maya' },
+      { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
+      { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
+      { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
     ],
     color: 'bg-blue-500',
     priority: 'high',
@@ -112,13 +113,13 @@ export const projects: Project[] = [
       { id: 'st-4', title: 'Handoff to engineering', done: false, dueDate: '2026-07-15', assignee: 'Rasya' },
     ],
     comments: [
-      { id: 'c-1', author: { initials: 'R', name: 'Rasya' }, text: 'Let\'s keep scope tight for v1 and ship a research-backed MVP.', time: 'Jun 17, 10:30am' },
-      { id: 'c-2', author: { initials: 'D', name: 'Dito' }, text: 'Agreed. I\'ll update the IA doc by EOD.', time: 'Jun 17, 11:05am' },
+      { id: 'c-1', author: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, text: 'Let\'s keep scope tight for v1 and ship a research-backed MVP.', time: 'Jun 17, 10:30am' },
+      { id: 'c-2', author: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, text: 'Agreed. I\'ll update the IA doc by EOD.', time: 'Jun 17, 11:05am' },
     ],
     activities: [
-      { id: 'a-1', actor: { initials: 'R', name: 'Rasya' }, text: 'changed status to AT RISK', time: 'Jun 16, 4:00pm' },
-      { id: 'a-2', actor: { initials: 'M', name: 'Maya' }, text: 'was assigned as PM Assignee', time: 'Jun 15, 9:00am' },
-      { id: 'a-3', actor: { initials: 'D', name: 'Dito' }, text: 'added child task “Produce high-fidelity mockups”', time: 'Jun 14, 2:30pm' },
+      { id: 'a-1', actor: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, text: 'changed status to AT RISK', time: 'Jun 16, 4:00pm' },
+      { id: 'a-2', actor: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, text: 'was assigned as PM Assignee', time: 'Jun 15, 9:00am' },
+      { id: 'a-3', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, text: 'added child task “Produce high-fidelity mockups”', time: 'Jun 14, 2:30pm' },
     ],
     attachments: [
       { id: 'f-1', name: 'alpha-research.pdf', size: 2457600, type: 'application/pdf' },
@@ -137,10 +138,10 @@ export const projects: Project[] = [
     atRiskTasks: 0,
     dueDate: '2026-07-15',
     createdDate: '2026-05-20',
-    owner: { initials: 'M', name: 'Maya' },
+    owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
     assignees: [
-      { initials: 'M', name: 'Maya' },
-      { initials: 'D', name: 'Dito' },
+      { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
+      { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
     ],
     color: 'bg-green-500',
     priority: 'medium',
@@ -157,11 +158,11 @@ export const projects: Project[] = [
       { id: 'st-6', title: 'Finalize onboarding flow', done: false, dueDate: '2026-07-05', assignee: 'Dito' },
     ],
     comments: [
-      { id: 'c-3', author: { initials: 'M', name: 'Maya' }, text: 'Press kit is ready for review.', time: 'Jun 17, 9:00am' },
+      { id: 'c-3', author: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, text: 'Press kit is ready for review.', time: 'Jun 17, 9:00am' },
     ],
     activities: [
-      { id: 'a-4', actor: { initials: 'M', name: 'Maya' }, text: 'changed status to ON TRACK', time: 'Jun 16, 10:00am' },
-      { id: 'a-5', actor: { initials: 'D', name: 'Dito' }, text: 'completed child task “Publish press kit”', time: 'Jun 15, 5:00pm' },
+      { id: 'a-4', actor: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, text: 'changed status to ON TRACK', time: 'Jun 16, 10:00am' },
+      { id: 'a-5', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, text: 'completed child task “Publish press kit”', time: 'Jun 15, 5:00pm' },
     ],
     attachments: [
       { id: 'f-3', name: 'press-kit.zip', size: 15728640, type: 'application/zip' },
@@ -179,7 +180,7 @@ export const projects: Project[] = [
     atRiskTasks: 0,
     dueDate: '2026-09-10',
     createdDate: '2026-06-20',
-    owner: { initials: 'D', name: 'Dito' },
+    owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
     assignees: [],
     color: 'bg-purple-500',
     priority: 'low',
@@ -194,7 +195,7 @@ export const projects: Project[] = [
     childTasks: [],
     comments: [],
     activities: [
-      { id: 'a-6', actor: { initials: 'D', name: 'Dito' }, text: 'created this project', time: 'Jun 14, 9:00am' },
+      { id: 'a-6', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, text: 'created this project', time: 'Jun 14, 9:00am' },
     ],
     attachments: [],
   },

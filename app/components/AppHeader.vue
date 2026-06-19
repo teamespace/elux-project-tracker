@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { unreadCount } from '~/shared/notifications'
+
 const { isOpen, toggle } = useSidebar()
 const search = useSearchModal()
 
@@ -34,11 +36,11 @@ onMounted(() => {
       <span class="flex-1 text-left">Search</span>
       <kbd class="rounded-md bg-white px-1.5 py-0.5 text-xs font-medium text-gray-400 shadow-sm">⌘K</kbd>
     </button>
-    <button class="flex size-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900">
+    <NuxtLink to="/notifications" class="relative flex size-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900">
       <UIcon name="ph:bell" class="size-4" />
-    </button>
-    <button class="flex size-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900">
-      <UIcon name="ph:sparkle" class="size-4" />
-    </button>
+      <span v-if="unreadCount() > 0" class="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
+        {{ unreadCount() }}
+      </span>
+    </NuxtLink>
   </header>
 </template>

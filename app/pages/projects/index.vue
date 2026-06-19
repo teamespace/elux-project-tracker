@@ -112,6 +112,7 @@ function progressColorForStatus(status: ProjectStatus): string {
                   <UAvatar
                     v-for="(a, i) in project.assignees"
                     :key="a.name"
+                    :src="a.avatar"
                     :text="a.initials"
                     :alt="a.name"
                     :class="avatarColor(i)"

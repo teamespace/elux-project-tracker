@@ -653,7 +653,7 @@ function onSubmit() {
 
           <UButton
             v-if="!showAddSubtask && !isView"
-            color="neutral"
+            color="primary"
             variant="ghost"
             size="sm"
             icon="ph:plus"

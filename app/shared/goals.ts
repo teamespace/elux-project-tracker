@@ -5,6 +5,7 @@ export type Status = 'on-track' | 'at-risk' | 'delayed' | 'not-started'
 export interface Owner {
   initials: string
   name: string
+  avatar?: string
 }
 
 export interface Label {
@@ -66,7 +67,7 @@ export const goals = ref<Goal[]>([
     description: 'Deliver a complete redesign of the core product experience to improve user engagement, reduce churn, and modernize the visual language across all key user journeys.',
     status: 'on-track',
     statusLabel: 'ON TRACK',
-    owner: { initials: 'R', name: 'Rasya' },
+    owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
     quarter: 'Q3 2026',
     dueDate: 'Sep 30, 2026',
     progress: 58,
@@ -75,18 +76,18 @@ export const goals = ref<Goal[]>([
       { id: 'l-2', name: 'Q3', color: 'bg-purple-50 text-purple-600 border-purple-200' },
     ],
     kpis: [
-      { id: 'kpi-1', name: 'NPS Score ≥ 45', current: '38', target: '45', progress: 84, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'R', name: 'Rasya' }, dueDate: 'Sep 30' },
-      { id: 'kpi-2', name: 'Reduce page load < 2s', current: '2.1s', target: '2.0s', progress: 95, status: 'on-track', statusLabel: 'ON TRACK', owner: { initials: 'D', name: 'Dito' }, dueDate: 'Aug 15' },
-      { id: 'kpi-3', name: 'Launch 3 core features', current: '1', target: '3', progress: 33, status: 'delayed', statusLabel: 'DELAYED', owner: { initials: 'M', name: 'Maya' }, dueDate: 'Sep 30' },
+      { id: 'kpi-1', name: 'NPS Score ≥ 45', current: '38', target: '45', progress: 84, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, dueDate: 'Sep 30' },
+      { id: 'kpi-2', name: 'Reduce page load < 2s', current: '2.1s', target: '2.0s', progress: 95, status: 'on-track', statusLabel: 'ON TRACK', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Aug 15' },
+      { id: 'kpi-3', name: 'Launch 3 core features', current: '1', target: '3', progress: 33, status: 'delayed', statusLabel: 'DELAYED', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Sep 30' },
     ],
     linkedProjects: [
       { id: 'epic-1', title: 'Auth & Onboarding Redesign', project: 'Alpha Project', status: 'at-risk', statusLabel: 'AT RISK', progress: 62, taskCount: 8 },
       { id: 'epic-2', title: 'Core Dashboard v2', project: 'Alpha Project', status: 'on-track', statusLabel: 'ON TRACK', progress: 78, taskCount: 5 },
     ],
     activity: [
-      { id: 'a-1', actor: { initials: 'R', name: 'Rasya' }, action: 'updated progress to', target: '58%', time: '2h ago' },
-      { id: 'a-2', actor: { initials: 'M', name: 'Maya' }, action: 'added KPI', target: 'Launch 3 core features', time: '1d ago' },
-      { id: 'a-3', actor: { initials: 'D', name: 'Dito' }, action: 'linked project', target: 'Auth & Onboarding Redesign', time: '2d ago' },
+      { id: 'a-1', actor: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, action: 'updated progress to', target: '58%', time: '2h ago' },
+      { id: 'a-2', actor: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, action: 'added KPI', target: 'Launch 3 core features', time: '1d ago' },
+      { id: 'a-3', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, action: 'linked project', target: 'Auth & Onboarding Redesign', time: '2d ago' },
     ],
   },
   {
@@ -95,7 +96,7 @@ export const goals = ref<Goal[]>([
     description: 'Increase the speed and quality of software delivery by improving CI/CD pipelines, reducing review times, and raising test coverage across all teams.',
     status: 'at-risk',
     statusLabel: 'AT RISK',
-    owner: { initials: 'M', name: 'Maya' },
+    owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
     quarter: 'Q3 2026',
     dueDate: 'Sep 30, 2026',
     progress: 28,
@@ -103,16 +104,16 @@ export const goals = ref<Goal[]>([
       { id: 'l-3', name: 'Engineering', color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
     ],
     kpis: [
-      { id: 'kpi-4', name: 'Deploy frequency ≥ 3x/week', current: '1.5', target: '3', progress: 50, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'M', name: 'Maya' }, dueDate: 'Sep 30' },
-      { id: 'kpi-5', name: 'PR review time < 4h', current: '6h', target: '4h', progress: 67, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'D', name: 'Dito' }, dueDate: 'Aug 30' },
-      { id: 'kpi-6', name: 'Test coverage ≥ 80%', current: '72%', target: '80%', progress: 90, status: 'on-track', statusLabel: 'ON TRACK', owner: { initials: 'R', name: 'Rara' }, dueDate: 'Sep 15' },
+      { id: 'kpi-4', name: 'Deploy frequency ≥ 3x/week', current: '1.5', target: '3', progress: 50, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Sep 30' },
+      { id: 'kpi-5', name: 'PR review time < 4h', current: '6h', target: '4h', progress: 67, status: 'at-risk', statusLabel: 'AT RISK', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Aug 30' },
+      { id: 'kpi-6', name: 'Test coverage ≥ 80%', current: '72%', target: '80%', progress: 90, status: 'on-track', statusLabel: 'ON TRACK', owner: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' }, dueDate: 'Sep 15' },
     ],
     linkedProjects: [
       { id: 'epic-3', title: 'API Documentation', project: 'Beta Launch', status: 'on-track', statusLabel: 'ON TRACK', progress: 80, taskCount: 3 },
     ],
     activity: [
-      { id: 'a-4', actor: { initials: 'M', name: 'Maya' }, action: 'flagged as at risk', target: 'Deploy frequency KPI', time: '4h ago' },
-      { id: 'a-5', actor: { initials: 'D', name: 'Dito' }, action: 'updated status to', target: 'At Risk', time: '1d ago' },
+      { id: 'a-4', actor: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, action: 'flagged as at risk', target: 'Deploy frequency KPI', time: '4h ago' },
+      { id: 'a-5', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, action: 'updated status to', target: 'At Risk', time: '1d ago' },
     ],
   },
   {
@@ -121,7 +122,7 @@ export const goals = ref<Goal[]>([
     description: 'Acquire and onboard the first 100 beta users, gather qualitative feedback, and achieve a healthy early retention rate before the public launch.',
     status: 'not-started',
     statusLabel: 'NOT STARTED',
-    owner: { initials: 'D', name: 'Dito' },
+    owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
     quarter: 'Q4 2026',
     dueDate: 'Dec 31, 2026',
     progress: 0,
@@ -130,12 +131,12 @@ export const goals = ref<Goal[]>([
       { id: 'l-5', name: 'Growth', color: 'bg-rose-50 text-rose-600 border-rose-200' },
     ],
     kpis: [
-      { id: 'kpi-7', name: 'Beta user signups ≥ 100', current: '0', target: '100', progress: 0, status: 'not-started', statusLabel: 'NOT STARTED', owner: { initials: 'D', name: 'Dito' }, dueDate: 'Dec 31' },
-      { id: 'kpi-8', name: 'User retention ≥ 60%', current: '0%', target: '60%', progress: 0, status: 'not-started', statusLabel: 'NOT STARTED', owner: { initials: 'M', name: 'Maya' }, dueDate: 'Dec 31' },
+      { id: 'kpi-7', name: 'Beta user signups ≥ 100', current: '0', target: '100', progress: 0, status: 'not-started', statusLabel: 'NOT STARTED', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Dec 31' },
+      { id: 'kpi-8', name: 'User retention ≥ 60%', current: '0%', target: '60%', progress: 0, status: 'not-started', statusLabel: 'NOT STARTED', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Dec 31' },
     ],
     linkedProjects: [],
     activity: [
-      { id: 'a-6', actor: { initials: 'D', name: 'Dito' }, action: 'created goal', target: 'Q4 Launch Beta to 100 Users', time: '3d ago' },
+      { id: 'a-6', actor: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, action: 'created goal', target: 'Q4 Launch Beta to 100 Users', time: '3d ago' },
     ],
   },
 ])

@@ -2,6 +2,7 @@
 interface Member {
   initials: string
   name: string
+  avatar?: string
   capacity: number
   assigned: number
   todoCount: number
@@ -20,6 +21,7 @@ const members: Member[] = [
   {
     initials: 'R',
     name: 'Rasya Ardiansyah',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya',
     capacity: 12,
     assigned: 8,
     todoCount: 3,
@@ -31,6 +33,7 @@ const members: Member[] = [
   {
     initials: 'M',
     name: 'Maya Putri',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya',
     capacity: 12,
     assigned: 4,
     todoCount: 2,
@@ -42,6 +45,7 @@ const members: Member[] = [
   {
     initials: 'D',
     name: 'Dito Santoso',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito',
     capacity: 12,
     assigned: 12,
     todoCount: 4,
@@ -53,6 +57,7 @@ const members: Member[] = [
   {
     initials: 'R',
     name: 'Rara Wijaya',
+    avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara',
     capacity: 12,
     assigned: 3,
     todoCount: 1,
@@ -187,12 +192,12 @@ function workloadLabelBg(status: Member['status']) {
           >
             <td class="px-4 py-3">
               <div class="flex items-center gap-2">
-                <span
-                  class="flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                  :class="member.initials === '?' ? 'bg-gray-500' : 'bg-blue-600'"
-                >
-                  {{ member.initials }}
-                </span>
+                <UAvatar
+                  :src="member.avatar"
+                  :text="member.initials"
+                  size="sm"
+                  :class="member.initials === '?' ? 'bg-gray-500' : ''"
+                />
                 <span class="font-medium text-gray-900">{{ member.name }}</span>
               </div>
             </td>

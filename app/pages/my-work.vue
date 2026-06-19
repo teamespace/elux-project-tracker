@@ -17,6 +17,7 @@ type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'er
 interface Assignee {
   initials: string
   name: string
+  avatar?: string
 }
 
 interface Task {
@@ -83,7 +84,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'High',
         status: 'overdue',
         statusLabel: 'OVERDUE',
-        assignee: { initials: 'R', name: 'Rasya' },
+        assignee: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
         dueDate: 'Jul 8',
         overdue: true,
         labels: ['Backend', 'Docs'],
@@ -104,7 +105,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'High',
         status: 'in-progress',
         statusLabel: 'IN PROGRESS',
-        assignee: { initials: 'D', name: 'Dito' },
+        assignee: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
         dueDate: 'Jul 15',
         overdue: false,
         labels: ['Frontend', 'Auth'],
@@ -118,7 +119,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Medium',
         status: 'in-progress',
         statusLabel: 'IN PROGRESS',
-        assignee: { initials: 'R', name: 'Rasya' },
+        assignee: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
         dueDate: 'Aug 5',
         overdue: false,
         labels: ['Frontend', 'Settings'],
@@ -132,7 +133,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Low',
         status: 'in-progress',
         statusLabel: 'IN PROGRESS',
-        assignee: { initials: 'R', name: 'Rara' },
+        assignee: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' },
         dueDate: 'Jul 18',
         overdue: false,
         labels: ['Docs', 'DX'],
@@ -153,7 +154,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Medium',
         status: 'todo',
         statusLabel: 'TODO',
-        assignee: { initials: 'M', name: 'Maya' },
+        assignee: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
         dueDate: 'Aug 20',
         overdue: false,
         labels: ['Frontend', 'Backend', 'Settings'],
@@ -167,7 +168,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Medium',
         status: 'todo',
         statusLabel: 'TODO',
-        assignee: { initials: 'D', name: 'Dito' },
+        assignee: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
         dueDate: 'Aug 25',
         overdue: false,
         labels: ['Frontend', 'Core'],
@@ -181,7 +182,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Low',
         status: 'todo',
         statusLabel: 'TODO',
-        assignee: { initials: 'R', name: 'Rara' },
+        assignee: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' },
         dueDate: 'Aug 15',
         overdue: false,
         labels: ['Frontend', 'Settings'],
@@ -202,7 +203,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'High',
         status: 'in-review',
         statusLabel: 'IN REVIEW',
-        assignee: { initials: 'R', name: 'Rasya' },
+        assignee: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
         dueDate: 'Jul 10',
         overdue: false,
         labels: ['Frontend', 'Auth'],
@@ -223,7 +224,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'High',
         status: 'done',
         statusLabel: 'DONE',
-        assignee: { initials: 'M', name: 'Maya' },
+        assignee: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
         dueDate: 'Jul 5',
         overdue: false,
         labels: ['Docs', 'API'],
@@ -237,7 +238,7 @@ const sections = ref<Section[]>([
         priorityLabel: 'Low',
         status: 'done',
         statusLabel: 'DONE',
-        assignee: { initials: 'R', name: 'Rasya' },
+        assignee: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
         dueDate: 'Jun 30',
         overdue: false,
         labels: ['Frontend', 'Core'],
@@ -741,12 +742,12 @@ function toggleCheck(taskId: string) {
                     </td>
                     <td class="border-y border-gray-200 px-4 py-3 first:border-l first:rounded-l-lg last:border-r last:rounded-r-lg">
                       <div class="flex items-center gap-2">
-                        <div
-                          class="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white"
+                        <UAvatar
+                          :src="task.assignee.avatar"
+                          :text="task.assignee.initials"
+                          size="xs"
                           :title="task.assignee.name"
-                        >
-                          {{ task.assignee.initials }}
-                        </div>
+                        />
                         <span class="truncate text-[13px] text-gray-700">
                           {{ task.assignee.name }}
                         </span>

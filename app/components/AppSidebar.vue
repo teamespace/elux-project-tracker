@@ -101,12 +101,13 @@ const footerNavItems: NavItem[] = [
       class="flex items-center border-t border-gray-200 px-3 py-3"
       :class="isOpen ? 'gap-3' : 'justify-center'"
     >
-      <div
-        class="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[12px] font-semibold text-white"
+      <UAvatar
+        src="https://api.dicebear.com/9.x/micah/svg?seed=Rasya"
+        text="R"
+        size="sm"
+        class="shrink-0"
         :title="isOpen ? undefined : 'Rasya Ardiansyah'"
-      >
-        R
-      </div>
+      />
       <div v-if="isOpen" class="flex min-w-0 flex-1 flex-col">
         <span class="truncate text-[13px] font-medium text-gray-900">Rasya Ardiansyah</span>
         <span class="truncate text-[11px] text-gray-500">Product Designer</span>

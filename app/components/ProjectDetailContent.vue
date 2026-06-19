@@ -345,6 +345,7 @@ function onSubmit() {
         <div class="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
           <div v-if="ownerPerson" class="flex items-center gap-1.5">
             <UAvatar
+              :src="ownerPerson.avatar"
               :text="ownerPerson.initials"
               size="xs"
               :class="avatarColor(people.findIndex(p => p.name === ownerPerson?.name))"
@@ -593,6 +594,7 @@ function onSubmit() {
               class="flex gap-3"
             >
               <UAvatar
+                :src="comment.author.avatar"
                 :text="comment.author.initials"
                 size="sm"
                 :class="avatarColor(people.findIndex(p => p.name === comment.author.name))"
@@ -611,7 +613,7 @@ function onSubmit() {
             </div>
 
             <div class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-3 transition-colors focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
-              <UAvatar text="Y" size="sm" class="bg-gray-700 shrink-0" />
+              <UAvatar text="Y" size="sm" class="bg-gray-700 shrink-0" src="https://api.dicebear.com/9.x/micah/svg?seed=Rasya" />
               <UInput
                 v-model="newComment"
                 variant="none"
@@ -632,6 +634,7 @@ function onSubmit() {
               class="flex items-start gap-3"
             >
               <UAvatar
+                :src="activity.actor.avatar"
                 :text="activity.actor.initials"
                 size="sm"
                 :class="avatarColor(people.findIndex(p => p.name === activity.actor.name))"

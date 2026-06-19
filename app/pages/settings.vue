@@ -4,68 +4,144 @@ definePageMeta({
   title: 'Settings',
 })
 
-const sections = [
-  {
-    id: 'profile',
-    title: 'Profile',
-    icon: 'ph:user',
-    description: 'Update your name, avatar, role, and timezone.',
-  },
-  {
-    id: 'notifications',
-    title: 'Notifications',
-    icon: 'ph:bell',
-    description: 'Choose when and how you receive email and in-app alerts.',
-  },
-  {
-    id: 'workspace',
-    title: 'Workspace',
-    icon: 'ph:buildings',
-    description: 'Manage workspace name, members, and integrations.',
-  },
+const activeTab = ref<'general' | 'profile' | 'appearance' | 'members' | 'notifications' | 'billing' | 'danger'>('general')
+
+const tabs = [
+  { id: 'general' as const, label: 'General', icon: 'ph:gear' },
+  { id: 'profile' as const, label: 'Profile', icon: 'ph:user' },
+  { id: 'appearance' as const, label: 'Appearance', icon: 'ph:paint-brush' },
+  { id: 'members' as const, label: 'Members', icon: 'ph:users' },
+  { id: 'notifications' as const, label: 'Notifications', icon: 'ph:bell' },
+  { id: 'billing' as const, label: 'Billing', icon: 'ph:credit-card' },
+  { id: 'danger' as const, label: 'Danger Zone', icon: 'ph:warning' },
 ]
+
+const generalForm = reactive({
+  workspaceName: 'Elux Workspace',
+  language: 'en',
+  timezone: 'asia-jakarta',
+  dateFormat: 'dd-mm-yyyy',
+})
+
+const languageOptions = [
+  { label: 'English', value: 'en' },
+  { label: 'Indonesia', value: 'id' },
+]
+
+const timezoneOptions = [
+  { label: 'Asia/Jakarta (WIB)', value: 'asia-jakarta' },
+  { label: 'Asia/Makassar (WITA)', value: 'asia-makassar' },
+  { label: 'Asia/Jayapura (WIT)', value: 'asia-jayapura' },
+  { label: 'UTC', value: 'utc' },
+]
+
+const dateFormatOptions = [
+  { label: 'DD/MM/YYYY', value: 'dd-mm-yyyy' },
+  { label: 'MM/DD/YYYY', value: 'mm-dd-yyyy' },
+  { label: 'YYYY-MM-DD', value: 'yyyy-mm-dd' },
+]
+
+const profileForm = reactive({
+  fullName: 'Rasya Elux',
+  email: 'rasya@elux.dev',
+  role: 'Admin',
+  avatarUrl: 'https://api.dicebear.com/7.2/initials/svg?seed=RE&backgroundColor=b6e3f4',
+  bio: '',
+})
+
+const appearanceTheme = ref('light')
+const themeOptions = [
+  { label: 'Light', value: 'light' },
+  { label: 'Dark', value: 'dark' },
+  { label: 'System', value: 'system' },
+]
+
+const members = reactive([
+  { id: '1', name: 'Rasya Elux', initials: 'RE', role: 'Admin', color: 'b6e3f4' },
+  { id: '2', name: 'Maya Putri', initials: 'MP', role: 'Editor', color: 'c0aede' },
+  { id: '3', name: 'Dito Prasetyo', initials: 'DP', role: 'Viewer', color: 'd1d4f9' },
+  { id: '4', name: 'Rara Wulandari', initials: 'RW', role: 'Editor', color: 'ffd5dc' },
+])
+
+const memberRoleBadge: Record<string, string> = {
+  Admin: 'bg-blue-50 text-blue-600',
+  Editor: 'bg-green-50 text-green-600',
+  Viewer: 'bg-gray-100 text-gray-500',
+}
+
+const notifPrefs = reactive({
+  projectUpdates: true,
+  taskAssignments: true,
+  mentions: true,
+  comments: false,
+  weeklyDigest: true,
+  frequency: 'realtime',
+})
+
+const frequencyOptions = [
+  { label: 'Real-time', value: 'realtime' },
+  { label: 'Hourly', value: 'hourly' },
+  { label: 'Daily', value: 'daily' },
+  { label: 'Weekly', value: 'weekly' },
+]
+
+const billingUsage = {
+  plan: 'Free',
+  members: '4 / 5',
+  projects: '3 / 5',
+  storage: '120 MB / 1 GB',
+}
 </script>
 
 <template>
-  <div>
-    <div class="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-3">
-      <div
-        v-for="section in sections"
-        :key="section.id"
-        class="rounded-lg border border-gray-200 bg-white p-5 transition-colors hover:border-gray-300"
+  <div class="flex gap-6">
+    <nav class="w-48 shrink-0">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        type="button"
+        class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] transition-colors"
+        :class="activeTab === tab.id ? 'bg-blue-50 font-medium text-blue-600' : 'text-gray-600 hover:bg-gray-50'"
+        @click="activeTab = tab.id"
       >
-        <div class="flex items-center gap-3">
-          <div class="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-            <UIcon :name="section.icon" class="size-5" />
-          </div>
-          <h3 class="text-[15px] font-semibold text-gray-900">{{ section.title }}</h3>
-        </div>
-        <p class="mt-2 text-[13px] text-gray-500">{{ section.description }}</p>
-        <button
-          type="button"
-          class="mt-4 text-[13px] font-medium text-blue-600 transition-colors hover:text-blue-700"
-        >
-          Edit {{ section.title }}
-        </button>
-      </div>
-    </div>
+        <UIcon :name="tab.icon" class="size-4 shrink-0" />
+        {{ tab.label }}
+      </button>
+    </nav>
 
-    <div class="mt-6 rounded-lg border border-gray-200 bg-white p-5">
-      <h3 class="text-[15px] font-semibold text-gray-900">Danger Zone</h3>
-      <p class="mt-1 text-[13px] text-gray-500">These actions are permanent and cannot be undone.</p>
-      <div class="mt-4 flex gap-3">
-        <button
-          type="button"
-          class="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-100"
-        >
-          Reset workspace
-        </button>
-        <button
-          type="button"
-          class="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-100"
-        >
-          Delete account
-        </button>
+    <div class="min-w-0 flex-1">
+      <div class="rounded-xl border border-gray-200 bg-white p-6">
+        <SettingsGeneralTab
+          v-if="activeTab === 'general'"
+          v-model:form="generalForm"
+          :language-options="languageOptions"
+          :timezone-options="timezoneOptions"
+          :date-format-options="dateFormatOptions"
+        />
+        <SettingsProfileTab
+          v-else-if="activeTab === 'profile'"
+          v-model:form="profileForm"
+        />
+        <SettingsAppearanceTab
+          v-else-if="activeTab === 'appearance'"
+          v-model:theme="appearanceTheme"
+          :theme-options="themeOptions"
+        />
+        <SettingsMembersTab
+          v-else-if="activeTab === 'members'"
+          :members="members"
+          :role-badge="memberRoleBadge"
+        />
+        <SettingsNotificationsTab
+          v-else-if="activeTab === 'notifications'"
+          v-model:prefs="notifPrefs"
+          :frequency-options="frequencyOptions"
+        />
+        <SettingsBillingTab
+          v-else-if="activeTab === 'billing'"
+          :usage="billingUsage"
+        />
+        <SettingsDangerTab v-else-if="activeTab === 'danger'" />
       </div>
     </div>
   </div>

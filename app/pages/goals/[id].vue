@@ -108,9 +108,11 @@ function addProject() {
         <!-- Meta row -->
         <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-gray-500">
           <span class="inline-flex items-center gap-1.5">
-            <span class="flex size-6 items-center justify-center rounded-full bg-blue-600 text-[11px] font-semibold text-white">
-              {{ goal.owner.initials }}
-            </span>
+            <UAvatar
+              :src="goal.owner.avatar"
+              :text="goal.owner.initials"
+              size="xs"
+            />
             <span class="text-gray-700">{{ goal.owner.name }}</span>
           </span>
           <span class="inline-flex items-center gap-1">
@@ -153,8 +155,8 @@ function addProject() {
             </span>
           </div>
           <UButton
+            color="primary"
             variant="outline"
-            color="neutral"
             size="sm"
             icon="ph:plus"
             label="Add KPI"
@@ -202,9 +204,11 @@ function addProject() {
               <span class="w-10 text-right text-[11px] tabular-nums text-gray-500">{{ kpi.progress }}%</span>
             </div>
             <div class="mt-2 flex items-center gap-2 text-[11px] text-gray-500">
-              <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-semibold text-white">
-                {{ kpi.owner.initials }}
-              </span>
+              <UAvatar
+                :src="kpi.owner.avatar"
+                :text="kpi.owner.initials"
+                size="2xs"
+              />
               <span class="truncate">{{ kpi.owner.name }}</span>
               <span class="text-gray-300">·</span>
               <span>Due {{ kpi.dueDate }}</span>
@@ -223,8 +227,8 @@ function addProject() {
             </span>
           </div>
           <UButton
+            color="primary"
             variant="outline"
-            color="neutral"
             size="sm"
             icon="ph:plus"
             label="Add project"

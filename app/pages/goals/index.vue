@@ -13,7 +13,7 @@ definePageMeta({
   <div>
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold text-gray-900">Goals</h1>
-      <UButton icon="ph:plus" label="New goal" @click="openCreate" />
+      <UButton color="primary" icon="ph:plus" label="New goal" @click="openCreate" />
     </div>
 
     <div class="flex flex-col gap-2">
