@@ -12,6 +12,9 @@ interface StatCard {
   sub: string
   icon: string
   trend: 'up' | 'down' | 'neutral'
+  chartType: 'line' | 'bar' | 'donut'
+  chartData?: number[]
+  chartValue?: number
 }
 
 interface Project {
@@ -48,10 +51,9 @@ interface ActivityItem {
 }
 
 const stats: StatCard[] = [
-  { label: 'Open Tasks', value: 42, sub: '12% vs last week', icon: 'ph:check-square', trend: 'up' },
-  { label: 'At Risk', value: 7, sub: '3% vs last week', icon: 'ph:warning', trend: 'down' },
-  { label: 'Due This Week', value: 11, sub: '5% vs last week', icon: 'ph:calendar', trend: 'up' },
-  { label: 'Completed', value: 28, sub: '8% vs last week', icon: 'ph:check-circle', trend: 'up' },
+  { label: 'Open Tasks', value: 42, sub: '+12% vs last week', icon: 'ph:check-square', trend: 'up', chartType: 'line', chartData: [28, 32, 30, 35, 34, 38, 42] },
+  { label: 'At Risk', value: 7, sub: '-3% vs last week', icon: 'ph:warning', trend: 'down', chartType: 'bar', chartData: [5, 8, 6, 9, 7, 6, 7] },
+  { label: 'Completed', value: 28, sub: '+8% vs last week', icon: 'ph:check-circle', trend: 'up', chartType: 'donut', chartValue: 72 },
 ]
 
 const projects: Project[] = [
