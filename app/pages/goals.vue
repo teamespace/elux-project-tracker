@@ -1,64 +1,22 @@
 <script setup lang="ts">
+import { goals, progressBarColor, statusClasses } from '~/shared/goals'
+
+const { openCreate } = useGoalSlideOver()
+
 definePageMeta({
   layout: 'default',
   title: 'Goals',
 })
-
-const goals = [
-  {
-    id: 'goal-1',
-    title: 'Q3 Ship Product Redesign',
-    status: 'on-track' as const,
-    statusLabel: 'ON TRACK',
-    owner: { initials: 'R', name: 'Rasya' },
-    kpiCount: 3,
-    epicCount: 2,
-    dueDate: 'Sep 30, 2026',
-    progress: 58,
-  },
-  {
-    id: 'goal-2',
-    title: 'Q3 Improve Dev Velocity',
-    status: 'at-risk' as const,
-    statusLabel: 'AT RISK',
-    owner: { initials: 'M', name: 'Maya' },
-    kpiCount: 5,
-    epicCount: 3,
-    dueDate: 'Sep 30, 2026',
-    progress: 28,
-  },
-  {
-    id: 'goal-3',
-    title: 'Q4 Launch Beta to 100 Users',
-    status: 'not-started' as const,
-    statusLabel: 'NOT STARTED',
-    owner: { initials: 'D', name: 'Dito' },
-    kpiCount: 2,
-    epicCount: 0,
-    dueDate: 'Dec 31, 2026',
-    progress: 0,
-  },
-]
-
-function statusClasses(status: string) {
-  const map: Record<string, string> = {
-    'on-track': 'bg-green-50 text-green-600 border-green-200',
-    'at-risk': 'bg-amber-50 text-amber-600 border-amber-200',
-    'not-started': 'bg-gray-50 text-gray-500 border-gray-200',
-  }
-  return map[status] || map['not-started']
-}
-
-function progressBarColor(progress: number) {
-  if (progress >= 75) return 'bg-green-600'
-  if (progress >= 25) return 'bg-amber-600'
-  return 'bg-gray-500'
-}
 </script>
 
 <template>
   <div>
-    <div class="mt-2 flex flex-col gap-2">
+    <div class="mb-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold text-gray-900">Goals</h1>
+      <UButton icon="ph:plus" label="New goal" @click="openCreate" />
+    </div>
+
+    <div class="flex flex-col gap-2">
       <NuxtLink
         v-for="goal in goals"
         :key="goal.id"
@@ -77,9 +35,9 @@ function progressBarColor(progress: number) {
                 </span>
                 {{ goal.owner.name }}
               </span>
-              <span>{{ goal.kpiCount }} KPIs</span>
+              <span>{{ goal.kpis.length }} KPIs</span>
               <span class="text-gray-400">·</span>
-              <span>{{ goal.epicCount }} {{ goal.epicCount === 1 ? 'epic' : 'epics' }}</span>
+              <span>{{ goal.linkedProjects.length }} {{ goal.linkedProjects.length === 1 ? 'project' : 'projects' }}</span>
               <span class="text-gray-400">·</span>
               <span>Due {{ goal.dueDate }}</span>
             </div>

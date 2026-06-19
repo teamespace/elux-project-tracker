@@ -9,6 +9,8 @@ definePageMeta({
 const statusFilter = ref<ProjectStatus | 'all'>('all')
 const sortBy = ref<'name' | 'status' | 'progress'>('name')
 
+const projectSlideOver = useProjectSlideOver()
+
 const statusFilterOptions = [
   { label: 'All statuses', value: 'all' },
   { label: 'On track', value: 'on-track' },
@@ -53,26 +55,35 @@ function progressColorForStatus(status: ProjectStatus): string {
 
 <template>
   <div>
-    <div class="mb-6 flex flex-wrap items-center gap-3">
-      <USelect
-        v-model="statusFilter"
-        :items="statusFilterOptions"
-        value-key="value"
-        label-key="label"
-        color="neutral"
-        variant="outline"
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <USelect
+          v-model="statusFilter"
+          :items="statusFilterOptions"
+          value-key="value"
+          label-key="label"
+          color="neutral"
+          variant="outline"
+          size="sm"
+          class="w-44"
+        />
+        <USelect
+          v-model="sortBy"
+          :items="sortOptions"
+          value-key="value"
+          label-key="label"
+          color="neutral"
+          variant="outline"
+          size="sm"
+          class="w-44"
+        />
+      </div>
+      <UButton
+        icon="ph:plus"
+        label="New project"
+        color="primary"
         size="sm"
-        class="w-44"
-      />
-      <USelect
-        v-model="sortBy"
-        :items="sortOptions"
-        value-key="value"
-        label-key="label"
-        color="neutral"
-        variant="outline"
-        size="sm"
-        class="w-44"
+        @click="projectSlideOver.openCreate()"
       />
     </div>
 

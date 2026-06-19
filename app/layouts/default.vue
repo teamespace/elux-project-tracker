@@ -20,5 +20,6 @@ const route = useRoute()
     <SearchModal />
     <TaskSlideOver />
     <ProjectSlideOver />
+    <GoalSlideOver />
   </div>
 </template>
