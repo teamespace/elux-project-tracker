@@ -331,3 +331,115 @@ body {
 .ctx-item.danger { color: #DC2626; }
 .ctx-item.danger:hover { background: #FEF2F2; }
 .ctx-divider { height: 1px; background: #F3F4F6; margin: 4px 0; }
+
+/* ─── KPI STRIP ─── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.kpi-cell {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.kpi-cell.kpi-has-chart { padding-bottom: 0; }
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+.kpi-header-left { display: flex; align-items: center; gap: 8px; }
+
+.kpi-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.kpi-icon svg { color: white; }
+.kpi-icon-blue   { background: #3B82F6; }
+.kpi-icon-red    { background: #EF4444; }
+.kpi-icon-amber  { background: #F59E0B; }
+.kpi-icon-green  { background: #22C55E; }
+
+.kpi-label { font-size: 12px; font-weight: 500; color: #4B5563; }
+
+.kpi-info-btn {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid #D1D5DB;
+  background: none; color: #9CA3AF;
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; line-height: 1;
+}
+
+.kpi-num-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kpi-number {
+  font-size: 32px; font-weight: 700;
+  color: #111827; line-height: 1; letter-spacing: -0.02em;
+}
+
+.kpi-delta {
+  font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 2px;
+}
+.kpi-delta.up   { color: #16A34A; }
+.kpi-delta.down { color: #DC2626; }
+
+.kpi-delta-label { font-size: 12px; color: #9CA3AF; }
+
+.kpi-progress {
+  height: 5px; background: #F3F4F6;
+  border-radius: 3px; margin-top: 14px; overflow: hidden;
+}
+.kpi-progress-fill { height: 100%; border-radius: 3px; }
+
+.kpi-caption { font-size: 11px; color: #9CA3AF; margin-top: 7px; }
+
+/* At Risk — mini bars */
+.kpi-mini-bars { display: flex; flex-direction: column; gap: 9px; margin-top: auto; }
+.kpi-mini-bar-row { display: flex; align-items: center; gap: 8px; }
+.kpi-mini-bar-label { font-size: 11px; color: #6B7280; width: 50px; flex-shrink: 0; }
+.kpi-mini-bar-track { flex: 1; height: 5px; background: #F3F4F6; border-radius: 3px; overflow: hidden; }
+.kpi-mini-bar-fill  { height: 100%; border-radius: 3px; }
+.kpi-mini-bar-val   { font-size: 12px; font-weight: 600; color: #374151; width: 14px; text-align: right; flex-shrink: 0; }
+
+/* Due This Week — full-width chart */
+.kpi-chart-full {
+  margin-top: 12px;
+  margin-left: -18px; margin-right: -18px;
+  height: 58px; flex-shrink: 0;
+}
+.kpi-chart-full svg { width: 100%; height: 100%; display: block; }
+
+/* Completion Rate */
+.kpi-pct-big { font-size: 32px; font-weight: 700; color: #111827; line-height: 1; letter-spacing: -0.02em; }
+.kpi-completion-body { display: flex; align-items: center; gap: 16px; margin-top: auto; }
+.kpi-stacked { margin-top: auto; }
+.kpi-stacked-track {
+  display: flex; height: 8px;
+  border-radius: 4px; overflow: hidden; gap: 2px;
+}
+.kpi-stacked-seg { height: 100%; }
+.kpi-stacked-labels { display: flex; margin-top: 10px; }
+.kpi-stacked-lbl { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.kpi-stacked-lbl:not(:first-child) { border-left: 1px solid #F3F4F6; padding-left: 10px; }
+.kpi-stacked-lbl-val  { font-size: 14px; font-weight: 700; line-height: 1.2; }
+.kpi-stacked-lbl-text { font-size: 10.5px; color: #9CA3AF; }

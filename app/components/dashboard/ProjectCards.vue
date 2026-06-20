@@ -95,12 +95,7 @@ const filteredProjects = computed(() => {
   })
 })
 
-const statusClass = (status: string) => ({
-  'on-track': 'bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]',
-  'at-risk': 'bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]',
-  'delayed': 'bg-[#FEF2F2] text-[#991B1B] border-[#FECACA]',
-  'not-started': 'bg-[#F8FAFC] text-gray-500 border-gray-200',
-}[status] || '')
+const statusClass = (status: string) => status
 
 const progressColorForStatus = (status: string) => {
   if (status === 'at-risk' || status === 'delayed') return '#EF4444'
