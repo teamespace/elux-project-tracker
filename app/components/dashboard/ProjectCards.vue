@@ -1,3 +1,4 @@
+// styled: agent-5
 <script setup lang="ts">
 import { progressColor } from '~/shared/projects'
 
@@ -23,163 +24,265 @@ const props = defineProps<{
 
 const projectSlideOver = useProjectSlideOver()
 
+const activeView = ref('list')
+const filterOpen = ref(false)
+const search = ref('')
+
+const statusOptions = [
+  { label: 'On Track', value: 'on-track' },
+  { label: 'At Risk', value: 'at-risk' },
+  { label: 'Not Started', value: 'not-started' },
+]
+
+const priorityOptions = [
+  { label: 'High', value: 'high' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Low', value: 'low' },
+]
+
+const selectedStatuses = ref<string[]>(statusOptions.map(s => s.value))
+const selectedPriorities = ref<string[]>(priorityOptions.map(p => p.value))
+
+const toggleStatus = (value: string) => {
+  const index = selectedStatuses.value.indexOf(value)
+  if (index === -1) selectedStatuses.value.push(value)
+  else selectedStatuses.value.splice(index, 1)
+}
+
+const togglePriority = (value: string) => {
+  const index = selectedPriorities.value.indexOf(value)
+  if (index === -1) selectedPriorities.value.push(value)
+  else selectedPriorities.value.splice(index, 1)
+}
+
+const clearFilters = () => {
+  selectedStatuses.value = []
+  selectedPriorities.value = []
+}
+
+const applyFilters = () => {
+  filterOpen.value = false
+}
+
+const filteredProjects = computed(() => {
+  return props.projects.filter((project) => {
+    const statusMatch = selectedStatuses.value.length === 0 || selectedStatuses.value.includes(project.status)
+    const priorityMatch = selectedPriorities.value.length === 0 || selectedPriorities.value.includes(project.priority)
+    const searchMatch = !search.value || project.name.toLowerCase().includes(search.value.toLowerCase())
+    return statusMatch && priorityMatch && searchMatch
+  })
+})
+
 const statusClass = (status: string) => ({
-  'on-track': 'text-green-700 bg-green-50 border-green-200',
-  'at-risk': 'text-amber-700 bg-amber-50 border-amber-200',
-  'delayed': 'text-red-700 bg-red-50 border-red-200',
-  'not-started': 'text-gray-600 bg-gray-100 border-gray-200',
+  'on-track': 'bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]',
+  'at-risk': 'bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]',
+  'delayed': 'bg-[#FEF2F2] text-[#991B1B] border-[#FECACA]',
+  'not-started': 'bg-[#F8FAFC] text-gray-500 border-gray-200',
 }[status] || '')
 
 const statusDotClass = (status: string) => ({
-  'on-track': 'bg-green-500',
-  'at-risk': 'bg-amber-500',
-  'delayed': 'bg-red-500',
-  'not-started': 'bg-gray-400',
-}[status] || 'bg-gray-400')
+  'on-track': 'bg-green-500 rounded-[2px]',
+  'at-risk': 'bg-amber-500 rounded-[2px]',
+  'delayed': 'bg-red-500 rounded-[2px]',
+  'not-started': 'bg-gray-400 rounded-full',
+}[status] || 'bg-gray-400 rounded-full')
 
 const priorityClass = (priority: string) => ({
-  high: 'text-red-700 bg-red-50 border-red-200',
-  medium: 'text-amber-700 bg-amber-50 border-amber-200',
-  low: 'text-green-700 bg-green-50 border-green-200',
-}[priority] || 'text-gray-600 bg-gray-100 border-gray-200')
+  high: 'bg-[#FEE2E2] text-[#B91C1C]',
+  medium: 'bg-[#FEF3C7] text-[#92400E]',
+  low: 'bg-[#D1FAE5] text-[#065F46]',
+}[priority] || 'bg-gray-100 text-gray-600')
 
 const deadlineClass = (status: string) =>
-  status === 'at-risk' || status === 'delayed' ? 'text-red-600' : 'text-gray-500'
+  status === 'at-risk' || status === 'delayed' ? 'text-red-500 font-medium' : 'text-gray-500'
+
+const progressColorForStatus = (status: string) => {
+  if (status === 'at-risk' || status === 'delayed') return 'bg-red-500'
+  if (status === 'on-track') return 'bg-green-500'
+  if (status === 'not-started') return 'bg-gray-400'
+  return progressColor(50)
+}
 </script>
 
 <template>
-  <div class="rounded-xl border border-gray-200 bg-white">
-    <!-- Top bar -->
-    <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-      <h2 class="text-lg font-semibold text-gray-900">
-        Projects
-      </h2>
-      <div class="flex items-center gap-3">
-        <div class="relative">
-          <UIcon name="ph:magnifying-glass" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
+  <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between border-b border-gray-100 px-4 py-2.5">
+      <div class="flex items-center gap-2">
+        <h2 class="text-[13px] font-semibold text-gray-900">
+          Projects
+        </h2>
+        <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-medium text-gray-400">{{ filteredProjects.length }}</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5">
+          <button
+            v-for="view in ['kanban', 'list', 'calendar']"
+            :key="view"
+            class="flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium capitalize transition-colors"
+            :class="activeView === view ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+            @click="activeView = view"
+          >
+            <UIcon :name="view === 'kanban' ? 'ph:kanban' : view === 'list' ? 'ph:list' : 'ph:calendar'" class="size-3.5" />
+            {{ view }}
+          </button>
+        </div>
+
+        <div class="relative hidden sm:block">
+          <UIcon name="ph:magnifying-glass" class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-gray-400" />
           <input
+            v-model="search"
             type="text"
-            placeholder="Search projects"
-            class="h-9 w-56 rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="Search"
+            class="h-7 w-36 rounded-md border border-gray-200 bg-gray-50 pl-8 pr-2 text-[12px] text-gray-700 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
           >
         </div>
-        <button
-          type="button"
-          class="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          <UIcon name="ph:faders" class="size-4" />
-          Filter
-        </button>
+
+        <div class="relative">
+          <button
+            class="inline-flex h-7 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 text-[12px] font-medium text-gray-500 transition-colors hover:bg-gray-50"
+            :class="{ 'bg-blue-50 border-blue-200 text-blue-600': filterOpen }"
+            @click="filterOpen = !filterOpen"
+          >
+            <UIcon name="ph:faders" class="size-3.5" />
+            Filter
+          </button>
+          <div
+            v-if="filterOpen"
+            class="absolute right-0 top-[calc(100%+6px)] z-20 min-w-[220px] rounded-[10px] border border-gray-200 bg-white p-3 shadow-[0_8px_24px_rgba(0,0,0,0.1)]"
+          >
+            <div class="mb-3">
+              <p class="mb-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-gray-400">Status</p>
+              <div class="flex flex-wrap gap-1.5">
+                <button
+                  v-for="option in statusOptions"
+                  :key="option.value"
+                  class="rounded-[20px] border px-2.5 py-0.5 text-[11.5px] transition-colors"
+                  :class="selectedStatuses.includes(option.value) ? 'border-blue-200 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-600'"
+                  @click="toggleStatus(option.value)"
+                >
+                  {{ option.label }}
+                </button>
+              </div>
+            </div>
+            <div>
+              <p class="mb-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-gray-400">Priority</p>
+              <div class="flex flex-wrap gap-1.5">
+                <button
+                  v-for="option in priorityOptions"
+                  :key="option.value"
+                  class="rounded-[20px] border px-2.5 py-0.5 text-[11.5px] transition-colors"
+                  :class="selectedPriorities.includes(option.value) ? 'border-blue-200 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-600'"
+                  @click="togglePriority(option.value)"
+                >
+                  {{ option.label }}
+                </button>
+              </div>
+            </div>
+            <div class="mt-3 flex justify-end gap-1.5 border-t border-gray-100 pt-2.5">
+              <button class="px-2 py-1 text-[12px] text-gray-500 transition-colors hover:text-gray-700" @click="clearFilters">
+                Clear all
+              </button>
+              <button class="rounded-md bg-blue-600 px-3 py-1 text-[12px] font-medium text-white transition-colors hover:bg-blue-700" @click="applyFilters">
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <NuxtLink to="/projects" class="text-[12px] text-gray-400 transition-colors hover:text-gray-700">
+          View all
+        </NuxtLink>
       </div>
     </div>
 
     <!-- Table -->
-    <table class="w-full text-left text-sm">
+    <table class="w-full text-left text-[13px]">
       <thead>
-        <tr class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase text-gray-500">
-          <th class="w-12 px-5 py-3">
-            <input
-              type="checkbox"
-              class="size-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              @click.stop
-            >
+        <tr class="border-b border-gray-100 text-[11.5px] font-medium text-gray-400">
+          <th class="w-8 py-2 pl-3.5 pr-2">
+            <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 accent-blue-600">
           </th>
-          <th class="px-4 py-3">
-            Project Name
-          </th>
-          <th class="px-4 py-3">
-            Status
-          </th>
-          <th class="px-4 py-3">
-            Progress
-          </th>
-          <th class="px-4 py-3">
-            Deadline
-          </th>
-          <th class="px-4 py-3">
-            People
-          </th>
-          <th class="px-4 py-3">
-            Priority
-          </th>
-          <th class="w-px px-4 py-3" />
+          <th class="px-3 py-2">Project Name</th>
+          <th class="px-3 py-2">Status</th>
+          <th class="px-3 py-2">Progress</th>
+          <th class="px-3 py-2">Deadline</th>
+          <th class="px-3 py-2">People</th>
+          <th class="px-3 py-2">Priority</th>
+          <th class="w-10 px-3 py-2 text-center" />
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="project in props.projects"
+          v-for="project in filteredProjects"
           :key="project.id"
           class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50"
           @click="projectSlideOver.openView(project.id)"
         >
-          <td class="px-5 py-4" @click.stop>
-            <input
-              type="checkbox"
-              class="size-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            >
+          <td class="py-2.5 pl-3.5 pr-2" @click.stop>
+            <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 accent-blue-600">
           </td>
-          <td class="px-4 py-4">
-            <span class="font-semibold text-gray-900">{{ project.name }}</span>
+          <td class="px-3 py-2.5">
+            <span class="font-medium text-gray-900">{{ project.name }}</span>
           </td>
-          <td class="px-4 py-4">
+          <td class="px-3 py-2.5">
             <span
-              class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium"
+              class="inline-flex items-center gap-1.5 rounded-[20px] border px-2.5 py-1 text-[11.5px] font-medium"
               :class="statusClass(project.status)"
             >
-              <span class="size-1.5 rounded-full" :class="statusDotClass(project.status)" />
+              <span class="size-[7px]" :class="statusDotClass(project.status)" />
               {{ project.statusLabel }}
             </span>
           </td>
-          <td class="px-4 py-4">
-            <div class="flex w-40 items-center gap-3">
-              <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+          <td class="px-3 py-2.5">
+            <div class="flex min-w-[110px] items-center gap-2">
+              <div class="h-2 flex-1 overflow-hidden rounded-[8px] bg-gray-100">
                 <div
-                  class="h-full rounded-full transition-all duration-300"
-                  :class="progressColor(project.progress)"
+                  class="h-full rounded-[8px] transition-all duration-300"
+                  :class="progressColorForStatus(project.status)"
                   :style="{ width: project.progress + '%' }"
                 />
               </div>
-              <span class="text-xs font-medium text-gray-700">{{ project.progress }}%</span>
+              <span class="text-[11px] font-medium text-gray-500">{{ project.progress }}%</span>
             </div>
           </td>
-          <td class="px-4 py-4">
-            <span class="text-sm" :class="deadlineClass(project.status)">
-              <span v-if="project.dueDate">{{ project.dueDate }}</span>
-              <span v-else-if="project.createdDate">{{ project.createdDate }}</span>
+          <td class="px-3 py-2.5">
+            <span class="text-[12.5px] whitespace-nowrap" :class="deadlineClass(project.status)">
+              {{ project.dueDate }}
             </span>
           </td>
-          <td class="px-4 py-4">
+          <td class="px-3 py-2.5">
             <div class="flex items-center">
-              <UAvatar
+              <img
                 v-for="(a, i) in project.assignees.slice(0, 3)"
                 :key="i"
                 :src="a.avatar"
-                :text="a.initials"
-                size="xs"
-                class="ring-2 ring-white first:ml-0 -ml-1.5"
-              />
+                :alt="a.name"
+                class="size-6 rounded-full border-2 border-white object-cover first:ml-0 -ml-1.5"
+              >
               <div
                 v-if="project.assignees.length > 3"
-                class="flex size-6 items-center justify-center rounded-full bg-gray-100 text-[10px] font-medium text-gray-500 ring-2 ring-white -ml-1.5"
+                class="flex size-6 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[9px] font-bold text-gray-600 -ml-1.5"
               >
                 +{{ project.assignees.length - 3 }}
               </div>
             </div>
           </td>
-          <td class="px-4 py-4">
+          <td class="px-3 py-2.5">
             <span
-              class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium"
+              class="inline-flex items-center rounded-md px-2.5 py-1 text-[11.5px] font-semibold"
               :class="priorityClass(project.priority)"
             >
               {{ project.priorityLabel }}
             </span>
           </td>
-          <td class="px-4 py-4 text-right" @click.stop>
+          <td class="px-3 py-2.5 text-center" @click.stop>
             <button
-              type="button"
-              class="inline-flex items-center justify-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              class="inline-flex items-center whitespace-nowrap rounded-[5px] border border-gray-200 bg-white px-2 py-0.5 text-[12px] font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
+              @click="projectSlideOver.openView(project.id)"
             >
-              <UIcon name="ph:dots-three-vertical" class="size-5" />
+              View
             </button>
           </td>
         </tr>

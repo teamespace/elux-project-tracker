@@ -1,3 +1,4 @@
+// styled: agent-6
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
 import { useTaskSlideOver } from '~/composables/useTaskSlideOver'
@@ -31,22 +32,22 @@ onBeforeUnmount(() => {
     >
       <div
         v-if="state.isOpen"
-        class="fixed inset-0 z-50 bg-black/40"
+        class="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
         @click.self="close"
       />
     </Transition>
 
     <Transition
-      enter-active-class="transform transition-transform duration-300 ease-out"
-      enter-from-class="translate-x-full"
-      enter-to-class="translate-x-0"
-      leave-active-class="transform transition-transform duration-200 ease-in"
-      leave-from-class="translate-x-0"
-      leave-to-class="translate-x-full"
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="translate-x-full opacity-0"
+      enter-to-class="translate-x-0 opacity-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="translate-x-0 opacity-100"
+      leave-to-class="translate-x-full opacity-0"
     >
       <div
         v-if="state.isOpen"
-        class="fixed right-0 top-0 z-50 flex h-full w-full max-w-[760px] flex-col overflow-y-auto bg-white shadow-2xl"
+        class="fixed bottom-2 right-2 top-2 z-50 flex h-[calc(100vh-16px)] w-full max-w-[640px] flex-col overflow-hidden rounded-[14px] border border-black/[0.07] bg-white shadow-[0_24px_64px_rgba(0,0,0,0.16)]"
         role="dialog"
         aria-modal="true"
         aria-label="Task details"

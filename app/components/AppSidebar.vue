@@ -1,3 +1,4 @@
+// styled: agent-2
 <script setup lang="ts">
 interface NavItem {
   label: string
@@ -7,6 +8,10 @@ interface NavItem {
 
 const route = useRoute()
 const { isOpen } = useSidebar()
+
+function isActive(path: string) {
+  return route.path === path || route.path.startsWith(path + '/')
+}
 
 const workspaceNavItems: NavItem[] = [
   { label: 'Dashboard', icon: 'ph:squares-four', to: '/dashboard' },
@@ -29,77 +34,102 @@ const footerNavItems: NavItem[] = [
 
 <template>
   <aside
-    class="flex h-full shrink-0 flex-col bg-[#F5F5F5] pt-4 transition-all duration-200"
-    :class="isOpen ? 'w-[240px]' : 'w-[72px]'"
+    class="flex h-screen shrink-0 flex-col bg-transparent transition-all duration-200"
+    :class="isOpen ? 'w-[240px]' : 'w-16'"
   >
-    <!-- Workspace header -->
+    <!-- Brand -->
     <div
-      class="flex h-[48px] items-center px-4"
-      :class="isOpen ? 'gap-2' : 'justify-center px-3'"
+      class="flex h-16 items-center"
+      :class="isOpen ? 'justify-start px-3.5 gap-2.5' : 'justify-center'"
     >
       <div
-        class="flex size-6 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-purple-500 text-[11px] font-bold text-white"
+        class="flex size-7 items-center justify-center rounded-md bg-blue-600 text-[13px] font-bold text-white"
         :title="isOpen ? undefined : 'Elux Space'"
       >
         E
       </div>
-      <span v-if="isOpen" class="text-[15px] font-semibold text-gray-900">Elux Space</span>
+      <span v-if="isOpen" class="text-[14px] font-semibold text-gray-700">Elux Space</span>
     </div>
 
     <!-- Workspace section -->
-    <div v-if="isOpen" class="px-4 pb-1 pt-1">
-      <p class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Workspace</p>
+    <div v-if="isOpen" class="px-3 pb-1 pt-1">
+      <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Workspace</p>
     </div>
-    <nav class="flex flex-col gap-0.5 px-3" :class="{ 'px-2': !isOpen }">
-      <SidebarNavItem
+    <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
+      <NuxtLink
         v-for="item in workspaceNavItems"
         :key="item.label"
-        :label="item.label"
-        :icon="item.icon"
         :to="item.to"
-        :active="route.path === item.to || route.path.startsWith(item.to + '/')"
-        :collapsed="!isOpen"
-      />
+        :title="!isOpen ? item.label : undefined"
+        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+        :class="[
+          isOpen
+            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+            : 'size-10 justify-center rounded-[10px]',
+          isActive(item.to)
+            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+            : '',
+        ]"
+      >
+        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
+      </NuxtLink>
     </nav>
 
     <!-- Personal section -->
-    <div v-if="isOpen" class="px-4 pb-1 pt-4">
-      <p class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Personal</p>
+    <div v-if="isOpen" class="px-3 pb-1 pt-4">
+      <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Personal</p>
     </div>
-    <nav class="flex flex-col gap-0.5 px-3" :class="{ 'px-2': !isOpen }">
-      <SidebarNavItem
+    <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
+      <NuxtLink
         v-for="item in personalNavItems"
         :key="item.label"
-        :label="item.label"
-        :icon="item.icon"
         :to="item.to"
-        :active="route.path === item.to || route.path.startsWith(item.to + '/')"
-        :collapsed="!isOpen"
-      />
+        :title="!isOpen ? item.label : undefined"
+        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+        :class="[
+          isOpen
+            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+            : 'size-10 justify-center rounded-[10px]',
+          isActive(item.to)
+            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+            : '',
+        ]"
+      >
+        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
+      </NuxtLink>
     </nav>
 
     <!-- Spacer -->
     <div class="flex-1" />
 
-    <!-- Bottom nav section -->
-    <nav class="flex flex-col gap-0.5 px-3 pb-2" :class="{ 'px-2': !isOpen }">
+    <!-- Bottom nav -->
+    <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
       <NuxtLink
         v-for="item in footerNavItems"
         :key="item.label"
         :to="item.to"
         :title="!isOpen ? item.label : undefined"
-        class="flex h-9 items-center rounded-lg text-[14px] font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-        :class="isOpen ? 'gap-2 px-3' : 'justify-center px-2'"
+        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+        :class="[
+          isOpen
+            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+            : 'size-10 justify-center rounded-[10px]',
+          isActive(item.to)
+            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+            : '',
+        ]"
       >
-        <UIcon :name="item.icon" class="size-4 shrink-0 text-gray-500" />
-        <span v-if="isOpen">{{ item.label }}</span>
+        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
       </NuxtLink>
     </nav>
 
-    <!-- User footer / profile card -->
+    <!-- User footer -->
     <div
-      class="flex items-center border-t border-gray-200 px-3 py-3"
-      :class="isOpen ? 'gap-3' : 'justify-center'"
+      class="flex items-center border-t border-gray-100"
+      :class="isOpen ? 'gap-2.5 px-3.5 pt-3 pb-4' : 'justify-center px-2 py-3'"
     >
       <UAvatar
         src="https://api.dicebear.com/9.x/micah/svg?seed=Rasya"
@@ -109,16 +139,9 @@ const footerNavItems: NavItem[] = [
         :title="isOpen ? undefined : 'Rasya Ardiansyah'"
       />
       <div v-if="isOpen" class="flex min-w-0 flex-1 flex-col">
-        <span class="truncate text-[13px] font-medium text-gray-900">Rasya Ardiansyah</span>
-        <span class="truncate text-[11px] text-gray-500">Product Designer</span>
+        <span class="truncate text-[13px] font-semibold text-gray-800">Rasya Ardiansyah</span>
+        <span class="truncate text-[11px] text-gray-400">Product Designer</span>
       </div>
-      <button
-        v-if="isOpen"
-        type="button"
-        class="flex size-7 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-      >
-        <UIcon name="ph:dots-three-vertical" class="size-4" />
-      </button>
     </div>
   </aside>
 </template>

@@ -1,3 +1,4 @@
+// styled: agent-6
 <script setup lang="ts">
 import { projectById } from '~/shared/projects'
 
@@ -13,7 +14,9 @@ const project = computed(() => projectById(id.value))
 
 <template>
   <NuxtLayout name="default">
-    <ProjectDetailContent :project-id="id" mode="page" />
+    <div class="mx-auto w-full max-w-[800px]">
+      <ProjectDetailContent :project-id="id" mode="page" />
+    </div>
 
     <template #header>
       <AppHeader>

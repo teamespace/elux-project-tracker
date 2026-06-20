@@ -1,3 +1,4 @@
+// styled: agent-2
 <script setup lang="ts">
 const route = useRoute()
 const showAI = ref(false)
@@ -9,26 +10,26 @@ function openAI() {
 
 <template>
   <div>
-    <div class="flex h-screen overflow-hidden bg-[#F5F5F5]">
+    <div class="flex h-screen overflow-hidden bg-[#fafafa]">
       <AppSidebar />
-      <div class="flex-1 overflow-hidden p-3">
-        <div class="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_4px_32px_rgba(0,0,0,0.03)]">
-          <slot name="header">
-            <AppHeader>{{ route.meta.title ?? '' }}</AppHeader>
-          </slot>
-          <main class="flex-1 overflow-y-auto px-5 py-4">
-            <slot />
-          </main>
-        </div>
+      <div class="flex flex-1 flex-col overflow-hidden m-2 ml-0 rounded-xl border border-black/[0.09] bg-white">
+        <slot name="header">
+          <AppHeader>{{ route.meta.title ?? '' }}</AppHeader>
+        </slot>
+        <main class="flex-1 overflow-y-auto px-6 py-5">
+          <slot />
+        </main>
       </div>
     </div>
     <SearchModal />
     <TaskSlideOver />
     <ProjectSlideOver />
     <GoalSlideOver />
+    <CriticalIssuesSlideOver />
+    <ActivitySlideOver />
     <!-- AI Floating Button -->
     <button
-      class="fixed bottom-6 right-6 z-40 flex size-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 hover:shadow-xl hover:scale-105"
+      class="fixed bottom-6 right-6 z-40 flex size-12 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg shadow-gray-900/20 transition-all hover:bg-gray-800 hover:shadow-xl hover:scale-105"
       @click="openAI"
     >
       <UIcon name="ph:sparkle" class="size-5" />
