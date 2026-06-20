@@ -24,7 +24,6 @@ const props = defineProps<{
 
 const projectSlideOver = useProjectSlideOver()
 
-const activeView = ref('list')
 const filterOpen = ref(false)
 const search = ref('')
 
@@ -152,19 +151,6 @@ const progressColorForStatus = (status: string) => {
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5">
-          <button
-            v-for="view in ['kanban', 'list', 'calendar']"
-            :key="view"
-            class="flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium capitalize transition-colors"
-            :class="activeView === view ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
-            @click="activeView = view"
-          >
-            <UIcon :name="view === 'kanban' ? 'ph:kanban' : view === 'list' ? 'ph:list' : 'ph:calendar'" class="size-3.5" />
-            {{ view }}
-          </button>
-        </div>
-
         <div class="relative hidden sm:block">
           <UIcon name="ph:magnifying-glass" class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-gray-400" />
           <input
@@ -256,26 +242,26 @@ const progressColorForStatus = (status: string) => {
           class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50"
           @click="projectSlideOver.openView(project.id)"
         >
-          <td class="py-1.5 pl-3 pr-2" @click.stop>
+          <td class="py-2 pl-3 pr-3" @click.stop>
             <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 accent-blue-600">
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <span class="text-[13px] font-medium text-gray-900">{{ project.name }}</span>
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <span
-              class="inline-flex items-center gap-1.5 rounded-[20px] border px-2.5 py-0.5 text-[11px] font-medium"
+              class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[12px] font-medium whitespace-nowrap"
               :class="statusClass(project.status)"
             >
-              <span class="size-[7px]" :class="statusDotClass(project.status)" />
+              <span class="size-[7px] rounded-full" :class="statusDotClass(project.status)" />
               {{ project.statusLabel }}
             </span>
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <div class="flex items-center gap-2">
-              <div class="h-1.5 flex-1 overflow-hidden rounded-[8px] bg-gray-100">
+              <div class="h-1 flex-1 overflow-hidden rounded-full bg-gray-100">
                 <div
-                  class="h-full rounded-[8px] transition-all duration-300"
+                  class="h-full rounded-full transition-all duration-300"
                   :class="progressColorForStatus(project.status)"
                   :style="{ width: project.progress + '%' }"
                 />
@@ -283,29 +269,29 @@ const progressColorForStatus = (status: string) => {
               <span class="text-[11px] font-medium text-gray-500">{{ project.progress }}%</span>
             </div>
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <span class="text-[12px] whitespace-nowrap" :class="deadlineClass(project.status)">
               {{ project.dueDate }}
             </span>
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <div class="flex items-center">
               <img
                 v-for="(a, i) in project.assignees.slice(0, 3)"
                 :key="i"
                 :src="a.avatar"
                 :alt="a.name"
-                class="size-5 rounded-full border-2 border-white object-cover first:ml-0 -ml-1.5"
+                class="size-7 rounded-full border-2 border-white object-cover first:ml-0 -ml-1.5"
               >
               <div
                 v-if="project.assignees.length > 3"
-                class="flex size-5 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[8px] font-bold text-gray-600 -ml-1.5"
+                class="flex size-7 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[8px] font-bold text-gray-600 -ml-1.5"
               >
                 +{{ project.assignees.length - 3 }}
               </div>
             </div>
           </td>
-          <td class="px-3 py-1.5">
+          <td class="py-2 px-3">
             <span
               class="inline-flex items-center rounded-md px-2.5 py-0.5 text-[11px] font-semibold"
               :class="priorityClass(project.priority)"
@@ -313,10 +299,10 @@ const progressColorForStatus = (status: string) => {
               {{ project.priorityLabel }}
             </span>
           </td>
-          <td class="px-3 py-1.5 text-center" @click.stop>
+          <td class="py-2 px-3 text-center" @click.stop>
             <div class="relative">
               <button
-                class="inline-flex items-center justify-center rounded-[5px] border border-transparent p-0.5 text-gray-400 transition-colors hover:border-gray-200 hover:bg-white hover:text-gray-700"
+                class="inline-flex items-center justify-center rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                 @click="toggleMenu(project.id, $event)"
               >
                 <UIcon name="ph:dots-three-vertical" class="size-4" />
