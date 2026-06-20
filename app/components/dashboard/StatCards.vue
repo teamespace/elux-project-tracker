@@ -37,6 +37,21 @@ function parseSub(sub: string) {
   }
   return { value: '', suffix: '', rest: sub }
 }
+
+function deltaColorClass(stat: StatCard): string {
+  if (stat.label === 'At Risk') return 'text-[#DC2626]'
+  if (stat.label === 'Completion Rate') return 'text-[#16A34A]'
+  if (stat.label === 'Open Tasks') return 'text-[#16A34A]'
+  if (stat.label === 'Due This Week') return 'text-[#16A34A]'
+  return 'text-gray-500'
+}
+
+function segmentNumberColor(seg: { color: string }): string {
+  if (seg.color.includes('green')) return '#16A34A'
+  if (seg.color.includes('blue') || seg.color.includes('indigo')) return '#6366F1'
+  if (seg.color.includes('amber')) return '#D97706'
+  return '#111827'
+}
 </script>
 
 <template>
@@ -69,12 +84,9 @@ function parseSub(sub: string) {
         <span
           v-if="parseSub(stat.sub).value"
           class="inline-flex items-center gap-0.5 text-[12px] font-semibold"
-          :class="stat.trend === 'down' ? 'text-red-600' : 'text-green-600'"
+          :class="deltaColorClass(stat)"
         >
-          <UIcon
-            :name="stat.trend === 'down' ? 'ph:caret-down' : 'ph:caret-up'"
-            class="size-3"
-          />
+          <span class="text-[12px] font-bold leading-none">{{ stat.trend === 'down' ? '-' : '^' }}</span>
           {{ parseSub(stat.sub).value }}{{ parseSub(stat.sub).suffix }}
         </span>
         <span class="text-[12px] text-gray-400">{{ parseSub(stat.sub).rest }}</span>
@@ -140,7 +152,7 @@ function parseSub(sub: string) {
               :key="seg.label"
               class="flex flex-1 flex-col gap-0.5 border-l border-gray-100 pl-2.5 first:border-l-0 first:pl-0"
             >
-              <span class="text-[14px] font-bold leading-none" :class="seg.textColor || 'text-gray-900'">{{ seg.value }}</span>
+              <span class="text-[14px] font-bold leading-none" :style="{ color: segmentNumberColor(seg) }">{{ seg.value }}</span>
               <span class="text-[10.5px] text-gray-400">{{ seg.label }}</span>
             </div>
           </div>
