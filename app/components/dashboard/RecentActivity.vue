@@ -20,7 +20,7 @@ const isSystem = (name: string) => name.toLowerCase() === 'system'
 </script>
 
 <template>
-  <div class="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden">
+  <div class="flex h-full flex-col rounded-xl border border-gray-200 bg-white overflow-hidden">
     <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3">
       <h3 class="text-[13px] font-semibold text-gray-900">Recent Activity</h3>
       <button class="text-[12px] text-gray-400 transition-colors hover:text-gray-700" @click="activitySlideOver.open()">
@@ -28,7 +28,7 @@ const isSystem = (name: string) => name.toLowerCase() === 'system'
       </button>
     </div>
 
-    <div class="flex flex-col p-4">
+    <div class="flex flex-1 flex-col overflow-y-auto p-4">
       <div
         v-if="displayedItems.length === 0"
         class="flex flex-1 items-center justify-center py-6"

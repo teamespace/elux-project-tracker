@@ -28,6 +28,42 @@ const activeView = ref('list')
 const filterOpen = ref(false)
 const search = ref('')
 
+// Per-row action menu
+const openMenuId = ref<string | null>(null)
+const _menuRefs = ref<Record<string, HTMLElement | null>>({})
+
+function toggleMenu(id: string, event: Event) {
+  event.stopPropagation()
+  if (openMenuId.value === id) {
+    openMenuId.value = null
+  }
+  else {
+    openMenuId.value = id
+  }
+}
+
+function closeMenu() {
+  openMenuId.value = null
+}
+
+function navigateToProject(id: string) {
+  closeMenu()
+  projectSlideOver.openView(id)
+}
+
+function navigateToAllProjects() {
+  closeMenu()
+  navigateTo('/projects')
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeMenu)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMenu)
+})
+
 const statusOptions = [
   { label: 'On Track', value: 'on-track' },
   { label: 'At Risk', value: 'at-risk' },
@@ -198,19 +234,19 @@ const progressColorForStatus = (status: string) => {
     </div>
 
     <!-- Table -->
-    <table class="w-full text-left text-[13px]">
+    <table class="w-full text-left">
       <thead>
-        <tr class="border-b border-gray-100 text-[11.5px] font-medium text-gray-400">
-          <th class="w-8 py-2 pl-3.5 pr-2">
+        <tr class="border-b border-gray-100 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+          <th class="w-8 py-2 pl-3">
             <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 accent-blue-600">
           </th>
-          <th class="px-3 py-2">Project Name</th>
-          <th class="px-3 py-2">Status</th>
-          <th class="px-3 py-2">Progress</th>
-          <th class="px-3 py-2">Deadline</th>
-          <th class="px-3 py-2">People</th>
-          <th class="px-3 py-2">Priority</th>
-          <th class="w-10 px-3 py-2 text-center" />
+          <th class="px-3 py-2 min-w-[160px]">Project Name</th>
+          <th class="px-3 py-2 w-[100px]">Status</th>
+          <th class="px-3 py-2 w-[120px]">Progress</th>
+          <th class="px-3 py-2 w-[110px]">Deadline</th>
+          <th class="px-3 py-2 w-[80px]">People</th>
+          <th class="px-3 py-2 w-[80px]">Priority</th>
+          <th class="w-8 px-3 py-2" />
         </tr>
       </thead>
       <tbody>
@@ -220,24 +256,24 @@ const progressColorForStatus = (status: string) => {
           class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50"
           @click="projectSlideOver.openView(project.id)"
         >
-          <td class="py-2.5 pl-3.5 pr-2" @click.stop>
+          <td class="py-1.5 pl-3 pr-2" @click.stop>
             <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 accent-blue-600">
           </td>
-          <td class="px-3 py-2.5">
-            <span class="font-medium text-gray-900">{{ project.name }}</span>
+          <td class="px-3 py-1.5">
+            <span class="text-[13px] font-medium text-gray-900">{{ project.name }}</span>
           </td>
-          <td class="px-3 py-2.5">
+          <td class="px-3 py-1.5">
             <span
-              class="inline-flex items-center gap-1.5 rounded-[20px] border px-2.5 py-1 text-[11.5px] font-medium"
+              class="inline-flex items-center gap-1.5 rounded-[20px] border px-2.5 py-0.5 text-[11px] font-medium"
               :class="statusClass(project.status)"
             >
               <span class="size-[7px]" :class="statusDotClass(project.status)" />
               {{ project.statusLabel }}
             </span>
           </td>
-          <td class="px-3 py-2.5">
-            <div class="flex min-w-[110px] items-center gap-2">
-              <div class="h-2 flex-1 overflow-hidden rounded-[8px] bg-gray-100">
+          <td class="px-3 py-1.5">
+            <div class="flex items-center gap-2">
+              <div class="h-1.5 flex-1 overflow-hidden rounded-[8px] bg-gray-100">
                 <div
                   class="h-full rounded-[8px] transition-all duration-300"
                   :class="progressColorForStatus(project.status)"
@@ -247,43 +283,73 @@ const progressColorForStatus = (status: string) => {
               <span class="text-[11px] font-medium text-gray-500">{{ project.progress }}%</span>
             </div>
           </td>
-          <td class="px-3 py-2.5">
-            <span class="text-[12.5px] whitespace-nowrap" :class="deadlineClass(project.status)">
+          <td class="px-3 py-1.5">
+            <span class="text-[12px] whitespace-nowrap" :class="deadlineClass(project.status)">
               {{ project.dueDate }}
             </span>
           </td>
-          <td class="px-3 py-2.5">
+          <td class="px-3 py-1.5">
             <div class="flex items-center">
               <img
                 v-for="(a, i) in project.assignees.slice(0, 3)"
                 :key="i"
                 :src="a.avatar"
                 :alt="a.name"
-                class="size-6 rounded-full border-2 border-white object-cover first:ml-0 -ml-1.5"
+                class="size-5 rounded-full border-2 border-white object-cover first:ml-0 -ml-1.5"
               >
               <div
                 v-if="project.assignees.length > 3"
-                class="flex size-6 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[9px] font-bold text-gray-600 -ml-1.5"
+                class="flex size-5 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[8px] font-bold text-gray-600 -ml-1.5"
               >
                 +{{ project.assignees.length - 3 }}
               </div>
             </div>
           </td>
-          <td class="px-3 py-2.5">
+          <td class="px-3 py-1.5">
             <span
-              class="inline-flex items-center rounded-md px-2.5 py-1 text-[11.5px] font-semibold"
+              class="inline-flex items-center rounded-md px-2.5 py-0.5 text-[11px] font-semibold"
               :class="priorityClass(project.priority)"
             >
               {{ project.priorityLabel }}
             </span>
           </td>
-          <td class="px-3 py-2.5 text-center" @click.stop>
-            <button
-              class="inline-flex items-center whitespace-nowrap rounded-[5px] border border-gray-200 bg-white px-2 py-0.5 text-[12px] font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
-              @click="projectSlideOver.openView(project.id)"
-            >
-              View
-            </button>
+          <td class="px-3 py-1.5 text-center" @click.stop>
+            <div class="relative">
+              <button
+                class="inline-flex items-center justify-center rounded-[5px] border border-transparent p-0.5 text-gray-400 transition-colors hover:border-gray-200 hover:bg-white hover:text-gray-700"
+                @click="toggleMenu(project.id, $event)"
+              >
+                <UIcon name="ph:dots-three-vertical" class="size-4" />
+              </button>
+
+              <!-- Action Menu -->
+              <div
+                v-if="openMenuId === project.id"
+                ref="el => { _menuRefs[project.id] = el as HTMLElement | null }"
+                class="absolute right-0 top-full z-30 mt-1 min-w-[180px] rounded-[10px] border border-gray-200 bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+              >
+                <button
+                  class="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] text-gray-700 transition-colors hover:bg-gray-50"
+                  @click="navigateToProject(project.id)"
+                >
+                  <UIcon name="ph:eye" class="size-4 text-gray-400" />
+                  View details
+                </button>
+                <button
+                  class="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] text-gray-700 transition-colors hover:bg-gray-50"
+                  @click="navigateToAllProjects"
+                >
+                  <UIcon name="ph:link" class="size-4 text-gray-400" />
+                  Open in Projects
+                </button>
+                <button
+                  class="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-[12.5px] text-red-600 transition-colors hover:bg-red-50"
+                >
+                  <UIcon name="ph:trash" class="size-4 text-red-500" />
+                  Delete project
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>

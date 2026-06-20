@@ -182,9 +182,11 @@ const activity: ActivityItem[] = [
 
     <DashboardCriticalIssues :issues="criticalIssues" />
 
-    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
+    <div class="flex gap-4 lg:grid lg:grid-cols-[1fr_280px]">
       <DashboardProjectCards :projects="projects" />
-      <DashboardRecentActivity :activity="activity" />
+      <div class="lg:flex lg:h-full">
+        <DashboardRecentActivity :activity="activity" />
+      </div>
     </div>
   </div>
 </template>

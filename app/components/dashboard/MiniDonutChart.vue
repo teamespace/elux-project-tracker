@@ -53,7 +53,7 @@ const color = computed(() => props.color ?? '#22C55E')
       :fill="color"
       font-size="10"
       font-weight="600"
-      font-family="Inter, system-ui, sans-serif"
+      font-family="Geist, ui-sans-serif, system-ui, sans-serif"
     >{{ fill }}%</text>
   </svg>
 </template>
