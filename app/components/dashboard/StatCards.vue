@@ -1,163 +1,156 @@
-// styled: agent-3
-<script setup lang="ts">
-export interface StatCard {
-  label: string
-  value?: number
-  percent?: number
-  sub: string
-  icon: string
-  trend: 'up' | 'down' | 'neutral'
-  iconColor?: 'blue' | 'red' | 'amber' | 'green'
-  valueColor?: string
-  progress?: { pct: number; color: string; caption: string }
-  miniBars?: { label: string; value: number; pct: number; color: string }[]
-  chartType?: 'line' | 'bar' | 'donut'
-  chartData?: number[]
-  chartValue?: number
-  chartColor?: string
-  fullWidthChart?: boolean
-  stacked?: { label: string; value: number; color: string; textColor?: string }[]
-}
-
-defineProps<{
-  stats: StatCard[]
-}>()
-
-const iconColorMap: Record<string, string> = {
-  blue: 'bg-blue-500',
-  red: 'bg-red-500',
-  amber: 'bg-amber-500',
-  green: 'bg-green-500',
-}
-
-function parseSub(sub: string) {
-  const match = sub.match(/^([+-]?\d+(?:\.\d+)?)%?\s*(.*)$/)
-  if (match) {
-    return { value: match[1], suffix: sub.startsWith(match[1] + '%') ? '%' : '', rest: match[2] }
-  }
-  return { value: '', suffix: '', rest: sub }
-}
-
-function deltaColorClass(stat: StatCard): string {
-  if (stat.label === 'At Risk') return 'text-[#DC2626]'
-  if (stat.label === 'Completion Rate') return 'text-[#16A34A]'
-  if (stat.label === 'Open Tasks') return 'text-[#16A34A]'
-  if (stat.label === 'Due This Week') return 'text-[#16A34A]'
-  return 'text-gray-500'
-}
-
-function segmentNumberColor(seg: { color: string }): string {
-  if (seg.color.includes('green')) return '#16A34A'
-  if (seg.color.includes('blue') || seg.color.includes('indigo')) return '#6366F1'
-  if (seg.color.includes('amber')) return '#D97706'
-  return '#111827'
-}
-</script>
-
 <template>
-  <div class="grid grid-cols-4 gap-3">
-    <div
-      v-for="stat in stats"
-      :key="stat.label"
-      class="relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white px-[18px] py-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
-      :class="{ 'pb-0': stat.fullWidthChart }"
-    >
-      <div class="mb-3.5 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <div
-            class="flex size-7 items-center justify-center rounded-md text-white"
-            :class="iconColorMap[stat.iconColor || 'blue']"
-          >
-            <UIcon :name="stat.icon" class="size-3.5" />
+  <div class="kpi-strip">
+
+    <!-- Card 1: Open Tasks -->
+    <div class="kpi-cell">
+      <div class="kpi-header">
+        <div class="kpi-header-left">
+          <div class="kpi-icon kpi-icon-blue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
           </div>
-          <span class="text-[12px] font-medium text-gray-600">{{ stat.label }}</span>
+          <span class="kpi-label">Open Tasks</span>
         </div>
-        <button class="flex size-[18px] items-center justify-center rounded-full border border-gray-300 text-[10px] font-bold leading-none text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500">
-          i
-        </button>
+        <button class="kpi-info-btn">i</button>
       </div>
-
-      <div class="flex flex-wrap items-baseline gap-2">
-        <span class="text-[32px] font-bold leading-none tracking-tight text-gray-900" :class="stat.valueColor">
-          {{ stat.percent !== undefined ? `${stat.percent}%` : stat.value }}
+      <div class="kpi-num-row">
+        <span class="kpi-number">42</span>
+        <span class="kpi-delta up">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 7H5l7-7z"/></svg>
+          12%
         </span>
-        <span
-          v-if="parseSub(stat.sub).value"
-          class="inline-flex items-center gap-0.5 text-[12px] font-semibold"
-          :class="deltaColorClass(stat)"
-        >
-          <span class="text-[12px] font-bold leading-none">{{ stat.trend === 'down' ? '-' : '^' }}</span>
-          {{ parseSub(stat.sub).value }}{{ parseSub(stat.sub).suffix }}
-        </span>
-        <span class="text-[12px] text-gray-400">{{ parseSub(stat.sub).rest }}</span>
+        <span class="kpi-delta-label">vs last week</span>
       </div>
-
-      <!-- Open Tasks: progress bar -->
-      <template v-if="stat.progress">
-        <div class="mt-3.5">
-          <div class="h-[5px] overflow-hidden rounded-md bg-gray-100">
-            <div
-              class="h-full rounded-md"
-              :class="stat.progress.color"
-              :style="{ width: `${stat.progress.pct}%` }"
-            />
-          </div>
-          <p class="mt-[7px] text-[11px] text-gray-400">{{ stat.progress.caption }}</p>
-        </div>
-      </template>
-
-      <!-- At Risk: mini bars -->
-      <template v-if="stat.miniBars?.length">
-        <div class="mt-auto flex flex-col gap-2 pt-3">
-          <div
-            v-for="bar in stat.miniBars"
-            :key="bar.label"
-            class="flex items-center gap-2"
-          >
-            <span class="w-[50px] text-[11px] text-gray-500">{{ bar.label }}</span>
-            <div class="h-[5px] flex-1 overflow-hidden rounded-md bg-gray-100">
-              <div
-                class="h-full rounded-md"
-                :class="bar.color"
-                :style="{ width: `${bar.pct}%` }"
-              />
-            </div>
-            <span class="w-3.5 text-right text-[12px] font-semibold text-gray-700">{{ bar.value }}</span>
-          </div>
-        </div>
-      </template>
-
-      <!-- Due This Week: full-width area chart -->
-      <template v-if="stat.fullWidthChart && stat.chartType === 'line'">
-        <div class="-mx-[18px] mt-3 h-[58px]">
-          <DashboardMiniAreaChart :data="stat.chartData ?? []" :color="stat.chartColor || '#22C55E'" />
-        </div>
-      </template>
-
-      <!-- Completion Rate: stacked bar -->
-      <template v-if="stat.stacked?.length">
-        <div class="mt-auto flex flex-col gap-2 pt-3">
-          <div class="flex h-2 gap-0.5 overflow-hidden rounded-md">
-            <div
-              v-for="seg in stat.stacked"
-              :key="seg.label"
-              class="h-full"
-              :class="seg.color"
-              :style="{ flex: seg.value }"
-            />
-          </div>
-          <div class="flex">
-            <div
-              v-for="seg in stat.stacked"
-              :key="seg.label"
-              class="flex flex-1 flex-col gap-0.5 border-l border-gray-100 pl-2.5 first:border-l-0 first:pl-0"
-            >
-              <span class="text-[14px] font-bold leading-none" :style="{ color: segmentNumberColor(seg) }">{{ seg.value }}</span>
-              <span class="text-[10.5px] text-gray-400">{{ seg.label }}</span>
-            </div>
-          </div>
-        </div>
-      </template>
+      <div style="flex:1"></div>
+      <div class="kpi-progress">
+        <div class="kpi-progress-fill" style="width:68%;background:#22C55E"></div>
+      </div>
+      <div class="kpi-caption" style="margin-bottom:2px">68% of weekly target complete</div>
     </div>
-  </div>
+
+    <!-- Card 2: At Risk -->
+    <div class="kpi-cell">
+      <div class="kpi-header">
+        <div class="kpi-header-left">
+          <div class="kpi-icon kpi-icon-red">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <span class="kpi-label">At Risk</span>
+        </div>
+        <button class="kpi-info-btn">i</button>
+      </div>
+      <div class="kpi-num-row">
+        <span class="kpi-number" style="color:#DC2626">7</span>
+        <span class="kpi-delta up" style="color:#DC2626">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 19l7-7H5l7 7z"/></svg>
+          3
+        </span>
+        <span class="kpi-delta-label">fewer this week</span>
+      </div>
+      <div class="kpi-mini-bars">
+        <div class="kpi-mini-bar-row">
+          <span class="kpi-mini-bar-label">Overdue</span>
+          <div class="kpi-mini-bar-track">
+            <div class="kpi-mini-bar-fill" style="width:71%;background:#EF4444"></div>
+          </div>
+          <span class="kpi-mini-bar-val">5</span>
+        </div>
+        <div class="kpi-mini-bar-row">
+          <span class="kpi-mini-bar-label">Blocked</span>
+          <div class="kpi-mini-bar-track">
+            <div class="kpi-mini-bar-fill" style="width:29%;background:#F59E0B"></div>
+          </div>
+          <span class="kpi-mini-bar-val">2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Due This Week -->
+    <div class="kpi-cell kpi-has-chart">
+      <div class="kpi-header">
+        <div class="kpi-header-left">
+          <div class="kpi-icon kpi-icon-amber">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Due This Week</span>
+        </div>
+        <button class="kpi-info-btn">i</button>
+      </div>
+      <div class="kpi-num-row">
+        <span class="kpi-number">11</span>
+        <span class="kpi-delta up">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 7H5l7-7z"/></svg>
+          5%
+        </span>
+        <span class="kpi-delta-label">vs last month</span>
+      </div>
+      <div class="kpi-chart-full">
+        <svg viewBox="0 0 300 58" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lgFull" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#22C55E" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="32" x2="300" y2="32" stroke="#F3F4F6" stroke-dasharray="5 4" stroke-width="1"/>
+          <path d="M 0,48 C 25,46 35,42 60,44 C 85,46 95,36 120,32 C 145,28 155,36 180,30 C 205,24 215,18 240,20 L 300,16 L 300,58 L 0,58 Z" fill="url(#lgFull)"/>
+          <path d="M 0,48 C 25,46 35,42 60,44 C 85,46 95,36 120,32 C 145,28 155,36 180,30 C 205,24 215,18 240,20 L 300,16" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="240" cy="20" r="3.5" fill="#22C55E" stroke="white" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Card 4: Completion Rate -->
+    <div class="kpi-cell">
+      <div class="kpi-header">
+        <div class="kpi-header-left">
+          <div class="kpi-icon kpi-icon-green">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Completion Rate</span>
+        </div>
+        <button class="kpi-info-btn">i</button>
+      </div>
+      <div class="kpi-completion-body">
+        <div class="kpi-completion-left">
+          <span class="kpi-pct-big">72%</span>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+            <span class="kpi-delta up">↑ 8%</span>
+            <span class="kpi-delta-label">this week</span>
+          </div>
+        </div>
+        <div class="kpi-stacked" style="flex:1">
+          <div class="kpi-stacked-track">
+            <div class="kpi-stacked-seg" style="flex:72;background:#22C55E;border-radius:4px 0 0 4px"></div>
+            <div class="kpi-stacked-seg" style="flex:21;background:#3B82F6"></div>
+            <div class="kpi-stacked-seg" style="flex:7;background:#F59E0B;border-radius:0 4px 4px 0"></div>
+          </div>
+          <div class="kpi-stacked-labels" style="margin-top:8px">
+            <div class="kpi-stacked-lbl">
+              <span class="kpi-stacked-lbl-val" style="color:#16A34A">28</span>
+              <span class="kpi-stacked-lbl-text">Done</span>
+            </div>
+            <div class="kpi-stacked-lbl">
+              <span class="kpi-stacked-lbl-val" style="color:#2563EB">9</span>
+              <span class="kpi-stacked-lbl-text">Active</span>
+            </div>
+            <div class="kpi-stacked-lbl">
+              <span class="kpi-stacked-lbl-val" style="color:#D97706">5</span>
+              <span class="kpi-stacked-lbl-text">At Risk</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /kpi-strip -->
 </template>
