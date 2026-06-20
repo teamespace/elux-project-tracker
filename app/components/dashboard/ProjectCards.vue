@@ -28,15 +28,21 @@ const filterOpen = ref(false)
 
 // Per-row action menu
 const openMenuId = ref<string | null>(null)
+const ctxMenuStyle = ref({ top: '0px', left: '0px' })
 
 function toggleMenu(id: string, event: Event) {
   event.stopPropagation()
   if (openMenuId.value === id) {
     openMenuId.value = null
+    return
   }
-  else {
-    openMenuId.value = id
+  const e = event as MouseEvent
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  ctxMenuStyle.value = {
+    top: rect.bottom + 4 + 'px',
+    left: Math.min(rect.left, window.innerWidth - 180) + 'px',
   }
+  openMenuId.value = id
 }
 
 function closeMenu() {
@@ -99,9 +105,9 @@ const statusClass = (status: string) => status
 
 const progressColorForStatus = (status: string) => {
   if (status === 'at-risk' || status === 'delayed') return '#EF4444'
-  if (status === 'on-track') return '#10B981'
+  if (status === 'on-track') return '#22C55E'
   if (status === 'not-started') return '#9CA3AF'
-  return progressColor(50)
+  return '#22C55E'
 }
 
 function overdueClass(p: Project): string {
@@ -119,7 +125,7 @@ function avatarColorForInitials(initials: string): string {
 </script>
 
 <template>
-  <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
+  <div class="projects-panel">
     <!-- Panel Header -->
     <div class="panel-header" style="position:relative">
       <div class="panel-title">
@@ -208,7 +214,7 @@ function avatarColorForInitials(initials: string): string {
           <td>
             <span :class="['status-pill', statusClass(p.status)]">{{ p.statusLabel }}</span>
           </td>
-          <td>
+          <td class="col-desc">
             <div class="tbl-prog">
               <div class="tbl-prog-track">
                 <div class="tbl-prog-fill" :style="{ width: p.progress + '%', background: progressColorForStatus(p.status) }"></div>
@@ -249,5 +255,26 @@ function avatarColorForInitials(initials: string): string {
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Context menu -->
+  <div
+    v-if="openMenuId"
+    class="ctx-menu open"
+    :style="ctxMenuStyle"
+  >
+    <div class="ctx-item">
+      <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit
+    </div>
+    <div class="ctx-item">
+      <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open
+    </div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item danger">
+      <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      Delete
+    </div>
   </div>
 </template>

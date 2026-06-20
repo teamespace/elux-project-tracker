@@ -332,6 +332,19 @@ body {
 .ctx-item.danger:hover { background: #FEF2F2; }
 .ctx-divider { height: 1px; background: #F3F4F6; margin: 4px 0; }
 
+/* ─── PROJECTS PANEL ─── */
+.projects-panel {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.status-pill.delayed { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+.status-pill.delayed::before { background: #EF4444; }
+
 /* ─── KPI STRIP ─── */
 .kpi-strip {
   display: grid;
