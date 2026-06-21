@@ -231,9 +231,6 @@ const activeFilters = computed<ActiveFilter[]>(() => {
 
 const hasActiveFilters = computed(() => activeFilters.value.length > 0)
 
-function openCreateTaskModal() {
-  useTaskSlideOver().openCreate()
-}
 </script>
 
 <template>
@@ -409,13 +406,7 @@ function openCreateTaskModal() {
           </div>
         </div>
 
-        <button
-          class="inline-flex items-center gap-1.5 rounded-md bg-gray-900 px-3 py-1.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-gray-800"
-          @click="openCreateTaskModal"
-        >
-          <UIcon name="ph:plus" class="size-4" />
-          New
-        </button>
+
       </div>
     </div>
 

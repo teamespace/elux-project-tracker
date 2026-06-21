@@ -32,10 +32,7 @@ function barPct(m: Member) {
         <div class="mw-title">Team Workload</div>
         <div class="mw-subtitle">This week · Jun 16–22, 2026</div>
       </div>
-      <button class="inline-flex items-center gap-1.5 rounded-lg px-3.5 h-[34px] text-[13px] font-medium text-white" style="background:oklch(60.6% 0.25 292.717)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Assign task
-      </button>
+
     </div>
 
     <!-- KPI Cards -->

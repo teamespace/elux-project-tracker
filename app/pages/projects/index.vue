@@ -9,8 +9,6 @@ definePageMeta({
 const statusFilter = ref<ProjectStatus | 'all'>('all')
 const sortBy = ref<'name' | 'status' | 'progress'>('name')
 
-const projectSlideOver = useProjectSlideOver()
-
 const statusFilterOptions = [
   { label: 'All statuses', value: 'all' },
   { label: 'On track', value: 'on-track' },
@@ -78,13 +76,7 @@ function progressColorForStatus(status: ProjectStatus): string {
           class="w-44"
         />
       </div>
-      <UButton
-        icon="ph:plus"
-        label="New project"
-        color="primary"
-        size="sm"
-        @click="projectSlideOver.openCreate()"
-      />
+
     </div>
 
     <div class="flex flex-col gap-3">

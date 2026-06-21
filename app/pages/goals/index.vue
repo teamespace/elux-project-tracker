@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { goals, progressBarColor, statusClasses } from '~/shared/goals'
 
-const { openCreate } = useGoalSlideOver()
-
 definePageMeta({
   layout: 'default',
   title: 'Goals',
@@ -13,7 +11,7 @@ definePageMeta({
   <div>
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold text-gray-900">Goals</h1>
-      <UButton color="primary" icon="ph:plus" label="New goal" @click="openCreate" />
+
     </div>
 
     <div class="flex flex-col gap-2">
