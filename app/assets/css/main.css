@@ -457,3 +457,29 @@ body {
 .kpi-stacked-lbl:not(:first-child) { border-left: 1px solid #F3F4F6; padding-left: 10px; }
 .kpi-stacked-lbl-val  { font-size: 14px; font-weight: 700; line-height: 1.2; }
 .kpi-stacked-lbl-text { font-size: 10.5px; color: #9CA3AF; }
+
+/* ─── CRITICAL ISSUES KANBAN ─── */
+.ci-kanban { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ci-kanban-col { border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; background: white; }
+.ci-kanban-col-header { display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; padding: 7px 12px; }
+.ci-kanban-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ci-kanban-col-dot.high { background: #EF4444; }
+.ci-kanban-col-dot.medium { background: #F59E0B; }
+.ci-kanban-col-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #6B7280; }
+.ci-kanban-col-count { margin-left: 2px; background: #E5E7EB; border-radius: 20px; padding: 0 6px; font-size: 11px; font-weight: 600; color: #9CA3AF; }
+.ci-kanban-item { display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #F3F4F6; padding: 10px 12px; cursor: pointer; transition: background .12s; }
+.ci-kanban-item:last-child { border-bottom: none; }
+.ci-kanban-item:hover { background: #F9FAFB; }
+.ci-kanban-title { font-size: 12.5px; font-weight: 500; color: #111827; line-height: 1.4; }
+.ci-kanban-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.ci-kanban-meta { font-size: 11px; color: #9CA3AF; }
+.ci-alert-status { display: inline-flex; align-items: center; gap: 4px; border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.ci-alert-status::before { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.ci-alert-status.overdue { background: #FEE2E2; color: #DC2626; }
+.ci-alert-status.overdue::before { background: #DC2626; }
+.ci-alert-status.at-risk { background: #FEF3C7; color: #92400E; }
+.ci-alert-status.at-risk::before { background: #F59E0B; }
+.ci-alert-status.not-started { background: #F3F4F6; color: #6B7280; }
+.ci-alert-status.not-started::before { background: #9CA3AF; }
+.ci-alert-status.done { background: oklch(96% 0.04 292.717); color: oklch(52% 0.27 292.717); }
+.ci-alert-status.done::before { background: oklch(60.6% 0.25 292.717); }
