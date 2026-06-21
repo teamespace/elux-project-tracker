@@ -35,7 +35,7 @@ const footerNavItems: NavItem[] = [
 <template>
   <aside
     class="flex h-screen shrink-0 flex-col bg-transparent transition-all duration-200"
-    :class="isOpen ? 'w-[240px]' : 'w-16'"
+    :class="isOpen ? 'w-[220px]' : 'w-16'"
   >
     <!-- Brand -->
     <div
@@ -43,7 +43,7 @@ const footerNavItems: NavItem[] = [
       :class="isOpen ? 'justify-start px-3.5 gap-2.5' : 'justify-center'"
     >
       <div
-        class="flex size-7 items-center justify-center rounded-md bg-blue-600 text-[13px] font-bold text-white"
+        class="flex size-7 items-center justify-center rounded-md text-[13px] font-bold text-white" style="background:oklch(60.6% 0.25 292.717)"
         :title="isOpen ? undefined : 'Elux Space'"
       >
         E

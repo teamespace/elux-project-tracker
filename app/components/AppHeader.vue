@@ -28,7 +28,7 @@ onMounted(() => {
         <UIcon name="ph:sidebar" class="size-4" />
       </button>
       <div class="mx-3 h-[18px] w-px bg-gray-200" />
-      <h2 class="text-[16px] font-semibold text-gray-900">
+      <h2 class="text-[13.5px] font-semibold text-gray-900">
         <slot />
       </h2>
     </div>
@@ -49,7 +49,7 @@ onMounted(() => {
       </NuxtLink>
 
       <button
-        class="inline-flex h-[34px] items-center gap-1.5 rounded-lg bg-gray-900 px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-gray-800"
+        class="inline-flex h-[34px] items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-blue-500"
         @click="taskSlideOver.openCreate()"
       >
         <UIcon name="ph:plus" class="size-3.5" />

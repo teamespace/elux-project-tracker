@@ -34,8 +34,7 @@ export default defineNuxtConfig({
 
   fonts: {
     families: [
-      { name: 'Geist', provider: 'google' },
-      { name: 'Geist Mono', provider: 'google' },
+      { name: 'Plus Jakarta Sans', provider: 'google' },
     ],
   },
 
