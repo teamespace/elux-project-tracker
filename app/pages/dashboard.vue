@@ -183,7 +183,7 @@ const activity: ActivityItem[] = [
 
     <div class="grid grid-cols-1 gap-4 items-stretch lg:grid-cols-[1fr_280px]">
       <DashboardProjectCards :projects="projects" />
-      <div class="h-full min-h-0">
+      <div class="h-full min-h-0 overflow-hidden">
         <DashboardRecentActivity :activity="activity" />
       </div>
     </div>
