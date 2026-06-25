@@ -894,9 +894,9 @@ onUnmounted(() => {
 .pdh-tab.active .pdh-tab-badge { background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); }
 
 /* ── BODY LAYOUT ── */
-.pd-layout { flex:1; display:grid; grid-template-columns:1fr 260px; min-height:0; overflow:hidden; position:relative; background:#fff; }
+.pd-layout { flex:1; display:grid; grid-template-columns:1fr 300px; min-height:0; overflow:hidden; position:relative; background:#fff; }
 .pd-layout--collapsed { grid-template-columns:1fr; }
-.pd-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; border-right:1px solid #E5E7EB; }
+.pd-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; }
 .pd-body { flex:1; overflow:hidden; display:flex; flex-direction:column; min-height:0; }
 .pd-main { padding:24px 28px; overflow-y:auto; flex:1; }
 .pd-side {
