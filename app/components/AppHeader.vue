@@ -5,7 +5,6 @@ import { unreadCount } from '~/shared/notifications'
 const { toggle } = useSidebar()
 const search = useSearchModal()
 const taskSlideOver = useTaskSlideOver()
-const projectSlideOver = useProjectSlideOver()
 const goalSlideOver = useGoalSlideOver()
 
 const newMenuOpen = ref(false)
@@ -21,11 +20,6 @@ function closeNewMenu() {
 function openNewTask() {
   closeNewMenu()
   taskSlideOver.openCreate()
-}
-
-function openNewProject() {
-  closeNewMenu()
-  projectSlideOver.openCreate()
 }
 
 function openNewGoal() {
@@ -101,12 +95,6 @@ onMounted(() => {
           v-if="newMenuOpen"
           class="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[186px] rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
         >
-          <button class="new-dd-item" @click="openNewProject">
-            <span class="new-dd-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </span>
-            New project
-          </button>
           <button class="new-dd-item" @click="openNewTask">
             <span class="new-dd-icon">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
