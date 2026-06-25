@@ -314,28 +314,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- bleed out of layout px-6 py-5 -->
-  <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
-
-    <!-- ══ HEADER ══ -->
-    <div class="pdh">
-
-      <!-- crumb + actions -->
-      <div class="pdh-top-row">
+  <template #header>
+    <AppHeader>
+      <template #breadcrumb>
         <div class="pdh-crumb">
           <NuxtLink to="/projects" class="pdh-crumb-link">Projects</NuxtLink>
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span class="pdh-crumb-cur">{{ proj.name }}</span>
         </div>
-        <div class="pdh-actions">
-          <button class="pdh-btn-ghost">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="13" r="1.5" fill="currentColor"/></svg>
-          </button>
-          <button class="pdh-btn-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          </button>
-        </div>
-      </div>
+      </template>
+    </AppHeader>
+  </template>
+
+  <!-- bleed out of layout px-6 py-5 -->
+  <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
+
+    <!-- ══ HEADER ══ -->
+    <div class="pdh">
 
       <!-- title row: icon + name + subtitle -->
       <div class="pdh-title-row">
@@ -577,7 +572,12 @@ onUnmounted(() => {
         <!-- Properties Card -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <span class="pd-panel-title">Properties</span>
+            <div class="pd-panel-hdr-left">
+              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="pd-panel-title">Properties</span>
+            </div>
             <button class="pd-panel-btn">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -611,11 +611,11 @@ onUnmounted(() => {
           <!-- PRIORITY -->
           <div class="pd-prop-row" @click.stop="toggleEdit('priority')">
             <div class="pd-prop-lbl">Priority</div>
-            <div class="pd-prop-val" style="display:flex;align-items:center;gap:5px">
-              <svg width="12" height="12" viewBox="0 0 16 16" :fill="editState.priorityColor">
+            <div class="pd-prop-val pd-prop-val--priority">
+              <svg class="pd-priority-icon" width="12" height="12" viewBox="0 0 16 16" :fill="editState.priorityColor">
                 <path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/>
               </svg>
-              <span style="font-size:12.5px;color:#111827">{{ editState.priority }}</span>
+              <span class="pd-priority-text" :style="{ color: editState.priorityColor }">{{ editState.priority }}</span>
             </div>
           </div>
           <div v-if="editingField === 'priority'" class="pd-dropdown">
@@ -628,22 +628,22 @@ onUnmounted(() => {
               <span style="font-size:12.5px">{{ opt.label }}</span>
             </div>
           </div>
-
           <!-- OWNER -->
           <div class="pd-prop-row" @click.stop="toggleEdit('owner')">
             <div class="pd-prop-lbl">Owner</div>
-            <div class="pd-prop-val" style="display:flex;align-items:center;gap:7px">
-              <img :src="ownerAvatar()" :alt="editState.owner" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
-              <span style="font-size:12.5px;color:#111827">{{ editState.owner }}</span>
+            <div class="pd-prop-val pd-prop-val--owner">
+              <img :src="ownerAvatar()" :alt="editState.owner" class="pd-owner-avatar">
+              <span class="pd-owner-name">{{ editState.owner }}</span>
             </div>
           </div>
           <div v-if="editingField === 'owner'" class="pd-dropdown">
             <div
-              v-for="u in userOptions" :key="u.name"
+              v-for="u in userOptions"
+              :key="u.name"
               class="pd-dd-item"
               @click.stop="setOwner(u)"
             >
-              <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
+              <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" class="pd-owner-avatar">
               <span style="font-size:12.5px">{{ u.name }}</span>
             </div>
           </div>
@@ -651,7 +651,7 @@ onUnmounted(() => {
           <!-- START DATE -->
           <div class="pd-prop-row" @click.stop="toggleEdit('startDate')">
             <div class="pd-prop-lbl">Start</div>
-            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">
+            <div class="pd-prop-val pd-prop-val--text">
               {{ editState.startDate }}
             </div>
           </div>
@@ -671,7 +671,7 @@ onUnmounted(() => {
           <!-- DUE DATE -->
           <div class="pd-prop-row" @click.stop="toggleEdit('endDate')">
             <div class="pd-prop-lbl">Due</div>
-            <div class="pd-prop-val" style="font-size:12.5px" :style="{ color: proj.endDateRed ? '#EF4444' : '#111827' }">
+            <div class="pd-prop-val pd-prop-val--text" :class="{ 'pd-prop-val--red': proj.endDateRed }">
               {{ editState.endDate }}
             </div>
           </div>
@@ -691,7 +691,7 @@ onUnmounted(() => {
           <!-- CATEGORY -->
           <div class="pd-prop-row" @click.stop="toggleEdit('category')">
             <div class="pd-prop-lbl">Category</div>
-            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">{{ editState.category }}</div>
+            <div class="pd-prop-val pd-prop-val--text">{{ editState.category }}</div>
           </div>
           <div v-if="editingField === 'category'" class="pd-dropdown pd-dropdown--input">
             <input
@@ -707,9 +707,9 @@ onUnmounted(() => {
           </div>
 
           <!-- LABELS -->
-          <div v-if="editState.labels.length" class="pd-prop-row" style="align-items:flex-start;padding-top:4px">
-            <div class="pd-prop-lbl" style="padding-top:4px">Labels</div>
-            <div class="pd-prop-val" style="display:flex;gap:4px;flex-wrap:wrap">
+          <div v-if="editState.labels.length" class="pd-prop-row pd-prop-row--labels">
+            <div class="pd-prop-lbl">Labels</div>
+            <div class="pd-prop-val pd-prop-val--labels">
               <span v-for="lb in editState.labels" :key="lb" class="pd-label">{{ lb }}</span>
             </div>
           </div>
@@ -718,7 +718,12 @@ onUnmounted(() => {
         <!-- Progress -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <span class="pd-panel-title">Progress</span>
+            <div class="pd-panel-hdr-left">
+              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="pd-panel-title">Progress</span>
+            </div>
           </div>
           <div class="pd-prog-nums">
             <div class="pd-prog-num-item">
@@ -730,13 +735,13 @@ onUnmounted(() => {
               <div class="pd-prog-num-lbl">Left</div>
             </div>
             <div class="pd-prog-num-item">
-              <div class="pd-prog-num purple">{{ proj.progress }}%</div>
+              <div class="pd-prog-num pd-prog-num--blue">{{ proj.progress }}%</div>
               <div class="pd-prog-num-lbl">Complete</div>
             </div>
           </div>
           <div class="pd-prog-bar-wrap">
             <div class="pd-prog-bar">
-              <div class="pd-prog-bar-fill" :style="{ width: proj.progress + '%', background: progFillColor(proj.statusClass) }"/>
+              <div class="pd-prog-bar-fill" :style="{ width: proj.progress + '%', background: '#3B82F6' }"/>
             </div>
           </div>
         </div>
@@ -744,27 +749,38 @@ onUnmounted(() => {
         <!-- Assignees -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <span class="pd-panel-title">Assignees</span>
+            <div class="pd-panel-hdr-left">
+              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="pd-panel-title">Assignees</span>
+            </div>
             <button class="pd-panel-btn">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </button>
           </div>
           <div class="pd-assignees">
-            <img
-              v-for="a in proj.assignees"
-              :key="a.seed"
-              :src="avatarUrl(a.seed, a.bg)"
-              :alt="a.name"
-              :title="a.name"
-              class="pd-av-lg"
-            >
+            <div v-for="a in proj.assignees" :key="a.seed" class="pd-assignee-row">
+              <img
+                :src="avatarUrl(a.seed, a.bg)"
+                :alt="a.name"
+                :title="a.name"
+                class="pd-av-lg"
+              >
+              <span class="pd-assignee-name">{{ a.name }}</span>
+            </div>
           </div>
         </div>
 
         <!-- Quick Links -->
         <div v-if="proj.quickLinks.length" class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <span class="pd-panel-title">Quick links</span>
+            <div class="pd-panel-hdr-left">
+              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="pd-panel-title">Quick links</span>
+            </div>
             <button class="pd-panel-btn">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </button>
@@ -772,12 +788,12 @@ onUnmounted(() => {
           <div class="pd-ql-list">
             <a v-for="ql in proj.quickLinks" :key="ql.label" :href="ql.url" target="_blank" class="pd-ql-row">
               <div class="pd-ql-icon">
-                <svg v-if="ql.icon === 'figma'" width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" fill="#F24E1E"/><path d="M8 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" fill="white"/></svg>
-                <svg v-else-if="ql.icon === 'notion'" width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" fill="#111"/><path d="M5 5h6M5 8h4" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
-                <svg v-else width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/></svg>
+                <svg v-if="ql.icon === 'figma'" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" fill="#F24E1E"/><path d="M8 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" fill="white"/></svg>
+                <svg v-else-if="ql.icon === 'notion'" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" fill="#111827"/><path d="M5 5h6M5 8h4" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+                <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/><path d="M9 2v4h4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
               </div>
               <span class="pd-ql-label">{{ ql.label }}</span>
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="pd-ql-ext"><path d="M9 3H3m6 0v6M3 9l6-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="pd-ql-ext"><path d="M12 4H4m8 0v8M4 12l8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
           </div>
         </div>
@@ -958,38 +974,53 @@ onUnmounted(() => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .pd-panel-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.pd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#9CA3AF; }
-.pd-panel-btn { width:20px; height:20px; border-radius:4px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#9CA3AF; }
-.pd-panel-btn:hover { background:#F3F4F6; color:#4B5563; }
+.pd-panel-hdr-left { display:flex; align-items:center; gap:8px; }
+.pd-panel-chevron { color:#6B7280; flex-shrink:0; }
+.pd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#6B7280; }
+.pd-panel-btn { width:20px; height:20px; border-radius:4px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#6B7280; }
+.pd-panel-btn:hover { background:#F3F4F6; color:#374151; }
 
 .pd-prop-row { display:flex; align-items:center; min-height:30px; border-radius:6px; padding:2px 4px; margin-bottom:1px; cursor:pointer; }
 .pd-prop-row:hover { background:#F9FAFB; }
-.pd-prop-lbl { width:72px; flex-shrink:0; font-size:11.5px; color:#9CA3AF; }
-.pd-prop-val { flex:1; font-size:12.5px; color:#111827; padding:2px 6px; border-radius:4px; }
-.pd-label { font-size:10.5px; background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); padding:2px 8px; border-radius:10px; font-weight:500; }
+.pd-prop-row--labels { align-items:flex-start; padding-top:4px; }
+.pd-prop-lbl { width:72px; flex-shrink:0; font-size:11.5px; font-weight:500; color:#374151; }
+.pd-prop-row--labels .pd-prop-lbl { padding-top:4px; }
+.pd-prop-val { flex:1; font-size:12.5px; color:#111827; padding:2px 6px; border-radius:4px; display:flex; justify-content:flex-end; }
+.pd-prop-val--text { justify-content:flex-end; }
+.pd-prop-val--red { color:#EF4444; }
+.pd-prop-val--priority { display:flex; align-items:center; justify-content:flex-end; gap:5px; }
+.pd-priority-icon { flex-shrink:0; }
+.pd-priority-text { font-size:12.5px; font-weight:500; }
+.pd-prop-val--owner { display:flex; align-items:center; justify-content:flex-end; gap:7px; }
+.pd-owner-avatar { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+.pd-owner-name { font-size:12.5px; color:#111827; }
+.pd-prop-val--labels { display:flex; justify-content:flex-end; gap:4px; flex-wrap:wrap; }
+.pd-label { font-size:10.5px; background:#F3E8FF; color:#7C3AED; padding:2px 8px; border-radius:10px; font-weight:500; }
 
 /* progress numbers */
 .pd-prog-nums { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-bottom:8px; }
 .pd-prog-num-item { text-align:center; }
 .pd-prog-num { font-size:18px; font-weight:700; color:#111827; letter-spacing:-0.02em; }
-.pd-prog-num.purple { color:oklch(60.6% 0.25 292.717); }
+.pd-prog-num--blue { color:#3B82F6; }
 .pd-prog-num-lbl { font-size:10.5px; color:#9CA3AF; margin-top:1px; }
 .pd-prog-bar-wrap { padding:0 2px; }
 .pd-prog-bar { height:4px; background:#F3F4F6; border-radius:2px; overflow:hidden; }
-.pd-prog-bar-fill { height:100%; border-radius:2px; transition:width .3s; }
+.pd-prog-bar-fill { height:100%; border-radius:2px; transition:width .3s; background:#3B82F6; }
 
 /* assignees */
-.pd-assignees { display:flex; gap:6px; flex-wrap:wrap; }
-.pd-av-lg { width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 0 0 1px #E5E7EB; }
+.pd-assignees { display:flex; flex-direction:column; gap:10px; }
+.pd-assignee-row { display:flex; align-items:center; gap:10px; }
+.pd-av-lg { width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 0 0 1px #E5E7EB; flex-shrink:0; }
+.pd-assignee-name { font-size:12.5px; color:#111827; }
 
 /* quick links */
-.pd-ql-list { display:flex; flex-direction:column; gap:2px; }
-.pd-ql-row { display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:7px; text-decoration:none; color:#111827; border:1px solid #F3F4F6; }
-.pd-ql-row:hover { background:#F9FAFB; border-color:#E5E7EB; }
-.pd-ql-icon { width:24px; height:24px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F9FAFB; }
+.pd-ql-list { display:flex; flex-direction:column; gap:8px; }
+.pd-ql-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; text-decoration:none; color:#111827; border:1px solid #E5E7EB; background:#fff; }
+.pd-ql-row:hover { background:#F9FAFB; border-color:#D1D5DB; }
+.pd-ql-icon { width:24px; height:24px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .pd-ql-label { flex:1; font-size:12.5px; color:#111827; }
 .pd-ql-ext { color:#9CA3AF; flex-shrink:0; }
-.pd-ql-row:hover .pd-ql-ext { color:oklch(60.6% 0.25 292.717); }
+.pd-ql-row:hover .pd-ql-ext { color:#6B7280; }
 
 /* dropdown panel */
 .pd-dropdown {

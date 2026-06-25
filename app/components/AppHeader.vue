@@ -28,9 +28,13 @@ onMounted(() => {
         <UIcon name="ph:sidebar" class="size-4" />
       </button>
       <div class="mx-3 h-[18px] w-px bg-gray-200" />
-      <h2 class="text-[13.5px] font-semibold text-gray-900">
-        <slot />
-      </h2>
+      <div class="text-[13px] text-gray-900">
+        <slot name="breadcrumb">
+          <h2 class="text-[13.5px] font-semibold text-gray-900">
+            <slot />
+          </h2>
+        </slot>
+      </div>
     </div>
 
     <div class="flex items-center gap-2.5">
