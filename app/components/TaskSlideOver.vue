@@ -112,7 +112,9 @@ onBeforeUnmount(() => {
         <!-- Body -->
         <div class="flex-1 overflow-hidden">
           <TaskCreateContent
-            v-if="state.mode === 'create'"
+            v-if="state.mode === 'create' || state.mode === 'peek'"
+            :mode="state.mode === 'peek' ? 'view' : 'create'"
+            :initial-data="state.draft"
             @close="close"
           />
           <TaskDetail

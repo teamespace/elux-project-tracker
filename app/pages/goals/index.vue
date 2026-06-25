@@ -37,7 +37,7 @@ interface GoalData {
   memberCount: number
 }
 
-const goalData: GoalData[] = [
+const goalData = ref<GoalData[]>([
   {
     id: 'goal-1', title: '1000 Dribbble Shots', description: 'Publish 1000 design shots to Dribbble by end of year',
     category: 'Design', categoryIcon: 'clock', status: 'on-track', statusLabel: 'On Track', period: 'Q4 2025',
@@ -70,11 +70,39 @@ const goalData: GoalData[] = [
     projects: [{ key: 'BETA', name: 'Beta Launch' }, { key: 'CUS', name: 'Customer Portal' }],
     members: [{ seed: 'Maya', bg: 'ffd5dc' }, { seed: 'Rara', bg: 'f9a8d4' }], memberCount: 4,
   },
-]
+])
 
 const filteredGoals = computed(() =>
-  goalData.filter(g => selectedStatuses.value.includes(g.status))
+  goalData.value.filter(g => selectedStatuses.value.includes(g.status))
 )
+
+const goalSlideOver = useGoalSlideOver()
+const actionOpen = ref<string | null>(null)
+
+function openActions(e: Event, id: string) {
+  e.stopPropagation()
+  e.preventDefault()
+  actionOpen.value = actionOpen.value === id ? null : id
+}
+function closeActions() { actionOpen.value = null }
+
+function viewGoal(id: string) {
+  closeActions()
+  navigateTo(`/goals/${id}`)
+}
+
+function editGoal(id: string) {
+  closeActions()
+  goalSlideOver.openEdit(id)
+}
+
+function deleteGoal(id: string) {
+  closeActions()
+  goalData.value = goalData.value.filter(g => g.id !== id)
+}
+
+onMounted(() => document.addEventListener('click', closeActions))
+onUnmounted(() => document.removeEventListener('click', closeActions))
 </script>
 
 <template>
@@ -139,75 +167,101 @@ const filteredGoals = computed(() =>
 
     <!-- ── CARD VIEW ── -->
     <div v-if="viewMode === 'card'" class="goals-grid">
-      <NuxtLink
+      <div
         v-for="g in filteredGoals" :key="g.id"
-        :to="`/goals/${g.id}`"
         class="goal-card"
         :style="g.status === 'completed' ? 'opacity:.85' : ''"
       >
-        <div class="goal-card-top">
-          <span class="goal-cat-tag">
-            <!-- clock icon for Design -->
-            <svg v-if="g.categoryIcon === 'clock'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
-            <!-- file icon for Content -->
-            <svg v-else-if="g.categoryIcon === 'file'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <!-- code icon for Engineering -->
-            <svg v-else-if="g.categoryIcon === 'code'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            <!-- bolt icon for Product -->
-            <svg v-else width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            {{ g.category }}
-          </span>
-          <span class="goal-status-pill" :class="g.status">
-            <template v-if="g.status === 'completed'">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </template>
-            <template v-else>
-              <span :style="{ width: '6px', height: '6px', borderRadius: '50%', display: 'inline-block', background: g.status === 'on-track' ? '#22C55E' : g.status === 'at-risk' ? '#F59E0B' : '#9CA3AF' }" />
-            </template>
-            {{ g.statusLabel }}
-          </span>
-        </div>
-
-        <div class="goal-card-title">{{ g.title }}</div>
-        <div class="goal-card-desc">{{ g.description }}</div>
-
-        <div class="goal-progress-section">
-          <div class="goal-progress-row">
-            <span class="goal-progress-label">Tasks completed</span>
-            <span class="goal-progress-count" :style="g.status === 'completed' ? 'color:oklch(52% 0.27 292.717)' : ''">
-              {{ g.current }} <span>/ {{ g.total }}</span>
+        <NuxtLink :to="`/goals/${g.id}`" class="goal-card-link">
+          <div class="goal-card-top">
+            <span class="goal-cat-tag">
+              <!-- clock icon for Design -->
+              <svg v-if="g.categoryIcon === 'clock'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+              <!-- file icon for Content -->
+              <svg v-else-if="g.categoryIcon === 'file'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <!-- code icon for Engineering -->
+              <svg v-else-if="g.categoryIcon === 'code'" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <!-- bolt icon for Product -->
+              <svg v-else width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              {{ g.category }}
+            </span>
+            <span class="goal-status-pill" :class="g.status">
+              <template v-if="g.status === 'completed'">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </template>
+              <template v-else>
+                <span :style="{ width: '6px', height: '6px', borderRadius: '50%', display: 'inline-block', background: g.status === 'on-track' ? '#22C55E' : g.status === 'at-risk' ? '#F59E0B' : '#9CA3AF' }" />
+              </template>
+              {{ g.statusLabel }}
             </span>
           </div>
-          <div class="goal-bar-track">
-            <div class="goal-bar-fill" :class="g.barColor" :style="{ width: `${g.progress}%` }" />
-          </div>
-          <div class="goal-progress-hint" :style="g.status === 'at-risk' ? 'color:#92400E' : g.status === 'completed' ? 'color:oklch(52% 0.27 292.717);font-weight:500' : ''">
-            {{ g.progressHint }}
-          </div>
-        </div>
 
-        <div class="goal-linked">
-          <span class="goal-linked-label">Projects</span>
-          <span v-for="p in g.projects" :key="p.key" class="goal-proj-chip">
-            <span class="goal-proj-chip-key">{{ p.key }}</span> {{ p.name }}
-          </span>
-        </div>
+          <div class="goal-card-title">{{ g.title }}</div>
+          <div class="goal-card-desc">{{ g.description }}</div>
 
-        <div class="goal-card-footer">
-          <span class="goal-due" :class="{ overdue: g.overdueDate }">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            {{ g.dueDate }}
-          </span>
-          <div class="goal-members">
-            <div class="av-stack">
-              <img v-for="m in g.members" :key="m.seed" class="av-circle"
-                :src="`https://api.dicebear.com/9.x/open-peeps/svg?seed=${m.seed}&backgroundColor=${m.bg}&backgroundType=solid`"
-                :alt="m.seed">
+          <div class="goal-progress-section">
+            <div class="goal-progress-row">
+              <span class="goal-progress-label">Tasks completed</span>
+              <span class="goal-progress-count" :style="g.status === 'completed' ? 'color:oklch(52% 0.27 292.717)' : ''">
+                {{ g.current }} <span>/ {{ g.total }}</span>
+              </span>
             </div>
-            <span class="goal-member-count">{{ g.memberCount }} members</span>
+            <div class="goal-bar-track">
+              <div class="goal-bar-fill" :class="g.barColor" :style="{ width: `${g.progress}%` }" />
+            </div>
+            <div class="goal-progress-hint" :style="g.status === 'at-risk' ? 'color:#92400E' : g.status === 'completed' ? 'color:oklch(52% 0.27 292.717);font-weight:500' : ''">
+              {{ g.progressHint }}
+            </div>
+          </div>
+
+          <div class="goal-linked">
+            <span class="goal-linked-label">Projects</span>
+            <span v-for="p in g.projects" :key="p.key" class="goal-proj-chip">
+              <span class="goal-proj-chip-key">{{ p.key }}</span> {{ p.name }}
+            </span>
+          </div>
+
+          <div class="goal-card-footer">
+            <span class="goal-due" :class="{ overdue: g.overdueDate }">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              {{ g.dueDate }}
+            </span>
+            <div class="goal-members">
+              <div class="av-stack">
+                <img v-for="m in g.members" :key="m.seed" class="av-circle"
+                  :src="`https://api.dicebear.com/9.x/open-peeps/svg?seed=${m.seed}&backgroundColor=${m.bg}&backgroundType=solid`"
+                  :alt="m.seed">
+              </div>
+              <span class="goal-member-count">{{ g.memberCount }} members</span>
+            </div>
+          </div>
+        </NuxtLink>
+
+        <div class="goal-card-actions">
+          <button class="goal-card-more" @click.stop="openActions($event, g.id)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <div
+            v-if="actionOpen === g.id"
+            class="goal-action-dd"
+            @click.stop
+          >
+            <button class="goal-action-item" @click.stop="viewGoal(g.id)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </button>
+            <button class="goal-action-item" @click.stop="editGoal(g.id)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <div class="goal-action-divider" />
+            <button class="goal-action-item danger" @click.stop="deleteGoal(g.id)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete
+            </button>
           </div>
         </div>
-      </NuxtLink>
+      </div>
     </div>
 
     <!-- ── LIST VIEW ── -->

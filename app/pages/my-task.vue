@@ -3,12 +3,14 @@ definePageMeta({ layout: 'default', title: 'My Task', middleware: 'auth' })
 import {
   type DueFilter,
   type GroupId,
+  type MyTask,
   currentUser,
-  groups,
+  groups as rawGroups,
   statusClass,
   statusDotClass,
   priorityClass,
   progressColor,
+  statusFromGroup,
 } from '~/shared/my-tasks'
 
 const activeStatCard = ref<GroupId | 'all'>('all')
@@ -101,6 +103,63 @@ const allFilteredTasks = computed(() =>
 function navigateToTask(taskId: string) {
   navigateTo(`/tasks/${taskId}`)
 }
+
+const groups = ref(structuredClone(rawGroups))
+
+const taskSlideOver = useTaskSlideOver()
+const actionOpen = ref<string | null>(null)
+
+function openActions(e: Event, id: string) {
+  e.stopPropagation()
+  e.preventDefault()
+  actionOpen.value = actionOpen.value === id ? null : id
+}
+function closeActions() { actionOpen.value = null }
+
+function taskToDraft(task: MyTask, groupId: GroupId): Partial<import('~/shared/board').Task> {
+  const statusInfo = statusFromGroup(groupId)
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description ?? '',
+    status: statusInfo.id as import('~/shared/board').TaskStatus,
+    statusLabel: statusInfo.label,
+    priority: task.priority,
+    priorityLabel: task.priorityLabel,
+    assignee: task.assignee ?? currentUser,
+    epicName: task.project,
+    projectName: task.project,
+    dueDate: '',
+    dueDateLabel: task.due,
+    progress: task.progress ?? 0,
+    comments: 0,
+    attachments: 0,
+  }
+}
+
+function viewTask(task: MyTask, groupId: GroupId) {
+  closeActions()
+  taskSlideOver.openPeek(taskToDraft(task, groupId))
+}
+
+function editTask(id: string) {
+  closeActions()
+  navigateTo(`/tasks/${id}`)
+}
+
+function deleteTask(id: string) {
+  closeActions()
+  for (const group of groups.value) {
+    const idx = group.tasks.findIndex(t => t.id === id)
+    if (idx !== -1) {
+      group.tasks.splice(idx, 1)
+      break
+    }
+  }
+}
+
+onMounted(() => document.addEventListener('click', closeActions))
+onUnmounted(() => document.removeEventListener('click', closeActions))
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })
 </script>
@@ -348,6 +407,31 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
             >
               {{ task.due }}
             </span>
+
+            <div class="relative shrink-0" @click.stop>
+              <button class="task-more-btn" @click="openActions($event, `list-${task.id}`)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+              </button>
+              <div
+                v-if="actionOpen === `list-${task.id}`"
+                class="task-action-dd"
+                @click.stop
+              >
+                <button class="task-action-item" @click.stop="viewTask(task, group.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+                <button class="task-action-item" @click.stop="editTask(task.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  Edit
+                </button>
+                <div class="task-action-divider" />
+                <button class="task-action-item danger" @click.stop="deleteTask(task.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -385,6 +469,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                 <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
                   Progress
                 </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600" style="width:36px" />
               </tr>
             </thead>
             <tbody>
@@ -469,6 +554,32 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                         :class="progressColor(task.progress ?? 0)"
                         :style="{ width: (task.progress ?? 0) + '%' }"
                       />
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3" @click.stop>
+                  <div class="relative">
+                    <button class="task-more-btn" @click="openActions($event, `tbl-${task.id}`)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+                    </button>
+                    <div
+                      v-if="actionOpen === `tbl-${task.id}`"
+                      class="task-action-dd task-action-dd--right"
+                      @click.stop
+                    >
+                      <button class="task-action-item" @click.stop="viewTask(task, task.groupId)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        View
+                      </button>
+                      <button class="task-action-item" @click.stop="editTask(task.id)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Edit
+                      </button>
+                      <div class="task-action-divider" />
+                      <button class="task-action-item danger" @click.stop="deleteTask(task.id)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </td>

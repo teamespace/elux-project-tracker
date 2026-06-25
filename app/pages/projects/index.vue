@@ -55,14 +55,23 @@ function openActions(e: Event, id: string) {
 }
 function closeActions() { actionOpen.value = null }
 
-function viewProject(id: string) {
+function viewProject(p: Proj) {
   closeActions()
-  navigateTo(`/projects/${id}`)
+  projectSlideOver.openPeek(p.id, {
+    id: p.id,
+    name: p.name,
+    status: p.status,
+    priority: p.priority,
+    description: p.description,
+    category: p.category,
+    dueLabel: p.dueLabel,
+    assignees: p.assignees.map(a => ({ name: a.name, initials: a.name.charAt(0), avatar: avatarUrl(a.seed, a.bg) })),
+  })
 }
 
 function editProject(id: string) {
   closeActions()
-  projectSlideOver.openView(id)
+  navigateTo(`/projects/${id}`)
 }
 
 function deleteProject(id: string) {
@@ -197,7 +206,7 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
               class="proj-action-dd"
               @click.stop
             >
-              <button class="proj-action-item" @click.stop="viewProject(p.id)">
+              <button class="proj-action-item" @click.stop="viewProject(p)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 View
               </button>
@@ -294,7 +303,7 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
                   class="proj-action-dd proj-action-dd--right"
                   @click.stop
                 >
-                  <button class="proj-action-item" @click.stop="viewProject(p.id)">
+                  <button class="proj-action-item" @click.stop="viewProject(p)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     View
                   </button>

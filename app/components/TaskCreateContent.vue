@@ -1,21 +1,34 @@
 <script setup lang="ts">
-import { statusOptions, priorityOptions, tasks as taskStore, statuses, type TaskStatus, type TaskPriority } from '~/shared/board'
+import { statusOptions, priorityOptions, tasks as taskStore, statuses, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
 import { people, findPerson, avatarColor } from '~/shared/projects'
+
+const props = defineProps<{
+  mode?: 'create' | 'view'
+  initialData?: Partial<Task>
+}>()
 
 const emit = defineEmits<{ close: [] }>()
 
+const isView = computed(() => props.mode === 'view')
+
+const defaultStatus: TaskStatus = props.initialData?.status ?? 'todo'
+const defaultPriority: TaskPriority = props.initialData?.priority ?? 'medium'
+const defaultAssignee = props.initialData?.assignee?.name ?? people[0]?.name ?? ''
+const defaultProject = props.initialData?.projectName ?? props.initialData?.epicName ?? ''
+const defaultDue = props.initialData?.dueDate ?? ''
+
 const form = reactive({
-  title: '',
-  status: 'todo' as TaskStatus,
-  assignee: people[0]?.name ?? '',
-  project: '',
-  priority: 'medium' as TaskPriority,
-  dueDate: '',
+  title: props.initialData?.title ?? '',
+  status: defaultStatus,
+  assignee: defaultAssignee,
+  project: defaultProject,
+  priority: defaultPriority,
+  dueDate: defaultDue,
   estimate: '',
-  description: '',
+  description: props.initialData?.description ?? '',
 })
 
-const subtasks = reactive<{ id: string; title: string; done: boolean }[]>([])
+const subtasks = reactive<{ id: string; title: string; done: boolean }[]>(props.initialData ? [] : [])
 const showSubtaskInput = ref(false)
 const newSubtask = ref('')
 
@@ -60,25 +73,43 @@ function submit() {
   const title = form.title.trim()
   if (!title) return
   const assignee = findPerson(form.assignee) ?? people[0]
-  taskStore.push({
-    id: `task-${Date.now()}`,
-    title,
-    description: form.description,
-    status: form.status,
-    statusLabel: statusOpt.value?.label ?? 'To Do',
-    priority: form.priority,
-    priorityLabel: priorityOpt.value?.label ?? 'Medium',
-    assignee: { id: `u-${Date.now()}`, initials: assignee?.initials ?? 'R', name: assignee?.name ?? 'Rasya', avatar: assignee?.avatar },
-    epicId: '',
-    epicName: form.project,
-    projectId: '',
-    projectName: form.project,
-    dueDate: form.dueDate,
-    dueDateLabel: form.dueDate,
-    progress: 0,
-    comments: 0,
-    attachments: 0,
-  })
+
+  if (isView.value && props.initialData?.id) {
+    const existing = taskStore.find(t => t.id === props.initialData!.id)
+    if (existing) {
+      existing.title = title
+      existing.description = form.description
+      existing.status = form.status
+      existing.statusLabel = statusOpt.value?.label ?? 'To Do'
+      existing.priority = form.priority
+      existing.priorityLabel = priorityOpt.value?.label ?? 'Medium'
+      existing.assignee = { id: existing.assignee?.id ?? `u-${Date.now()}`, initials: assignee?.initials ?? 'R', name: assignee?.name ?? 'Rasya', avatar: assignee?.avatar }
+      existing.epicName = form.project
+      existing.projectName = form.project
+      existing.dueDate = form.dueDate
+      existing.dueDateLabel = form.dueDate
+    }
+  } else {
+    taskStore.push({
+      id: `task-${Date.now()}`,
+      title,
+      description: form.description,
+      status: form.status,
+      statusLabel: statusOpt.value?.label ?? 'To Do',
+      priority: form.priority,
+      priorityLabel: priorityOpt.value?.label ?? 'Medium',
+      assignee: { id: `u-${Date.now()}`, initials: assignee?.initials ?? 'R', name: assignee?.name ?? 'Rasya', avatar: assignee?.avatar },
+      epicId: '',
+      epicName: form.project,
+      projectId: '',
+      projectName: form.project,
+      dueDate: form.dueDate,
+      dueDateLabel: form.dueDate,
+      progress: 0,
+      comments: 0,
+      attachments: 0,
+    })
+  }
   emit('close')
 }
 </script>
@@ -241,8 +272,9 @@ function submit() {
         </button>
       </div>
       <div class="footer-right">
-        <button class="btn-cancel" @click="$emit('close')">Cancel</button>
-        <button class="btn-create" @click="submit">Create task</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ isView ? 'Close' : 'Cancel' }}</button>
+        <button v-if="!isView" class="btn-create" @click="submit">Create task</button>
+        <button v-else class="btn-create" @click="submit">Save changes</button>
       </div>
     </div>
   </div>

@@ -27,6 +27,26 @@ const emit = defineEmits<{
   (e: 'delete', id: string): void
 }>()
 
+function viewProject(p: Project) {
+  closeMenu()
+  projectSlideOver.openPeek(p.id, {
+    id: p.id,
+    name: p.name,
+    status: p.status,
+    priority: p.priority,
+    description: p.description,
+    category: '',
+    startDate: p.createdDate,
+    endDate: p.dueDate,
+    assignees: p.assignees.map(a => ({ name: a.name, initials: a.initials, avatar: a.avatar })),
+  })
+}
+
+function editProject(id: string) {
+  closeMenu()
+  navigateTo(`/projects/${id}`)
+}
+
 const filterOpen = ref(false)
 
 // Per-row action menu
@@ -266,11 +286,11 @@ function avatarColorForInitials(initials: string): string {
     class="ctx-menu open"
     :style="ctxMenuStyle"
   >
-    <button class="ctx-item" @click="projectSlideOver.openView(openMenuId); closeMenu()">
+    <button class="ctx-item" @click="viewProject(filteredProjects.find(p => p.id === openMenuId)!)">
       <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       View
     </button>
-    <button class="ctx-item" @click="projectSlideOver.openEdit(openMenuId); closeMenu()">
+    <button class="ctx-item" @click="editProject(openMenuId)">
       <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Edit
     </button>

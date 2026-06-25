@@ -2,29 +2,39 @@
 import { people, statusOptions, priorityOptions, findPerson, avatarColor } from '~/shared/projects'
 import type { ProjectStatus, ProjectPriority } from '~/shared/projects'
 
+const props = defineProps<{
+  mode?: 'create' | 'view'
+  initialData?: Record<string, any>
+}>()
+
 const emit = defineEmits<{ close: [] }>()
+
+const isView = computed(() => props.mode === 'view')
+
+const initialStatus: ProjectStatus = props.initialData?.status ?? 'not-started'
+const initialPriority: ProjectPriority = props.initialData?.priority ?? 'medium'
+const initialOwner = props.initialData?.owner?.name ?? people[0]?.name ?? ''
+const initialAssignees = props.initialData?.assignees?.map((a: any) => a.name).filter(Boolean) ?? [people[0]?.name ?? '']
 
 /* ── form state ── */
 const form = reactive({
-  name: '',
-  status: 'not-started' as ProjectStatus,
-  priority: 'medium' as ProjectPriority,
-  owner: people[0]?.name ?? '',
-  createdDate: '',
-  due: '',
-  category: '',
-  figma: '',
-  notion: '',
-  description: '',
-  assignees: [people[0]?.name ?? ''],
-  otherLinks: [] as { label: string; url: string }[],
+  name: props.initialData?.name ?? '',
+  status: initialStatus,
+  priority: initialPriority,
+  owner: initialOwner,
+  start: props.initialData?.startDate ?? props.initialData?.start ?? '',
+  due: props.initialData?.endDate ?? props.initialData?.due ?? '',
+  labels: Array.isArray(props.initialData?.labels) ? props.initialData.labels.join(', ') : (props.initialData?.labels ?? ''),
+  category: props.initialData?.category ?? '',
+  figma: props.initialData?.links?.figma ?? props.initialData?.figma ?? '',
+  notion: props.initialData?.links?.notion ?? props.initialData?.notion ?? '',
+  description: props.initialData?.description ?? '',
+  assignees: initialAssignees,
 })
 
-const childTasks = reactive<{ id: string; title: string; done: boolean }[]>([])
+const childTasks = reactive<{ id: string; title: string; done: boolean }[]>(props.initialData?.childTasks?.map((t: any) => ({ id: t.id, title: t.title, done: t.done })) ?? [])
 const newTaskTitle = ref('')
 const showTaskInput = ref(false)
-const showAddOtherLink = ref(false)
-const newOtherLink = reactive({ label: '', url: '' })
 
 /* ── dropdown state ── */
 const openDd = ref<string | null>(null)
@@ -40,6 +50,7 @@ onUnmounted(() => document.removeEventListener('click', closeDds))
 const statusOpt = computed(() => statusOptions.find(o => o.value === form.status))
 const priorityOpt = computed(() => priorityOptions.find(o => o.value === form.priority))
 const ownerPerson = computed(() => findPerson(form.owner) ?? people[0])
+
 const availableAssignees = computed(() => people.filter(p => !form.assignees.includes(p.name)))
 
 const statusDotColor: Record<ProjectStatus, string> = {
@@ -78,17 +89,12 @@ function removeAssignee(name: string) {
   if (i !== -1) form.assignees.splice(i, 1)
 }
 
-function submitOtherLink() {
-  const url = newOtherLink.url.trim()
-  if (!url) return
-  form.otherLinks.push({ label: newOtherLink.label.trim() || url, url })
-  newOtherLink.label = ''
-  newOtherLink.url = ''
-  showAddOtherLink.value = false
-}
-
 function submit() {
-  console.log('Create project', { ...form, childTasks })
+  if (isView.value) {
+    console.log('Update project', props.initialData?.id, { ...form, childTasks })
+  } else {
+    console.log('Create project', { ...form, childTasks })
+  }
   emit('close')
 }
 </script>
@@ -199,6 +205,26 @@ function submit() {
           </div>
         </div>
 
+        <!-- START -->
+        <div class="pf">
+          <div class="pf-lbl">Start</div>
+          <div class="pf-val"><input v-model="form.start" type="date" class="pf-date-input"></div>
+        </div>
+
+        <!-- DUE -->
+        <div class="pf">
+          <div class="pf-lbl">Due</div>
+          <div class="pf-val"><input v-model="form.due" type="date" class="pf-date-input"></div>
+        </div>
+
+        <!-- LABELS -->
+        <div class="pf">
+          <div class="pf-lbl">Labels</div>
+          <div class="pf-val">
+            <input v-model="form.labels" type="text" class="pf-text-input" placeholder="—">
+          </div>
+        </div>
+
         <!-- CATEGORY -->
         <div class="pf">
           <div class="pf-lbl">Category</div>
@@ -207,20 +233,8 @@ function submit() {
           </div>
         </div>
 
-        <!-- CREATED DATE -->
+        <!-- ASSIGNEES -->
         <div class="pf">
-          <div class="pf-lbl">Created Date</div>
-          <div class="pf-val"><input v-model="form.createdDate" type="date" class="pf-date-input"></div>
-        </div>
-
-        <!-- DUE DATE -->
-        <div class="pf">
-          <div class="pf-lbl">Due Date</div>
-          <div class="pf-val"><input v-model="form.due" type="date" class="pf-date-input"></div>
-        </div>
-
-        <!-- ASSIGNEES — full width -->
-        <div class="pf" style="grid-column: 1 / -1">
           <div class="pf-lbl">Assignees</div>
           <div class="pf-val pf-assignees">
             <div
@@ -229,7 +243,11 @@ function submit() {
               :title="name"
               @click.stop="removeAssignee(name)"
             >
-              <img :src="findPerson(name)?.avatar" class="pf-av" :alt="name">
+              <img
+                :src="findPerson(name)?.avatar"
+                class="pf-av"
+                :alt="name"
+              >
             </div>
             <div v-if="availableAssignees.length" class="pf-add-av-wrap" @click.stop="toggleDd('assignees', $event)">
               <button class="pf-add-av">+</button>
@@ -276,40 +294,9 @@ function submit() {
           </div>
         </div>
 
-        <!-- OTHER LINKS (existing) -->
-        <div v-for="(link, i) in form.otherLinks" :key="i" class="pf" style="grid-column: 1 / -1">
-          <div class="pf-lbl">{{ link.label }}</div>
-          <div class="pf-val">
-            <a :href="link.url" target="_blank" class="pf-link-input">{{ link.url }}</a>
-            <button class="pf-link-del" @click.stop="form.otherLinks.splice(i, 1)">
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- ADD OTHER LINK -->
-        <div class="pf" style="grid-column: 1 / -1" @click.stop>
-          <div v-if="!showAddOtherLink" class="pf-lbl">Other</div>
-          <div v-if="!showAddOtherLink" class="pf-val">
-            <button class="pf-other-add-btn" @click.stop="showAddOtherLink = true">+ Add link</button>
-          </div>
-          <div v-else class="other-link-form" @click.stop>
-            <input
-              v-model="newOtherLink.label"
-              class="other-link-input"
-              placeholder="Label (optional)"
-            >
-            <input
-              v-model="newOtherLink.url"
-              class="other-link-input"
-              placeholder="https://…"
-              @keydown.enter="submitOtherLink"
-            >
-            <div class="other-link-actions">
-              <button class="other-link-add" @click="submitOtherLink">Add</button>
-              <button class="other-link-cancel" @click="showAddOtherLink = false; newOtherLink.label = ''; newOtherLink.url = ''">Cancel</button>
-            </div>
-          </div>
+        <div class="pf" style="grid-column: 1 / -1">
+          <div class="pf-lbl">Other</div>
+          <div class="pf-val pf-other-add">+ Add link</div>
         </div>
 
       </div>
@@ -339,6 +326,7 @@ function submit() {
             <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           </button>
         </div>
+
         <div v-if="showTaskInput" class="task-input-row" @click.stop>
           <input
             v-model="newTaskTitle"
@@ -370,8 +358,9 @@ function submit() {
         </button>
       </div>
       <div class="footer-right">
-        <button class="btn-cancel" @click="$emit('close')">Cancel</button>
-        <button class="btn-create" @click="submit">Create project</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ isView ? 'Close' : 'Cancel' }}</button>
+        <button v-if="!isView" class="btn-create" @click="submit">Create project</button>
+        <button v-else class="btn-create" @click="submit">Save changes</button>
       </div>
     </div>
   </div>
@@ -468,38 +457,10 @@ function submit() {
 .pf-text-input::placeholder { color: #D1D5DB; }
 .pf-link-input {
   border: none; outline: none; font-size: 13px; color: #2563EB;
-  font-family: inherit; background: transparent; width: 100%; text-decoration: none;
+  font-family: inherit; background: transparent; width: 100%;
 }
 .pf-link-input::placeholder { color: #D1D5DB; }
-.pf-other-add-btn {
-  border: none; background: transparent; padding: 0;
-  font-size: 13px; color: #9CA3AF; cursor: pointer; font-family: inherit;
-}
-.pf-other-add-btn:hover { color: #6B7280; }
-.pf-link-del {
-  width: 18px; height: 18px; border: none; background: transparent;
-  color: #9CA3AF; cursor: pointer; padding: 0; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; border-radius: 4px;
-}
-.pf-link-del:hover { color: #EF4444; background: #FEF2F2; }
-
-/* Other link add form */
-.other-link-form { display: flex; flex-direction: column; gap: 6px; padding-top: 2px; }
-.other-link-input {
-  width: 100%; border: 1px solid #E5E7EB; border-radius: 6px;
-  padding: 5px 10px; font-size: 13px; outline: none; font-family: inherit; color: #111827;
-}
-.other-link-input:focus { border-color: oklch(60.6% 0.25 292.717); }
-.other-link-actions { display: flex; gap: 6px; }
-.other-link-add {
-  padding: 4px 12px; background: oklch(60.6% 0.25 292.717); color: #fff; border: none;
-  border-radius: 6px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit;
-}
-.other-link-add:hover { background: oklch(52% 0.27 292.717); }
-.other-link-cancel {
-  padding: 4px 10px; background: #F3F4F6; color: #4B5563; border: none;
-  border-radius: 6px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit;
-}
+.pf-other-add { font-size: 13px; color: #9CA3AF; }
 
 /* assignees */
 .pf-assignees { gap: 3px; }
@@ -548,7 +509,7 @@ function submit() {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 0; border-bottom: 1px solid #F9FAFB;
 }
-.task-check { width: 14px; height: 14px; accent-color: oklch(60.6% 0.25 292.717); cursor: pointer; flex-shrink: 0; }
+.task-check { width: 14px; height: 14px; accent-color: #111827; cursor: pointer; flex-shrink: 0; }
 .task-name { flex: 1; font-size: 13px; color: #374151; }
 .task-name.done { text-decoration: line-through; color: #9CA3AF; }
 .task-del {
@@ -562,12 +523,11 @@ function submit() {
   flex: 1; border: 1px solid #E5E7EB; border-radius: 6px;
   padding: 5px 10px; font-size: 13px; outline: none; font-family: inherit;
 }
-.task-input:focus { border-color: oklch(60.6% 0.25 292.717); }
+.task-input:focus { border-color: #111827; }
 .task-add-btn {
-  padding: 5px 12px; background: oklch(60.6% 0.25 292.717); color: #fff; border: none;
+  padding: 5px 12px; background: #111827; color: #fff; border: none;
   border-radius: 6px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit;
 }
-.task-add-btn:hover { background: oklch(52% 0.27 292.717); }
 .task-cancel-btn {
   padding: 5px 10px; background: #F3F4F6; color: #4B5563; border: none;
   border-radius: 6px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit;
@@ -602,8 +562,8 @@ function submit() {
 .btn-cancel:hover { background: #F9FAFB; }
 .btn-create {
   height: 34px; padding: 0 16px; border-radius: 8px;
-  border: none; background: oklch(60.6% 0.25 292.717); color: #fff;
+  border: none; background: #111827; color: #fff;
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s;
 }
-.btn-create:hover { background: oklch(52% 0.27 292.717); }
+.btn-create:hover { background: #1F2937; }
 </style>

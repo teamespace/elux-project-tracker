@@ -2,7 +2,7 @@ import type { Task } from '~/shared/board'
 
 export interface TaskSlideOverState {
   isOpen: boolean
-  mode: 'create' | 'edit' | 'view'
+  mode: 'create' | 'edit' | 'view' | 'peek'
   taskId: string | null
   draft?: Partial<Task>
 }
@@ -35,6 +35,13 @@ export function useTaskSlideOver() {
     state.value.isOpen = true
   }
 
+  function openPeek(initialData: Partial<Task>) {
+    state.value.mode = 'peek'
+    state.value.taskId = initialData.id ?? null
+    state.value.draft = initialData
+    state.value.isOpen = true
+  }
+
   function close() {
     state.value.isOpen = false
   }
@@ -44,6 +51,7 @@ export function useTaskSlideOver() {
     openCreate,
     openEdit,
     openView,
+    openPeek,
     close,
   }
 }
