@@ -93,7 +93,7 @@ const onDrop = (status: Status) => {
       v-for="status in statuses"
       :key="status.id"
       :data-status="status.id"
-      class="flex w-80 shrink-0 flex-col rounded-xl border border-gray-200 transition-colors"
+      class="flex flex-1 min-w-[260px] flex-col rounded-xl border border-gray-200 transition-colors"
       :class="[
         status.bg,
         dragOverStatusId === status.id && draggingTaskId
