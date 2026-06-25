@@ -132,33 +132,94 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
 
     <!-- Stat cards -->
     <div class="mw-stats">
+      <!-- In Progress — tick bar style -->
       <div class="mw-stat-card" :class="{ active: activeStatCard === 'inprogress' }" @click="setStatCard('inprogress')">
-        <div class="mw-stat-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          In Progress
+        <div class="mw-stat-icon-row">
+          <div class="mw-stat-icon blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <span class="mw-stat-label">In Progress</span>
         </div>
-        <div class="mw-stat-num">5</div>
+        <div class="mw-num-row">
+          <div class="mw-stat-num">5</div>
+          <div class="mw-stat-sublabel">of 20 tasks</div>
+        </div>
+        <div class="mw-ticks">
+          <div class="mw-tick on blue"/><div class="mw-tick on blue"/><div class="mw-tick on blue"/><div class="mw-tick on blue"/><div class="mw-tick on blue"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+        </div>
       </div>
+
+      <!-- Due This Week — donut chart -->
       <div class="mw-stat-card" @click="setStatCard('all')">
-        <div class="mw-stat-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Due This Week
+        <div class="mw-stat-icon-row">
+          <div class="mw-stat-icon amber"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <span class="mw-stat-label">Due This Week</span>
         </div>
-        <div class="mw-stat-num amber">4</div>
+        <div class="mw-donut-row">
+          <svg viewBox="0 0 56 56" style="width:80px;height:80px;transform:rotate(-90deg);flex-shrink:0">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="white" stroke-width="9"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="oklch(60.6% 0.25 292.717)" stroke-width="9" stroke-dasharray="67.12 71.11" stroke-dashoffset="0" stroke-linecap="butt"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#F59E0B" stroke-width="9" stroke-dasharray="32.56 105.67" stroke-dashoffset="-69.12" stroke-linecap="butt"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#22C55E" stroke-width="9" stroke-dasharray="32.56 105.67" stroke-dashoffset="-103.68" stroke-linecap="butt"/>
+          </svg>
+          <div class="mw-donut-legend">
+            <div class="mw-dl-item"><span class="mw-dl-dot" style="background:oklch(60.6% 0.25 292.717)"/><span class="mw-dl-label">Alpha Project</span><span class="mw-dl-val">2</span><span class="mw-dl-pct">· 50%</span></div>
+            <div class="mw-dl-item"><span class="mw-dl-dot" style="background:#F59E0B"/><span class="mw-dl-label">Beta Launch</span><span class="mw-dl-val">1</span><span class="mw-dl-pct">· 25%</span></div>
+            <div class="mw-dl-item"><span class="mw-dl-dot" style="background:#22C55E"/><span class="mw-dl-label">Mobile MVP</span><span class="mw-dl-val">1</span><span class="mw-dl-pct">· 25%</span></div>
+          </div>
+        </div>
       </div>
+
+      <!-- Overdue — tick bar (red) -->
       <div class="mw-stat-card" :class="{ active: activeStatCard === 'overdue' }" @click="setStatCard('overdue')">
-        <div class="mw-stat-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Overdue
+        <div class="mw-stat-icon-row">
+          <div class="mw-stat-icon red"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <span class="mw-stat-label">Overdue</span>
         </div>
-        <div class="mw-stat-num red">3</div>
+        <div class="mw-num-row">
+          <div class="mw-stat-num">3</div>
+          <div class="mw-stat-sublabel">of 20 tasks</div>
+        </div>
+        <div class="mw-ticks">
+          <div class="mw-tick on red"/><div class="mw-tick on red"/><div class="mw-tick on red"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+          <div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/><div class="mw-tick"/>
+          <div class="mw-tick"/><div class="mw-tick"/>
+        </div>
       </div>
-      <div class="mw-stat-card" :class="{ active: activeStatCard === 'completed' }" @click="setStatCard('completed')">
-        <div class="mw-stat-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Completed
+
+      <!-- Completion Rate -->
+      <div class="mw-stat-card" :class="{ active: activeStatCard === 'completed' }" @click="setStatCard('completed')" style="justify-content:flex-start">
+        <div class="mw-stat-icon-row" style="justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="mw-stat-icon green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <span class="mw-stat-label">Completion Rate</span>
+          </div>
+          <button class="kpi-info-btn" @click.stop>i</button>
         </div>
-        <div class="mw-stat-num green">8</div>
+        <div class="mw-rate-body">
+          <div class="mw-rate-left">
+            <div class="mw-rate-big">40%</div>
+            <div class="mw-rate-trend">
+              <span class="mw-rate-trend-val">↑ 8%</span>
+              <span class="mw-rate-trend-lbl">this week</span>
+            </div>
+          </div>
+          <div class="mw-rate-right">
+            <div class="mw-rate-bar">
+              <div class="mw-rate-seg" style="width:40%;background:#22C55E"/>
+              <div class="mw-rate-seg" style="width:25%;background:oklch(60.6% 0.25 292.717)"/>
+              <div class="mw-rate-seg" style="width:15%;background:#F59E0B"/>
+            </div>
+            <div class="mw-rate-stats">
+              <div class="mw-rate-stat"><div class="mw-rate-snum green">8</div><div class="mw-rate-slbl">Done</div></div>
+              <div class="mw-rate-stat"><div class="mw-rate-snum purple">5</div><div class="mw-rate-slbl">Active</div></div>
+              <div class="mw-rate-stat"><div class="mw-rate-snum amber">3</div><div class="mw-rate-slbl">At Risk</div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

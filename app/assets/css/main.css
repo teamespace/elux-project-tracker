@@ -912,3 +912,77 @@ body {
 .mw-tbl .td-due { font-size: 12px; color: #9CA3AF; white-space: nowrap; }
 .mw-tbl .td-due.overdue { color: #DC2626; font-weight: 500; }
 .mw-tbl .td-due.today   { color: oklch(60.6% 0.25 292.717); font-weight: 500; }
+
+/* ─── MY WORK STAT CARD — NEW STYLES ─── */
+.mw-stat-icon-row { display: flex; align-items: center; gap: 8px; }
+.mw-stat-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: white; }
+.mw-stat-icon.blue  { background: oklch(60.6% 0.25 292.717); }
+.mw-stat-icon.red   { background: #EF4444; }
+.mw-stat-icon.amber { background: #F59E0B; }
+.mw-stat-icon.green { background: #22C55E; }
+.mw-stat-sublabel { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+.mw-num-row { display: flex; align-items: baseline; gap: 7px; }
+.mw-ticks { display: flex; gap: 3px; width: 100%; margin-top: 10px; }
+.mw-tick { flex: 1; height: 18px; border-radius: 2.5px; background: #E5E7EB; }
+.mw-tick.on.blue { background: oklch(60.6% 0.25 292.717); }
+.mw-tick.on.red  { background: #EF4444; }
+.mw-donut-row { display: flex; align-items: center; gap: 14px; flex: 1; }
+.mw-donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.mw-dl-item { display: flex; align-items: center; gap: 7px; }
+.mw-dl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mw-dl-label { font-size: 12px; color: #6B7280; flex: 1; white-space: nowrap; }
+.mw-dl-val { font-size: 12.5px; font-weight: 700; color: #1F2937; }
+.mw-dl-pct { font-size: 11.5px; color: #9CA3AF; margin-left: 3px; }
+.mw-rate-body { display: flex; align-items: center; gap: 14px; flex: 1; }
+.mw-rate-left { flex-shrink: 0; }
+.mw-rate-big { font-size: 38px; font-weight: 800; color: #111827; letter-spacing: -0.03em; line-height: 1; }
+.mw-rate-trend { display: flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 7px; }
+.mw-rate-trend-val { color: #22C55E; font-weight: 600; }
+.mw-rate-trend-lbl { color: #9CA3AF; }
+.mw-rate-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.mw-rate-bar { width: 100%; height: 10px; border-radius: 6px; background: #F3F4F6; display: flex; gap: 3px; overflow: hidden; }
+.mw-rate-seg { height: 100%; border-radius: 6px; }
+.mw-rate-stats { display: flex; align-items: flex-start; }
+.mw-rate-stat { flex: 1; text-align: center; }
+.mw-rate-stat + .mw-rate-stat { border-left: 1px solid #EFEFEF; }
+.mw-rate-snum { font-size: 22px; font-weight: 700; line-height: 1; }
+.mw-rate-snum.green  { color: #22C55E; }
+.mw-rate-snum.purple { color: oklch(60.6% 0.25 292.717); }
+.mw-rate-snum.amber  { color: #F59E0B; }
+.mw-rate-slbl { font-size: 11px; color: #9CA3AF; margin-top: 3px; }
+
+/* ─── PROJECTS TABLE (list view) ─── */
+.proj-tbl { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; font-size: 13px; }
+.proj-tbl thead th { padding: 9px 14px; text-align: left; font-size: 11.5px; font-weight: 500; color: #9CA3AF; border-bottom: 1px solid #F3F4F6; background: white; white-space: nowrap; user-select: none; }
+.proj-tbl thead th:first-child { width: 36px; padding-left: 16px; }
+.proj-tbl thead th.srt { cursor: pointer; }
+.proj-tbl thead th.srt:hover { color: #374151; }
+.proj-tbl tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; cursor: pointer; }
+.proj-tbl tbody tr:last-child { border-bottom: none; }
+.proj-tbl tbody tr:hover { background: #F9FAFB; }
+.proj-tbl td { padding: 10px 14px; vertical-align: middle; }
+.proj-tbl td:first-child { padding-left: 16px; }
+.tbl-pname { font-weight: 600; color: #111827; display: flex; align-items: center; gap: 8px; }
+.tbl-pdesc { font-size: 11.5px; color: #9CA3AF; margin-top: 2px; }
+.proj-key { font-family: ui-monospace, monospace; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px; background: #F3F4F6; color: #6B7280; flex-shrink: 0; }
+.tbl-prog { min-width: 120px; display: flex; align-items: center; gap: 8px; }
+.tbl-prog-track { flex: 1; height: 4px; background: #F3F4F6; border-radius: 99px; overflow: hidden; }
+.tbl-prog-fill { height: 100%; border-radius: 99px; }
+.tbl-prog-lbl { font-size: 11px; font-weight: 500; color: #6B7280; white-space: nowrap; flex-shrink: 0; width: 28px; text-align: right; }
+.tbl-due-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 6px; background: #F3F4F6; font-size: 12px; font-weight: 500; color: #4B5563; white-space: nowrap; }
+.tbl-due-pill.overdue { background: #FEF2F2; color: #DC2626; }
+.sstatus { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.sstatus::before { content: ''; width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
+.sstatus.on-track    { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; } .sstatus.on-track::before    { background: #22C55E; }
+.sstatus.at-risk     { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; } .sstatus.at-risk::before     { background: #F59E0B; }
+.sstatus.not-started { background: #F9FAFB; color: #6B7280; border: 1px solid #E5E7EB; } .sstatus.not-started::before { background: #9CA3AF; border-radius: 50%; }
+.sstatus.delayed     { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; } .sstatus.delayed::before     { background: #EF4444; }
+.spill { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.spill-high   { background: #FEE2E2; color: #B91C1C; }
+.spill-medium { background: #FEF3C7; color: #92400E; }
+.spill-low    { background: #D1FAE5; color: #065F46; }
+.tbl-more { width: 26px; height: 26px; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: transparent; color: #D1D5DB; transition: background 0.1s, color 0.1s; font-family: var(--font-sans); }
+.tbl-more:hover { background: #F3F4F6; color: #374151; }
+
+/* ─── GOAL STATUS PILL — COMPLETED VARIANT ─── */
+.goal-status-pill.completed { background: oklch(96% 0.04 292.717); color: oklch(52% 0.27 292.717); }

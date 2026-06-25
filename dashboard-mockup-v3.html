@@ -287,7 +287,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--gray-900);
+    background: var(--blue-500);
     color: white;
     border: none;
     border-radius: 8px;
@@ -297,7 +297,9 @@
     font-weight: 500;
     cursor: pointer;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background 0.1s;
   }
+  .btn-primary:hover { background: var(--blue-600); }
 
   /* ─── SCROLL AREA ─── */
   .content-scroll {
@@ -321,9 +323,10 @@
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: 12px;
-    padding: 16px 18px 16px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     position: relative;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -1142,6 +1145,65 @@
   .filter-clear { font-size: 12px; color: var(--gray-500); background: none; border: none; cursor: pointer; }
   .filter-apply { font-size: 12px; font-weight: 500; color: white; background: var(--blue-600); border: none; border-radius: 6px; padding: 4px 12px; cursor: pointer; }
 
+  /* ─── DROPDOWN FILTER (checkbox style) ─── */
+  .df-wrap { position: relative; display: inline-flex; }
+  .df-btn { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; font-size: 12.5px; font-weight: 500; color: var(--gray-600); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .1s, border-color .1s; white-space: nowrap; }
+  .df-btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .df-btn.has-filter { border-color: var(--blue-200); background: var(--blue-50); color: var(--blue-600); }
+  .df-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 20px; background: var(--blue-500); color: white; font-size: 10.5px; font-weight: 700; }
+  .df-dropdown { position: absolute; top: calc(100% + 6px); left: 0; min-width: 200px; background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.12); z-index: 400; display: none; padding: 5px 0; }
+  .df-dropdown.open { display: block; }
+  .df-item { display: flex; align-items: center; gap: 9px; padding: 7px 14px; cursor: pointer; transition: background .1s; user-select: none; }
+  .df-item:hover { background: var(--gray-50); }
+  .df-checkbox { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--gray-300); background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .1s, border-color .1s; }
+  .df-item.checked .df-checkbox { background: var(--blue-500); border-color: var(--blue-500); }
+  .df-item.checked .df-checkbox::after { content: ''; display: block; width: 8px; height: 5px; border-left: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(-45deg) translateY(-1px); }
+  .df-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .df-item-label { font-size: 13px; color: var(--gray-700); }
+  .df-footer { display: flex; justify-content: space-between; align-items: center; padding: 7px 14px 4px; border-top: 1px solid var(--gray-100); margin-top: 4px; }
+  .df-clear { font-size: 12px; color: var(--gray-400); background: none; border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .df-clear:hover { color: var(--gray-700); }
+
+  /* ─── NEW button dropdown ─── */
+  .new-btn-wrap { position: relative; display: inline-flex; }
+  .new-btn-dropdown { position: absolute; top: calc(100% + 6px); right: 0; min-width: 186px; background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.12); z-index: 400; display: none; padding: 4px 0; }
+  .new-btn-dropdown.open { display: block; }
+  .new-btn-item { display: flex; align-items: center; gap: 10px; padding: 8px 14px; cursor: pointer; transition: background .1s; font-size: 13px; color: var(--gray-700); font-family: 'Plus Jakarta Sans', sans-serif; background: none; border: none; width: 100%; text-align: left; }
+  .new-btn-item:hover { background: var(--gray-50); }
+  .new-btn-icon { width: 26px; height: 26px; border-radius: 7px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--gray-600); }
+
+  /* ─── BOARD PAGE ─── */
+  .board-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0; }
+  .board-view-tabs { display: flex; gap: 2px; background: var(--gray-100); border-radius: 9px; padding: 3px; }
+  .board-view-tab { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 7px; border: none; background: transparent; font-size: 12.5px; font-weight: 500; color: var(--gray-500); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .12s, color .12s; }
+  .board-view-tab.active { background: white; color: var(--gray-800); box-shadow: 0 1px 3px rgba(0,0,0,.09); }
+  .board-view-tab svg { opacity: .7; }
+  .board-view-tab.active svg { opacity: 1; }
+  .board-filter-right { display: flex; align-items: center; gap: 8px; }
+  .board-filter-sep { width: 1px; height: 20px; background: var(--gray-200); margin: 0 2px; }
+  .board-kanban { display: flex; gap: 12px; padding: 16px 20px; flex: 1; overflow-x: auto; min-height: 0; }
+  .board-col { display: flex; flex-direction: column; gap: 0; min-width: 252px; width: 252px; flex-shrink: 0; }
+  .board-col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 0 2px; }
+  .board-col-title { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--gray-700); }
+  .board-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .board-col-count { font-size: 11.5px; font-weight: 600; color: var(--gray-400); background: var(--gray-100); border-radius: 20px; padding: 1px 7px; }
+  .board-col-add { width: 24px; height: 24px; border-radius: 7px; border: none; background: none; color: var(--gray-400); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .board-col-add:hover { background: var(--gray-100); color: var(--gray-600); }
+  .board-cards { display: flex; flex-direction: column; gap: 8px; }
+  .board-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 11px 13px; cursor: pointer; transition: box-shadow .12s, border-color .12s; }
+  .board-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.07); border-color: var(--gray-300); }
+  .board-card-title { font-size: 13px; font-weight: 500; color: var(--gray-900); margin-bottom: 8px; line-height: 1.4; }
+  .board-card-project { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--gray-500); background: var(--gray-100); border-radius: 5px; padding: 2px 7px; margin-bottom: 8px; }
+  .board-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .board-card-due { font-size: 11.5px; color: var(--gray-400); display: flex; align-items: center; gap: 4px; }
+  .board-card-due.overdue { color: var(--red-500); }
+  .board-card-priority { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+  .board-card-priority.high { background: #FEE2E2; color: #DC2626; }
+  .board-card-priority.medium { background: #FEF3C7; color: #92400E; }
+  .board-card-priority.low { background: #F0FDF4; color: #16A34A; }
+  .board-col-add-card { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 8px; border: 1px dashed var(--gray-200); color: var(--gray-400); font-size: 12.5px; cursor: pointer; margin-top: 6px; transition: background .1s, border-color .1s; font-family: 'Plus Jakarta Sans', sans-serif; background: none; width: 100%; }
+  .board-col-add-card:hover { background: var(--gray-50); border-color: var(--gray-300); color: var(--gray-600); }
+
   /* Context menu (···) */
   .ctx-menu {
     display: none; position: fixed;
@@ -1578,6 +1640,98 @@
   .act-full-tag { font-size: 11px; color: var(--blue-600); background: var(--blue-50); border-radius: 4px; padding: 1px 7px; font-weight: 500; }
   .act-full-time { font-size: 11px; color: var(--gray-400); }
 
+  /* ── GOALS PAGE ── */
+  .goals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .goal-card { background: white; border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px 20px 16px; display: flex; flex-direction: column; gap: 0; cursor: pointer; transition: box-shadow .15s, border-color .15s; }
+  .goal-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); border-color: var(--gray-300); }
+  .goal-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  .goal-cat-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--gray-100); color: var(--gray-500); }
+  .goal-status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
+  .goal-status-pill.on-track { background: #DCFCE7; color: #15803D; }
+  .goal-status-pill.at-risk { background: #FEF3C7; color: #92400E; }
+  .goal-status-pill.completed { background: var(--blue-50); color: var(--blue-600); }
+  .goal-status-pill.not-started { background: var(--gray-100); color: var(--gray-500); }
+  .goal-card-title { font-size: 15px; font-weight: 700; color: var(--gray-900); line-height: 1.3; margin-bottom: 6px; }
+  .goal-card-desc { font-size: 12.5px; color: var(--gray-400); line-height: 1.5; margin-bottom: 18px; }
+  .goal-progress-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .goal-progress-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .goal-progress-label { font-size: 11.5px; color: var(--gray-400); font-weight: 400; }
+  .goal-progress-count { font-size: 14px; font-weight: 700; color: var(--gray-900); }
+  .goal-progress-count span { font-weight: 400; color: var(--gray-400); font-size: 13px; }
+  .goal-bar-track { height: 6px; background: var(--gray-100); border-radius: 10px; overflow: hidden; }
+  .goal-bar-fill { height: 100%; border-radius: 10px; transition: width .3s; }
+  .goal-bar-fill.green { background: #22C55E; }
+  .goal-bar-fill.amber { background: #F59E0B; }
+  .goal-bar-fill.blue { background: var(--blue-500); }
+  .goal-bar-fill.complete { background: var(--blue-500); }
+  .goal-progress-hint { font-size: 11.5px; color: var(--gray-400); }
+  .goal-linked { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
+  .goal-linked-label { font-size: 11.5px; color: var(--gray-400); margin-right: 2px; }
+  .goal-proj-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: var(--gray-100); font-size: 11.5px; font-weight: 500; color: var(--gray-600); }
+  .goal-proj-chip-key { font-size: 10px; font-weight: 700; color: var(--gray-400); letter-spacing: .03em; }
+  .goal-more-chip { padding: 3px 8px; border-radius: 6px; background: var(--gray-100); font-size: 11px; font-weight: 600; color: var(--gray-400); }
+  .goal-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--gray-100); margin-top: auto; }
+  .goal-due { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--gray-400); }
+  .goal-due.overdue { color: var(--red-500); font-weight: 500; }
+  .goal-due svg { flex-shrink: 0; }
+  .goal-members { display: flex; align-items: center; gap: 6px; }
+  .goal-member-count { font-size: 12px; color: var(--gray-400); }
+
+  /* ── GOAL DETAIL PAGE ── */
+  .gd-layout { display: flex; flex-direction: row; height: 100%; overflow: hidden; }
+  .gd-left { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .gd-right { width: 320px; flex-shrink: 0; border-left: 1px solid var(--gray-100); overflow-y: auto; display: flex; flex-direction: column; }
+  .gd-back { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gray-400); background: none; border: none; cursor: pointer; font-family: inherit; margin-bottom: 4px; padding: 0; }
+  .gd-back:hover { color: var(--gray-700); }
+  .gd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .gd-title-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .gd-title { font-size: 22px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+  .gd-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .gd-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .gd-btn-edit { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; background: var(--blue-500); color: white; border: none; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .1s; }
+  .gd-btn-edit:hover { background: var(--blue-600); }
+  .gd-btn-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; background: white; color: var(--gray-600); border: 1px solid var(--gray-200); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
+  .gd-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .gd-card-title { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
+  .gd-big-progress { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 14px; }
+  .gd-big-num { font-size: 40px; font-weight: 800; color: var(--gray-900); line-height: 1; }
+  .gd-big-target { font-size: 18px; font-weight: 500; color: var(--gray-300); line-height: 1; padding-bottom: 4px; }
+  .gd-big-pct { font-size: 13px; font-weight: 600; color: #22C55E; background: #DCFCE7; border-radius: 6px; padding: 3px 9px; margin-bottom: 6px; }
+  .gd-bar-track { height: 10px; background: var(--gray-100); border-radius: 10px; overflow: hidden; }
+  .gd-bar-fill { height: 100%; border-radius: 10px; background: var(--blue-500); }
+  .gd-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .gd-field:last-child { margin-bottom: 0; }
+  .gd-label { font-size: 12px; font-weight: 600; color: var(--gray-500); }
+  .gd-input { height: 36px; padding: 0 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; color: var(--gray-900); font-family: inherit; outline: none; transition: border-color .15s; background: white; width: 100%; }
+  .gd-input:focus { border-color: var(--blue-500); }
+  .gd-textarea { padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; color: var(--gray-900); font-family: inherit; outline: none; resize: none; width: 100%; min-height: 72px; line-height: 1.5; }
+  .gd-textarea:focus { border-color: var(--blue-500); }
+  .gd-proj-linked { display: flex; flex-direction: column; gap: 8px; }
+  .gd-proj-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 9px; }
+  .gd-proj-info { display: flex; align-items: center; gap: 9px; }
+  .gd-proj-key { font-size: 10px; font-weight: 700; color: var(--gray-500); background: var(--gray-100); border-radius: 4px; padding: 2px 6px; }
+  .gd-proj-name { font-size: 13px; font-weight: 500; color: var(--gray-900); }
+  .gd-proj-tasks { font-size: 12px; color: var(--gray-400); }
+  .gd-proj-remove { width: 24px; height: 24px; border-radius: 6px; border: none; background: none; color: var(--gray-300); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .gd-proj-remove:hover { background: #FEF2F2; color: var(--red-500); }
+  .gd-add-proj { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border: 1px dashed var(--gray-200); border-radius: 9px; color: var(--gray-400); font-size: 12.5px; cursor: pointer; background: none; font-family: inherit; width: 100%; margin-top: 2px; }
+  .gd-add-proj:hover { border-color: var(--blue-200); color: var(--blue-600); background: var(--blue-50); }
+  .gd-right-section { padding: 20px; border-bottom: 1px solid var(--gray-100); }
+  .gd-right-title { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
+  .gd-breakdown-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .gd-breakdown-proj { display: flex; align-items: center; gap: 7px; }
+  .gd-breakdown-bar { flex: 1; height: 5px; background: var(--gray-100); border-radius: 10px; overflow: hidden; margin: 0 10px; }
+  .gd-breakdown-fill { height: 100%; border-radius: 10px; background: var(--blue-500); }
+  .gd-breakdown-count { font-size: 12px; font-weight: 600; color: var(--gray-600); min-width: 40px; text-align: right; }
+  .gd-act-item { display: flex; align-items: flex-start; gap: 9px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+  .gd-act-item:last-child { border-bottom: none; }
+  .gd-act-av { width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0; object-fit: cover; }
+  .gd-act-body { flex: 1; min-width: 0; }
+  .gd-act-name { font-size: 12.5px; font-weight: 600; color: var(--gray-800); }
+  .gd-act-text { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
+  .gd-act-time { font-size: 11px; color: var(--gray-300); margin-top: 2px; }
+  .gd-save-row { display: flex; justify-content: flex-end; gap: 8px; }
+
   /* ── PROJECTS PAGE ── */
   .page-toolbar { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; margin-bottom: 16px; }
   .tab-strip { display: flex; align-items: center; gap: 2px; }
@@ -1605,11 +1759,11 @@
 
   .btn-new-proj {
     display: flex; align-items: center; gap: 6px;
-    background: var(--blue-600); color: white; border: none; border-radius: 8px;
+    background: var(--blue-500); color: white; border: none; border-radius: 8px;
     padding: 0 14px; height: 34px; font-size: 13px; font-weight: 500;
     cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.1s;
   }
-  .btn-new-proj:hover { background: #1d4ed8; }
+  .btn-new-proj:hover { background: var(--blue-600); }
   .proj-toolbar-right { display: flex; align-items: center; gap: 8px; }
 
   /* Card grid */
@@ -1947,44 +2101,140 @@
 
   /* ── MY WORK PAGE ── */
   #page-mywork { flex-direction: column; gap: 0; }
-  .mw-header { padding: 24px 32px 0; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
+  .mw-header { padding: 0 0 16px 0; display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; }
   .mw-title { font-size: 20px; font-weight: 700; color: var(--gray-900); }
   .mw-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
-  .mw-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 20px 32px 0; flex-shrink: 0; }
-  .mw-stat-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; user-select: none; }
+  .mw-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 0 16px; flex-shrink: 0; }
+  /* ── base card ── */
+  .mw-stat-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; user-select: none; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); justify-content: space-between; }
   .mw-stat-card:hover { border-color: var(--gray-300); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .mw-stat-card.active { border-color: var(--blue-500); box-shadow: 0 0 0 3px oklch(60.6% 0.25 292.717 / 0.10); }
-  .mw-stat-label { font-size: 11.5px; font-weight: 500; color: var(--gray-500); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .mw-stat-num { font-size: 26px; font-weight: 700; color: var(--gray-900); line-height: 1; }
-  .mw-stat-num.red   { color: #DC2626; }
-  .mw-stat-num.amber { color: #D97706; }
-  .mw-stat-num.green { color: #16A34A; }
-  .mw-filterbar { display: flex; align-items: center; gap: 8px; padding: 16px 32px 0; flex-shrink: 0; }
-  .mw-search { display: flex; align-items: center; gap: 7px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 7px; padding: 6px 10px; font-size: 12.5px; color: var(--gray-400); flex: 0 0 200px; }
-  .mw-select { height: 30px; padding: 0 10px; border: 1px solid var(--gray-200); border-radius: 7px; background: white; font-size: 12.5px; color: var(--gray-600); font-family: inherit; cursor: pointer; }
-  .filter-chips { display: flex; align-items: center; gap: 5px; margin-left: 2px; }
-  .chip { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit; color: var(--gray-600); transition: background 0.1s, border-color 0.1s, box-shadow 0.1s; white-space: nowrap; }
-  .chip:hover { background: var(--gray-200); }
-  .chip.active { background: white; border-color: var(--gray-400); box-shadow: 0 1px 3px rgba(0,0,0,0.08); color: var(--gray-800); font-weight: 500; }
-  .mw-table-wrap { flex: 1; overflow-y: auto; padding: 16px 32px 32px; }
-  .mw-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .mw-table thead th { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px; border-bottom: 1px solid var(--gray-200); text-align: left; white-space: nowrap; position: sticky; top: 0; background: white; z-index: 1; }
-  .mw-table thead th:first-child { padding-left: 4px; }
-  .task-group-header td { padding: 10px 10px 4px; font-size: 11px; font-weight: 700; color: var(--gray-500); letter-spacing: 0.06em; text-transform: uppercase; border-bottom: none; cursor: pointer; user-select: none; }
-  .task-group-header:hover td { color: var(--gray-700); }
-  .group-chevron { display: inline-block; margin-right: 6px; transition: transform 0.18s; font-size: 13px; line-height: 1; }
+  .mw-stat-icon-row { display: flex; align-items: center; gap: 8px; }
+  .mw-stat-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mw-stat-icon svg { color: white; }
+  .mw-stat-icon.blue  { background: oklch(60.6% 0.25 292.717); }
+  .mw-stat-icon.red   { background: #EF4444; }
+  .mw-stat-icon.amber { background: #F59E0B; }
+  .mw-stat-icon.green { background: #22C55E; }
+  .mw-stat-label { font-size: 12px; font-weight: 500; color: var(--gray-600); }
+  .mw-stat-num { font-size: 30px; font-weight: 700; color: var(--gray-900); line-height: 1; letter-spacing: -0.02em; }
+  .mw-stat-sublabel { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .mw-num-row { display: flex; align-items: baseline; gap: 7px; }
+
+  /* ── image 1 style: segmented tick bar ── */
+  .mw-ticks { display: flex; gap: 3px; width: 100%; }
+  .mw-tick { flex: 1; height: 18px; border-radius: 2.5px; background: var(--gray-200); }
+  .mw-tick.on.blue  { background: oklch(60.6% 0.25 292.717); }
+  .mw-tick.on.red   { background: #EF4444; }
+
+  /* ── image 2 style: donut + project legend ── */
+  .mw-donut-row { display: flex; align-items: center; gap: 14px; flex: 1; }
+  .mw-donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .mw-dl-item { display: flex; align-items: center; gap: 7px; }
+  .mw-dl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .mw-dl-label { font-size: 12px; color: var(--gray-500); flex: 1; white-space: nowrap; }
+  .mw-dl-val { font-size: 12.5px; font-weight: 700; color: var(--gray-800); }
+  .mw-dl-pct { font-size: 11.5px; color: var(--gray-400); margin-left: 3px; }
+
+  /* ── completion rate card ── */
+  .mw-rate-body { display: flex; align-items: center; gap: 14px; flex: 1; }
+  .mw-rate-left { flex-shrink: 0; }
+  .mw-rate-big { font-size: 38px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.03em; line-height: 1; }
+  .mw-rate-trend { display: flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 7px; }
+  .mw-rate-trend-val { color: #22C55E; font-weight: 600; }
+  .mw-rate-trend-lbl { color: var(--gray-400); }
+  .mw-rate-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .mw-rate-bar { width: 100%; height: 10px; border-radius: 6px; background: var(--gray-100); display: flex; gap: 3px; }
+  .mw-rate-seg { height: 100%; border-radius: 6px; }
+  .mw-rate-stats { display: flex; align-items: flex-start; }
+  .mw-rate-stat { flex: 1; text-align: center; }
+  .mw-rate-stat + .mw-rate-stat { border-left: 1px solid #EFEFEF; }
+  .mw-rate-snum { font-size: 22px; font-weight: 700; line-height: 1; }
+  .mw-rate-snum.green  { color: #22C55E; }
+  .mw-rate-snum.purple { color: oklch(60.6% 0.25 292.717); }
+  .mw-rate-snum.amber  { color: #F59E0B; }
+  .mw-rate-slbl { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+
+  /* ── image 3 style: multi-segment gauge + legend ── */
+  .mw-gauge-row { display: flex; align-items: center; gap: 14px; flex: 1; }
+  .mw-gauge-svg-wrap { position: relative; width: 88px; height: 88px; flex-shrink: 0; }
+  .mw-gauge-svg-wrap svg { width: 88px; height: 88px; }
+  .mw-gauge-center { position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%); text-align: center; line-height: 1.3; }
+  .mw-gauge-cnum { font-size: 18px; font-weight: 800; color: var(--gray-900); }
+  .mw-gauge-clbl { font-size: 10px; color: var(--gray-400); }
+  .mw-gauge-legend { display: flex; flex-direction: column; gap: 6px; }
+  .mw-gl-item { display: flex; align-items: center; gap: 6px; }
+  .mw-gl-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .mw-gl-num { font-size: 13px; font-weight: 700; color: var(--gray-900); min-width: 16px; }
+  .mw-gl-lbl { font-size: 11px; color: var(--gray-400); }
+  .mw-filterbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 0 14px; flex-shrink: 0; flex-wrap: wrap; }
+  .mw-filterbar-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  /* Date filter chips */
+  .mw-date-chip { display: inline-flex; align-items: center; height: 30px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; font-size: 12.5px; font-weight: 500; color: var(--gray-600); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .1s, border-color .1s, color .1s; white-space: nowrap; }
+  .mw-date-chip:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .mw-date-chip.active { background: oklch(60.6% 0.25 292.717); border-color: oklch(60.6% 0.25 292.717); color: white; }
+  /* Table view */
+  .mw-tbl-view { display: none; flex: 1; overflow-y: auto; }
+  .mw-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .mw-tbl th { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px; border-bottom: 1px solid var(--gray-200); text-align: left; white-space: nowrap; position: sticky; top: 0; background: white; z-index: 1; }
+  .mw-tbl td { padding: 9px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+  .mw-tbl tbody tr { cursor: pointer; transition: background .1s; }
+  .mw-tbl tbody tr:hover td { background: var(--gray-50); }
+  .mw-tbl .td-task { font-size: 13px; font-weight: 500; color: var(--gray-800); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mw-tbl .td-proj { font-size: 12px; color: var(--gray-500); white-space: nowrap; }
+  .mw-tbl .td-due { font-size: 12px; color: var(--gray-400); white-space: nowrap; }
+  .mw-tbl .td-due.overdue { color: #DC2626; font-weight: 500; }
+  .mw-tbl .td-due.today { color: oklch(60.6% 0.25 292.717); font-weight: 500; }
+  .mw-tbl .td-av { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; object-fit: cover; vertical-align: middle; }
+  /* mw-df-wrap: filter dropdown wrapper */
+  .mw-df-wrap { position: relative; display: inline-flex; }
+  .mw-df-btn { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; font-size: 12.5px; font-weight: 500; color: var(--gray-600); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .1s, border-color .1s; white-space: nowrap; }
+  .mw-df-btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .mw-df-btn.has-filter { color: oklch(60.6% 0.25 292.717); border-color: oklch(60.6% 0.25 292.717); background: oklch(97% 0.01 292.717); }
+  .mw-df-btn svg { flex-shrink: 0; color: var(--gray-400); }
+  .mw-df-dd { position: absolute; top: calc(100% + 5px); left: 0; background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.10); min-width: 160px; z-index: 100; display: none; padding: 5px; }
+  .mw-df-dd.open { display: block; }
+  .mw-df-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px; font-size: 13px; color: var(--gray-700); cursor: pointer; transition: background .1s; }
+  .mw-df-item:hover { background: var(--gray-50); }
+  .mw-df-item.active-item { color: oklch(60.6% 0.25 292.717); font-weight: 600; }
+  .mw-df-sep { height: 1px; background: var(--gray-100); margin: 4px 0; }
+
+  /* ── Task list (div-based) ── */
+  .mw-table-wrap { flex: 1; overflow-y: auto; padding: 0; }
+  .task-group-header { display: flex; align-items: center; gap: 7px; padding: 14px 8px 6px; cursor: pointer; user-select: none; }
+  .task-group-header:hover .mw-group-label { color: var(--gray-900); }
+  .group-chevron { font-size: 11px; color: var(--gray-400); transition: transform 0.18s; line-height: 1; }
   .task-group.collapsed .group-chevron { transform: rotate(-90deg); }
   .task-group.collapsed .task-row { display: none; }
-  .task-row td { padding: 7px 10px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); vertical-align: middle; }
-  .task-row td:first-child { padding-left: 28px; }
-  .task-row:hover td { background: var(--gray-50); }
-  .task-name { font-weight: 500; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; display: block; }
-  .task-name.done-task { text-decoration: line-through; color: var(--gray-400); }
-  .task-project { font-size: 12px; color: var(--gray-500); white-space: nowrap; }
-  .task-priority { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+  .mw-group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .mw-group-dot.overdue    { background: #EF4444; }
+  .mw-group-dot.inprogress { background: #7C3AED; }
+  .mw-group-dot.todo       { background: #9CA3AF; }
+  .mw-group-dot.inreview   { background: #F59E0B; }
+  .mw-group-dot.completed  { background: #22C55E; }
+  .mw-group-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+  .mw-group-count { font-size: 12.5px; color: var(--gray-400); font-weight: 400; }
+  .task-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background .1s; }
+  .task-row:hover { background: var(--gray-50); }
+  .mw-row-main { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .mw-row-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .task-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+  .task-status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: block; }
+  .task-status-pill.overdue    { background: #FFF1F2; color: #991B1B; } .task-status-pill.overdue::before    { background: #EF4444; }
+  .task-status-pill.inprogress { background: #EDE9FE; color: #5B21B6; } .task-status-pill.inprogress::before { background: #7C3AED; }
+  .task-status-pill.todo       { background: #F3F4F6; color: #4B5563; } .task-status-pill.todo::before       { background: #9CA3AF; }
+  .task-status-pill.inreview   { background: #FFF7ED; color: #92400E; } .task-status-pill.inreview::before   { background: #F59E0B; }
+  .task-status-pill.done       { background: #F0FDF4; color: #166534; } .task-status-pill.done::before       { background: #22C55E; }
+  .task-priority { display: inline-flex; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 500; flex-shrink: 0; white-space: nowrap; }
   .task-priority.high   { background: #FEE2E2; color: #991B1B; }
   .task-priority.medium { background: #FEF3C7; color: #92400E; }
-  .task-priority.low    { background: var(--gray-100); color: var(--gray-500); }
+  .task-priority.low    { background: #DCFCE7; color: #166534; }
+  .task-name { font-size: 13.5px; font-weight: 500; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-name.done-task { text-decoration: line-through; color: var(--gray-400); font-weight: 400; }
+  .mw-task-av { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; flex-shrink: 0; object-fit: cover; }
+  .task-due { font-size: 12px; color: var(--gray-400); white-space: nowrap; min-width: 44px; text-align: right; }
+  .task-due.overdue { color: #DC2626; font-weight: 500; }
+  .task-due.today   { color: oklch(60.6% 0.25 292.717); font-weight: 500; }
   .task-due { font-size: 12px; white-space: nowrap; color: var(--gray-500); }
   .task-due.overdue { color: #DC2626; font-weight: 500; }
   .task-due.today   { color: #D97706; font-weight: 500; }
@@ -2010,7 +2260,7 @@
   .chip:not(.active):hover { background:var(--gray-50); border-color:var(--gray-300); }
   .mw-select { font-size:12px; font-weight:500; padding:5px 10px; border-radius:8px; border:1px solid var(--gray-200); background:white; color:var(--gray-600); cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; outline:none; }
 
-  .tw-legend { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--gray-500); margin-bottom:14px; flex-wrap:wrap; padding: 0 32px; }
+  .tw-legend { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--gray-500); margin-bottom:14px; flex-wrap:wrap; padding: 0; }
   .tw-legend-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
   .tw-legend-dot.available { background:#22C55E; }
   .tw-legend-dot.balanced { background:#F59E0B; }
@@ -2018,7 +2268,7 @@
   .tw-legend-dot.overloaded { background:#EF4444; }
   .tw-sep { color:var(--gray-300); }
 
-  .tw-table-wrap { background:white; border:1px solid var(--gray-200); border-radius:12px; overflow:hidden; margin: 0 32px; }
+  .tw-table-wrap { background:white; border:1px solid var(--gray-200); border-radius:12px; overflow:hidden; margin: 0; }
   .tw-table { width:100%; border-collapse:collapse; font-size:13px; }
   .tw-table th { font-size:11px; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:.05em; padding:10px 16px; border-bottom:1px solid var(--gray-100); background:var(--gray-50); text-align:left; }
   .tw-table th.right { text-align:right; }
@@ -2128,13 +2378,80 @@
   }
   window.addEventListener('load', syncHeight);
 
-  /* Filter dropdown */
+  /* ── Dropdown filter (checkbox style) ── */
+  let openDfId = null;
+  function toggleDf(e, ddId, btnId) {
+    e.stopPropagation();
+    const dd = document.getElementById(ddId);
+    const isOpen = dd.classList.contains('open');
+    closeAllDf();
+    if (!isOpen) { dd.classList.add('open'); openDfId = ddId; }
+  }
+  function closeAllDf() {
+    document.querySelectorAll('.df-dropdown.open').forEach(d => d.classList.remove('open'));
+    openDfId = null;
+  }
+  function toggleDfItem(el, btnId) {
+    el.classList.toggle('checked');
+    const dd = el.closest('.df-dropdown');
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    const checked = dd.querySelectorAll('.df-item.checked').length;
+    const total = dd.querySelectorAll('.df-item').length;
+    const deselected = total - checked;
+    if (deselected === 0) {
+      btn.classList.remove('has-filter');
+      btn.querySelector('.df-badge')?.remove();
+    } else {
+      btn.classList.add('has-filter');
+      let badge = btn.querySelector('.df-badge');
+      if (!badge) { badge = document.createElement('span'); badge.className = 'df-badge'; btn.appendChild(badge); }
+      badge.textContent = deselected;
+    }
+  }
+  function clearDf(ddId, btnId) {
+    const dd = document.getElementById(ddId);
+    dd.querySelectorAll('.df-item').forEach(i => i.classList.add('checked'));
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.classList.remove('has-filter'); btn.querySelector('.df-badge')?.remove(); }
+  }
+
+  /* ── Goals view toggle + filter ── */
+  function goalView(v) {
+    document.getElementById('gv-card').style.display = v === 'card' ? 'grid' : 'none';
+    document.getElementById('gv-list').style.display = v === 'list' ? 'block' : 'none';
+    document.getElementById('gvb-card').classList.toggle('active', v === 'card');
+    document.getElementById('gvb-list').classList.toggle('active', v === 'list');
+  }
+  function filterGoals() {
+    const checked = [...document.querySelectorAll('#goal-status-dd .df-item.checked')].map(i => i.dataset.goalStatus);
+    document.querySelectorAll('.goal-card').forEach(c => {
+      c.style.display = checked.includes(c.dataset.gstatus) ? '' : 'none';
+    });
+    document.querySelectorAll('.goal-list-row').forEach(r => {
+      r.style.display = checked.includes(r.dataset.gstatus) ? '' : 'none';
+    });
+  }
+
+  /* ── New button dropdown ── */
+  let newMenuOpen = false;
+  function toggleNewMenu(e) {
+    e.stopPropagation();
+    newMenuOpen = !newMenuOpen;
+    document.getElementById('new-btn-dropdown').classList.toggle('open', newMenuOpen);
+  }
+  function closeNewMenu() {
+    newMenuOpen = false;
+    document.getElementById('new-btn-dropdown').classList.remove('open');
+  }
+
+  /* Filter dropdown (legacy — kept for compat) */
   let filterOpen = false;
   function toggleFilter(e) {
     e.stopPropagation();
     filterOpen = !filterOpen;
-    document.getElementById('filter-dropdown').classList.toggle('open', filterOpen);
-    document.querySelector('.filter-btn').classList.toggle('active', filterOpen);
+    const dd = document.getElementById('filter-dropdown');
+    if (dd) dd.classList.toggle('open', filterOpen);
   }
   function toggleChip(el) { el.classList.toggle('on'); }
 
@@ -2471,9 +2788,11 @@
   document.addEventListener('click', function(e) {
     if (filterOpen && !e.target.closest('#filter-dropdown') && !e.target.closest('.filter-btn')) {
       filterOpen = false;
-      document.getElementById('filter-dropdown').classList.remove('open');
-      document.querySelector('.filter-btn').classList.remove('active');
+      const fd = document.getElementById('filter-dropdown');
+      if (fd) fd.classList.remove('open');
     }
+    if (openDfId && !e.target.closest('.df-wrap')) closeAllDf();
+    if (newMenuOpen && !e.target.closest('#new-btn-wrap')) closeNewMenu();
     if (ctxMenu && !e.target.closest('#ctx-menu')) closeCtxMenu();
     if (layoutMenuOpen && !e.target.closest('.peek-layout-menu') && !e.target.closest('.peek-view-btn')) closeLayoutMenu();
     if (activePeekDD && !e.target.closest('.peek-fdd-wrap')) {
@@ -2509,7 +2828,7 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         <span class="nav-label">Projects</span>
       </a>
-      <a class="nav-item" href="#" title="Board">
+      <a class="nav-item" href="#" data-page="board" title="Board" onclick="navigate('board');return false;">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
         <span class="nav-label">Board</span>
       </a>
@@ -2572,10 +2891,27 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="btn-notif-dot"></div>
         </div>
-        <button class="btn-primary" onclick="openNewTaskModal()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          New Task
-        </button>
+        <div class="new-btn-wrap" id="new-btn-wrap">
+          <button class="btn-primary" onclick="toggleNewMenu(event)" style="gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.7"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="new-btn-dropdown" id="new-btn-dropdown">
+            <button class="new-btn-item" onclick="navigate('projects');closeNewMenu()">
+              <div class="new-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+              New project
+            </button>
+            <button class="new-btn-item" onclick="openNewTaskModal();closeNewMenu()">
+              <div class="new-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+              New task
+            </button>
+            <button class="new-btn-item" onclick="closeNewMenu()">
+              <div class="new-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+              New goal
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2813,30 +3149,17 @@
               <span class="panel-count">5</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px">
-              <button class="filter-btn" onclick="toggleFilter(event)">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-                Filter
-              </button>
-              <div id="filter-dropdown" class="filter-dropdown">
-                <div class="filter-group">
-                  <div class="filter-group-label">Status</div>
-                  <div class="filter-chips">
-                    <div class="filter-chip on" onclick="toggleChip(this)">On Track</div>
-                    <div class="filter-chip on" onclick="toggleChip(this)">At Risk</div>
-                    <div class="filter-chip on" onclick="toggleChip(this)">Not Started</div>
-                  </div>
-                </div>
-                <div class="filter-group">
-                  <div class="filter-group-label">Priority</div>
-                  <div class="filter-chips">
-                    <div class="filter-chip on" onclick="toggleChip(this)">High</div>
-                    <div class="filter-chip on" onclick="toggleChip(this)">Medium</div>
-                    <div class="filter-chip on" onclick="toggleChip(this)">Low</div>
-                  </div>
-                </div>
-                <div class="filter-actions">
-                  <button class="filter-clear" onclick="document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'))">Clear all</button>
-                  <button class="filter-apply" onclick="filterOpen=false;document.getElementById('filter-dropdown').classList.remove('open')">Apply</button>
+              <div class="df-wrap">
+                <button class="df-btn" id="dash-status-btn" onclick="toggleDf(event,'dash-status-dd','dash-status-btn')">
+                  Status
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="df-dropdown" id="dash-status-dd">
+                  <div class="df-item checked" onclick="toggleDfItem(this,'dash-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">On Track</span></div>
+                  <div class="df-item checked" onclick="toggleDfItem(this,'dash-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">At Risk</span></div>
+                  <div class="df-item checked" onclick="toggleDfItem(this,'dash-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#9CA3AF"></span><span class="df-item-label">Not Started</span></div>
+                  <div class="df-item checked" onclick="toggleDfItem(this,'dash-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#EF4444"></span><span class="df-item-label">Delayed</span></div>
+                  <div class="df-footer"><button class="df-clear" onclick="clearDf('dash-status-dd','dash-status-btn')">Clear</button></div>
                 </div>
               </div>
               <a class="link-sm" href="#" onclick="navigate('projects');return false;">View all</a>
@@ -3029,20 +3352,560 @@
     </div><!-- /content-scroll -->
 
     <!-- ════════════════════════════════════════════════
+         GOALS PAGE
+    ════════════════════════════════════════════════ -->
+    <div id="page-goals" class="content-scroll" style="display:none">
+
+      <!-- Toolbar -->
+      <div class="page-toolbar">
+        <div style="display:flex;align-items:center;gap:8px">
+          <!-- Status filter -->
+          <div class="df-wrap">
+            <button class="df-btn" id="goal-status-btn" onclick="toggleDf(event,'goal-status-dd','goal-status-btn')">
+              Status
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="goal-status-dd">
+              <div class="df-item checked" data-goal-status="on-track" onclick="toggleDfItem(this,'goal-status-btn');filterGoals()"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">On Track</span></div>
+              <div class="df-item checked" data-goal-status="at-risk" onclick="toggleDfItem(this,'goal-status-btn');filterGoals()"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">At Risk</span></div>
+              <div class="df-item checked" data-goal-status="completed" onclick="toggleDfItem(this,'goal-status-btn');filterGoals()"><div class="df-checkbox"></div><span class="df-dot" style="background:var(--blue-500)"></span><span class="df-item-label">Completed</span></div>
+              <div class="df-item checked" data-goal-status="not-started" onclick="toggleDfItem(this,'goal-status-btn');filterGoals()"><div class="df-checkbox"></div><span class="df-dot" style="background:#9CA3AF"></span><span class="df-item-label">Not Started</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('goal-status-dd','goal-status-btn');filterGoals()">Clear</button></div>
+            </div>
+          </div>
+          <!-- Period filter -->
+          <div class="df-wrap">
+            <button class="df-btn" id="goal-period-btn" onclick="toggleDf(event,'goal-period-dd','goal-period-btn')">
+              Period
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="goal-period-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'goal-period-btn')"><div class="df-checkbox"></div><span class="df-item-label">Q1 2025</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'goal-period-btn')"><div class="df-checkbox"></div><span class="df-item-label">Q2 2025</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'goal-period-btn')"><div class="df-checkbox"></div><span class="df-item-label">Q3 2025</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'goal-period-btn')"><div class="df-checkbox"></div><span class="df-item-label">Q4 2025</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('goal-period-dd','goal-period-btn')">Clear</button></div>
+            </div>
+          </div>
+        </div>
+        <!-- View switcher only, no New goal button -->
+        <div class="proj-view-switcher">
+          <button class="proj-view-btn active" id="gvb-card" onclick="goalView('card')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Card
+          </button>
+          <button class="proj-view-btn" id="gvb-list" onclick="goalView('list')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            List
+          </button>
+        </div>
+      </div>
+
+      <!-- Goals card grid -->
+      <div id="gv-card" class="goals-grid">
+
+        <!-- 1. 1000 Dribbble Shots · On Track -->
+        <div class="goal-card" data-gstatus="on-track" onclick="navigate('goal-detail')">
+          <div class="goal-card-top">
+            <span class="goal-cat-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+              Design
+            </span>
+            <span class="goal-status-pill on-track">
+              <span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block"></span>
+              On Track
+            </span>
+          </div>
+          <div class="goal-card-title">1000 Dribbble Shots</div>
+          <div class="goal-card-desc">Publish 1000 design shots to Dribbble by end of year</div>
+          <div class="goal-progress-section">
+            <div class="goal-progress-row">
+              <span class="goal-progress-label">Tasks completed</span>
+              <span class="goal-progress-count">900 <span>/ 1000</span></span>
+            </div>
+            <div class="goal-bar-track"><div class="goal-bar-fill green" style="width:90%"></div></div>
+            <div class="goal-progress-hint">90% · 100 tasks remaining</div>
+          </div>
+          <div class="goal-linked">
+            <span class="goal-linked-label">Projects</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">DRIB</span> Dribbble Shot</span>
+          </div>
+          <div class="goal-card-footer">
+            <span class="goal-due">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Dec 31, 2025
+            </span>
+            <div class="goal-members">
+              <div class="av-stack" style="gap:-4px">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid">
+              </div>
+              <span class="goal-member-count">5 members</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 50 Blog Posts · At Risk -->
+        <div class="goal-card" data-gstatus="at-risk" onclick="navigate('goal-detail')">
+          <div class="goal-card-top">
+            <span class="goal-cat-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Content
+            </span>
+            <span class="goal-status-pill at-risk">
+              <span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;display:inline-block"></span>
+              At Risk
+            </span>
+          </div>
+          <div class="goal-card-title">50 Blog Posts Published</div>
+          <div class="goal-card-desc">Publish 50 technical blog posts across product & engineering</div>
+          <div class="goal-progress-section">
+            <div class="goal-progress-row">
+              <span class="goal-progress-label">Tasks completed</span>
+              <span class="goal-progress-count">23 <span>/ 50</span></span>
+            </div>
+            <div class="goal-bar-track"><div class="goal-bar-fill amber" style="width:46%"></div></div>
+            <div class="goal-progress-hint" style="color:#92400E">46% · deadline Sep 30</div>
+          </div>
+          <div class="goal-linked">
+            <span class="goal-linked-label">Projects</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">BLOG</span> Blog Series</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">DS2</span> Design System v2</span>
+          </div>
+          <div class="goal-card-footer">
+            <span class="goal-due overdue">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Sep 30, 2025
+            </span>
+            <div class="goal-members">
+              <div class="av-stack">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Aldo&backgroundColor=d1f0c2&backgroundType=solid">
+              </div>
+              <span class="goal-member-count">3 members</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. API Endpoints Documented · On Track -->
+        <div class="goal-card" data-gstatus="on-track" onclick="navigate('goal-detail')">
+          <div class="goal-card-top">
+            <span class="goal-cat-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Engineering
+            </span>
+            <span class="goal-status-pill on-track">
+              <span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block"></span>
+              On Track
+            </span>
+          </div>
+          <div class="goal-card-title">100 API Endpoints Documented</div>
+          <div class="goal-card-desc">Document all public API endpoints with examples and schemas</div>
+          <div class="goal-progress-section">
+            <div class="goal-progress-row">
+              <span class="goal-progress-label">Tasks completed</span>
+              <span class="goal-progress-count">67 <span>/ 100</span></span>
+            </div>
+            <div class="goal-bar-track"><div class="goal-bar-fill blue" style="width:67%"></div></div>
+            <div class="goal-progress-hint">67% · 33 tasks remaining</div>
+          </div>
+          <div class="goal-linked">
+            <span class="goal-linked-label">Projects</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">API</span> API Gateway v2</span>
+          </div>
+          <div class="goal-card-footer">
+            <span class="goal-due">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Oct 31, 2025
+            </span>
+            <div class="goal-members">
+              <div class="av-stack">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid">
+              </div>
+              <span class="goal-member-count">3 members</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Product Launch Checklist · Completed -->
+        <div class="goal-card" data-gstatus="completed" onclick="navigate('goal-detail')" style="opacity:.8">
+          <div class="goal-card-top">
+            <span class="goal-cat-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Product
+            </span>
+            <span class="goal-status-pill completed">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Completed
+            </span>
+          </div>
+          <div class="goal-card-title">Beta Launch Checklist</div>
+          <div class="goal-card-desc">Complete all pre-launch tasks for Beta product release</div>
+          <div class="goal-progress-section">
+            <div class="goal-progress-row">
+              <span class="goal-progress-label">Tasks completed</span>
+              <span class="goal-progress-count" style="color:var(--blue-600)">48 <span>/ 48</span></span>
+            </div>
+            <div class="goal-bar-track"><div class="goal-bar-fill complete" style="width:100%"></div></div>
+            <div class="goal-progress-hint" style="color:var(--blue-600);font-weight:500">100% · Completed Jun 28, 2025</div>
+          </div>
+          <div class="goal-linked">
+            <span class="goal-linked-label">Projects</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">BETA</span> Beta Launch</span>
+            <span class="goal-proj-chip"><span class="goal-proj-chip-key">CUS</span> Customer Portal</span>
+          </div>
+          <div class="goal-card-footer">
+            <span class="goal-due">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Jun 30, 2025
+            </span>
+            <div class="goal-members">
+              <div class="av-stack">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid">
+                <img class="av-circle" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rara&backgroundColor=f9a8d4&backgroundType=solid">
+              </div>
+              <span class="goal-member-count">4 members</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /gv-card -->
+
+      <!-- Goals list view -->
+      <div id="gv-list" style="display:none">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="border-bottom:1px solid var(--gray-100)">
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px">Goal</th>
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px">Status</th>
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px">Progress</th>
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px">Linked projects</th>
+              <th style="text-align:left;font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px">Deadline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="goal-list-row" data-gstatus="on-track" onclick="navigate('goal-detail')" style="cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background=''">
+              <td style="padding:12px 12px">
+                <div style="font-size:13.5px;font-weight:600;color:var(--gray-900)">1000 Dribbble Shots</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Design</div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-status-pill on-track"><span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block"></span>On Track</span></td>
+              <td style="padding:12px 12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="flex:1;height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden;min-width:80px"><div style="height:100%;width:90%;background:#22C55E;border-radius:10px"></div></div>
+                  <span style="font-size:12.5px;font-weight:600;color:var(--gray-700);white-space:nowrap">900 / 1000</span>
+                </div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-proj-chip"><span class="goal-proj-chip-key">DRIB</span> Dribbble Shot</span></td>
+              <td style="padding:12px 12px;font-size:12.5px;color:var(--gray-500)">Dec 31, 2025</td>
+            </tr>
+            <tr class="goal-list-row" data-gstatus="at-risk" onclick="navigate('goal-detail')" style="cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background=''">
+              <td style="padding:12px 12px">
+                <div style="font-size:13.5px;font-weight:600;color:var(--gray-900)">50 Blog Posts Published</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Content</div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-status-pill at-risk"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;display:inline-block"></span>At Risk</span></td>
+              <td style="padding:12px 12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="flex:1;height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden;min-width:80px"><div style="height:100%;width:46%;background:#F59E0B;border-radius:10px"></div></div>
+                  <span style="font-size:12.5px;font-weight:600;color:var(--gray-700);white-space:nowrap">23 / 50</span>
+                </div>
+              </td>
+              <td style="padding:12px 12px;display:flex;gap:5px;padding-top:16px">
+                <span class="goal-proj-chip"><span class="goal-proj-chip-key">BLOG</span> Blog Series</span>
+                <span class="goal-proj-chip"><span class="goal-proj-chip-key">DS2</span> Design System v2</span>
+              </td>
+              <td style="padding:12px 12px;font-size:12.5px;color:var(--red-500);font-weight:500">Sep 30, 2025</td>
+            </tr>
+            <tr class="goal-list-row" data-gstatus="on-track" onclick="navigate('goal-detail')" style="cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background=''">
+              <td style="padding:12px 12px">
+                <div style="font-size:13.5px;font-weight:600;color:var(--gray-900)">100 API Endpoints Documented</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Engineering</div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-status-pill on-track"><span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block"></span>On Track</span></td>
+              <td style="padding:12px 12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="flex:1;height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden;min-width:80px"><div style="height:100%;width:67%;background:var(--blue-500);border-radius:10px"></div></div>
+                  <span style="font-size:12.5px;font-weight:600;color:var(--gray-700);white-space:nowrap">67 / 100</span>
+                </div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-proj-chip"><span class="goal-proj-chip-key">API</span> API Gateway v2</span></td>
+              <td style="padding:12px 12px;font-size:12.5px;color:var(--gray-500)">Oct 31, 2025</td>
+            </tr>
+            <tr class="goal-list-row" data-gstatus="completed" onclick="navigate('goal-detail')" style="cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s;opacity:.75" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background=''">
+              <td style="padding:12px 12px">
+                <div style="font-size:13.5px;font-weight:600;color:var(--gray-900)">Beta Launch Checklist</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">Product</div>
+              </td>
+              <td style="padding:12px 12px"><span class="goal-status-pill completed"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Completed</span></td>
+              <td style="padding:12px 12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="flex:1;height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden;min-width:80px"><div style="height:100%;width:100%;background:var(--blue-500);border-radius:10px"></div></div>
+                  <span style="font-size:12.5px;font-weight:600;color:var(--blue-600);white-space:nowrap">48 / 48</span>
+                </div>
+              </td>
+              <td style="padding:12px 12px;display:flex;gap:5px;padding-top:16px">
+                <span class="goal-proj-chip"><span class="goal-proj-chip-key">BETA</span> Beta Launch</span>
+                <span class="goal-proj-chip"><span class="goal-proj-chip-key">CUS</span> Customer Portal</span>
+              </td>
+              <td style="padding:12px 12px;font-size:12.5px;color:var(--gray-500)">Jun 30, 2025</td>
+            </tr>
+          </tbody>
+        </table>
+      </div><!-- /gv-list -->
+
+    </div><!-- /page-goals -->
+
+    <!-- ════════════════════════════════════════════════
+         GOAL DETAIL PAGE
+    ════════════════════════════════════════════════ -->
+    <div id="page-goal-detail" class="content-scroll" style="display:none;padding:0;overflow:hidden">
+      <div class="gd-layout">
+
+        <!-- LEFT: main content -->
+        <div class="gd-left">
+          <button class="gd-back" onclick="navigate('goals')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Goals
+          </button>
+
+          <!-- Header -->
+          <div class="gd-header">
+            <div class="gd-title-wrap">
+              <div class="gd-title">1000 Dribbble Shots</div>
+              <div class="gd-meta-row">
+                <span class="goal-status-pill on-track" style="font-size:12px">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block"></span>
+                  On Track
+                </span>
+                <span style="font-size:12px;color:var(--gray-400)">·</span>
+                <span class="goal-cat-tag">Design</span>
+                <span style="font-size:12px;color:var(--gray-400)">·</span>
+                <span style="font-size:12.5px;color:var(--gray-400)">Due Dec 31, 2025</span>
+              </div>
+            </div>
+            <div class="gd-header-actions">
+              <button class="gd-btn-ghost">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Share
+              </button>
+              <button class="gd-btn-edit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit goal
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress overview -->
+          <div class="gd-card">
+            <div class="gd-card-title">Progress</div>
+            <div class="gd-big-progress">
+              <div class="gd-big-num">900</div>
+              <div class="gd-big-target">/ 1000 tasks</div>
+              <div class="gd-big-pct">90%</div>
+            </div>
+            <div class="gd-bar-track"><div class="gd-bar-fill" style="width:90%;background:#22C55E"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <span style="font-size:12px;color:var(--gray-400)">100 tasks remaining</span>
+              <span style="font-size:12px;color:var(--gray-400)">Last updated today</span>
+            </div>
+          </div>
+
+          <!-- Edit form -->
+          <div class="gd-card">
+            <div class="gd-card-title">Goal details</div>
+            <div class="gd-field">
+              <label class="gd-label">Goal name</label>
+              <input class="gd-input" type="text" value="1000 Dribbble Shots">
+            </div>
+            <div class="gd-field">
+              <label class="gd-label">Description</label>
+              <textarea class="gd-textarea">Publish 1000 design shots to Dribbble by end of year. Each task completed in linked projects counts as one shot published.</textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="gd-field">
+                <label class="gd-label">Target count</label>
+                <input class="gd-input" type="number" value="1000">
+              </div>
+              <div class="gd-field">
+                <label class="gd-label">Category</label>
+                <select class="gd-input" style="cursor:pointer">
+                  <option selected>Design</option>
+                  <option>Engineering</option>
+                  <option>Content</option>
+                  <option>Product</option>
+                  <option>Marketing</option>
+                </select>
+              </div>
+              <div class="gd-field">
+                <label class="gd-label">Start date</label>
+                <input class="gd-input" type="date" value="2025-01-01">
+              </div>
+              <div class="gd-field">
+                <label class="gd-label">Deadline</label>
+                <input class="gd-input" type="date" value="2025-12-31">
+              </div>
+            </div>
+            <div class="gd-save-row" style="margin-top:6px">
+              <button class="gd-btn-ghost" style="font-size:12.5px;padding:6px 12px">Discard</button>
+              <button class="gd-btn-edit" style="font-size:12.5px;padding:6px 14px">Save changes</button>
+            </div>
+          </div>
+
+          <!-- Linked projects -->
+          <div class="gd-card">
+            <div class="gd-card-title">Linked projects</div>
+            <div class="gd-proj-linked">
+              <div class="gd-proj-row">
+                <div class="gd-proj-info">
+                  <span class="gd-proj-key">DRIB</span>
+                  <div>
+                    <div class="gd-proj-name">Dribbble Shot</div>
+                    <div class="gd-proj-tasks">900 tasks done · 100 remaining</div>
+                  </div>
+                </div>
+                <button class="gd-proj-remove">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <button class="gd-add-proj">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Link a project
+              </button>
+            </div>
+            <div style="margin-top:12px;padding:10px 12px;background:var(--blue-50);border-radius:8px;font-size:12px;color:var(--blue-600);line-height:1.5">
+              <strong>How it works:</strong> Every task marked Done inside a linked project counts as +1 toward this goal's target.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: breakdown + activity -->
+        <div class="gd-right">
+          <div class="gd-right-section">
+            <div class="gd-right-title">Per-project breakdown</div>
+            <div>
+              <div class="gd-breakdown-row">
+                <div class="gd-breakdown-proj">
+                  <span style="font-size:10px;font-weight:700;color:var(--gray-500);background:var(--gray-100);border-radius:4px;padding:2px 6px">DRIB</span>
+                  <span style="font-size:12.5px;color:var(--gray-700)">Dribbble Shot</span>
+                </div>
+                <span class="gd-breakdown-count">900</span>
+              </div>
+              <div style="height:5px;background:var(--gray-100);border-radius:10px;overflow:hidden;margin-top:4px;margin-bottom:14px">
+                <div style="height:100%;width:100%;background:#22C55E;border-radius:10px"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--gray-400)">
+                <span>1 project linked</span>
+                <span>900 / 1000 total</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="gd-right-section">
+            <div class="gd-right-title">Recent activity</div>
+            <div class="gd-act-item">
+              <img class="gd-act-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid">
+              <div class="gd-act-body">
+                <div class="gd-act-name">Rasya</div>
+                <div class="gd-act-text">Completed <strong>Shot #900</strong> in Dribbble Shot</div>
+                <div class="gd-act-time">Today · 2:14 PM</div>
+              </div>
+            </div>
+            <div class="gd-act-item">
+              <img class="gd-act-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid">
+              <div class="gd-act-body">
+                <div class="gd-act-name">Maya</div>
+                <div class="gd-act-text">Completed <strong>Shot #897–899</strong> in Dribbble Shot</div>
+                <div class="gd-act-time">Today · 11:40 AM</div>
+              </div>
+            </div>
+            <div class="gd-act-item">
+              <img class="gd-act-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid">
+              <div class="gd-act-body">
+                <div class="gd-act-name">Dito</div>
+                <div class="gd-act-text">Completed <strong>Shot #893–896</strong> in Dribbble Shot</div>
+                <div class="gd-act-time">Yesterday · 4:05 PM</div>
+              </div>
+            </div>
+            <div class="gd-act-item">
+              <img class="gd-act-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid">
+              <div class="gd-act-body">
+                <div class="gd-act-name">Rasya</div>
+                <div class="gd-act-text">Linked project <strong>Dribbble Shot</strong> to this goal</div>
+                <div class="gd-act-time">Jun 20 · 9:30 AM</div>
+              </div>
+            </div>
+            <div class="gd-act-item">
+              <img class="gd-act-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid">
+              <div class="gd-act-body">
+                <div class="gd-act-name">Rasya</div>
+                <div class="gd-act-text">Created goal <strong>1000 Dribbble Shots</strong></div>
+                <div class="gd-act-time">Jan 1 · 9:00 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-goal-detail -->
+
+    <!-- ════════════════════════════════════════════════
          PROJECTS PAGE
     ════════════════════════════════════════════════ -->
     <div id="page-projects" class="content-scroll">
 
       <!-- Toolbar -->
       <div class="page-toolbar">
-        <div class="tab-strip">
-          <button class="pg-tab active" onclick="projTab(this,'all')">All <span class="pg-tab-count">8</span></button>
-          <button class="pg-tab" onclick="projTab(this,'on-track')">On Track <span class="pg-tab-count">4</span></button>
-          <button class="pg-tab" onclick="projTab(this,'at-risk')">At Risk <span class="pg-tab-count">2</span></button>
-          <button class="pg-tab" onclick="projTab(this,'not-started')">Not Started <span class="pg-tab-count">1</span></button>
-          <button class="pg-tab" onclick="projTab(this,'delayed')">Delayed <span class="pg-tab-count">1</span></button>
+        <!-- Left: filter dropdowns -->
+        <div style="display:flex;align-items:center;gap:8px">
+          <!-- Status -->
+          <div class="df-wrap">
+            <button class="df-btn" id="proj-status-btn" onclick="toggleDf(event,'proj-status-dd','proj-status-btn')">
+              Status
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="proj-status-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">On Track</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">At Risk</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#9CA3AF"></span><span class="df-item-label">Not Started</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#EF4444"></span><span class="df-item-label">Delayed</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('proj-status-dd','proj-status-btn')">Clear</button></div>
+            </div>
+          </div>
+          <!-- Priority -->
+          <div class="df-wrap">
+            <button class="df-btn" id="proj-priority-btn" onclick="toggleDf(event,'proj-priority-dd','proj-priority-btn')">
+              Priority
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="proj-priority-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#EF4444"></span><span class="df-item-label">High</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">Medium</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">Low</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('proj-priority-dd','proj-priority-btn')">Clear</button></div>
+            </div>
+          </div>
+          <!-- Assignee -->
+          <div class="df-wrap">
+            <button class="df-btn" id="proj-assignee-btn" onclick="toggleDf(event,'proj-assignee-dd','proj-assignee-btn')">
+              Assignee
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="proj-assignee-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-assignee-btn')"><div class="df-checkbox"></div><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" style="width:18px;height:18px;border-radius:50%;flex-shrink:0"><span class="df-item-label">Rasya</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-assignee-btn')"><div class="df-checkbox"></div><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid" style="width:18px;height:18px;border-radius:50%;flex-shrink:0"><span class="df-item-label">Maya</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-assignee-btn')"><div class="df-checkbox"></div><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid" style="width:18px;height:18px;border-radius:50%;flex-shrink:0"><span class="df-item-label">Dito</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-assignee-btn')"><div class="df-checkbox"></div><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rara&backgroundColor=f9a8d4&backgroundType=solid" style="width:18px;height:18px;border-radius:50%;flex-shrink:0"><span class="df-item-label">Rara</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'proj-assignee-btn')"><div class="df-checkbox"></div><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid" style="width:18px;height:18px;border-radius:50%;flex-shrink:0"><span class="df-item-label">Lintang</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('proj-assignee-dd','proj-assignee-btn')">Clear</button></div>
+            </div>
+          </div>
         </div>
-        <div class="proj-toolbar-right">
+
+        <!-- Right: view switcher + new project -->
+        <div style="display:flex;align-items:center;gap:8px">
           <div class="proj-view-switcher">
             <button class="proj-view-btn active" id="pvb-card" onclick="projView('card')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -3270,6 +4133,233 @@
       </div><!-- /pv-list -->
 
     </div><!-- /page-projects -->
+
+    <!-- ════════════════════════════════════════════════
+         BOARD PAGE
+    ════════════════════════════════════════════════ -->
+    <div id="page-board" class="content-scroll" style="display:none;padding:0;flex-direction:column">
+
+      <!-- Toolbar -->
+      <div class="board-toolbar">
+        <div class="board-view-tabs">
+          <button class="board-view-tab active">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Kanban
+          </button>
+          <button class="board-view-tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/><path d="M9 3v18M15 3v18"/></svg>
+            Table
+          </button>
+          <button class="board-view-tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            List
+          </button>
+          <button class="board-view-tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Calendar
+          </button>
+        </div>
+
+        <div class="board-filter-right">
+          <!-- Status filter -->
+          <div class="df-wrap">
+            <button class="df-btn" id="board-status-btn" onclick="toggleDf(event,'board-status-dd','board-status-btn')">
+              Status
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="board-status-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#9CA3AF"></span><span class="df-item-label">To Do</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">In Progress</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#8B5CF6"></span><span class="df-item-label">In Review</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-status-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">Done</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('board-status-dd','board-status-btn')">Clear</button></div>
+            </div>
+          </div>
+
+          <!-- Priority filter -->
+          <div class="df-wrap">
+            <button class="df-btn" id="board-priority-btn" onclick="toggleDf(event,'board-priority-dd','board-priority-btn')">
+              Priority
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="df-dropdown" id="board-priority-dd">
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#EF4444"></span><span class="df-item-label">High</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#F59E0B"></span><span class="df-item-label">Medium</span></div>
+              <div class="df-item checked" onclick="toggleDfItem(this,'board-priority-btn')"><div class="df-checkbox"></div><span class="df-dot" style="background:#22C55E"></span><span class="df-item-label">Low</span></div>
+              <div class="df-footer"><button class="df-clear" onclick="clearDf('board-priority-dd','board-priority-btn')">Clear</button></div>
+            </div>
+          </div>
+
+          <div class="board-filter-sep"></div>
+          <button class="btn-new-proj" onclick="openNewTaskModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanban columns -->
+      <div class="board-kanban">
+
+        <!-- TO DO -->
+        <div class="board-col">
+          <div class="board-col-header">
+            <div class="board-col-title">
+              <span class="board-col-dot" style="background:#9CA3AF"></span>
+              To Do
+              <span class="board-col-count">4</span>
+            </div>
+            <button class="board-col-add"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="board-cards">
+            <div class="board-card">
+              <div class="board-card-project">ALPHA · Alpha Project</div>
+              <div class="board-card-title">Set up design system tokens & spacing scale</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Aug 12</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority high">High</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">MOB · Mobile App MVP</div>
+              <div class="board-card-title">Define onboarding flow for new users</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sep 5</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority medium">Medium</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">ANL · Analytics Dashboard</div>
+              <div class="board-card-title">Write API specs for reporting endpoints</div>
+              <div class="board-card-footer">
+                <span class="board-card-due overdue"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jul 5</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority high">High</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">DS2 · Design System v2</div>
+              <div class="board-card-title">Document component states and usage guidelines</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sep 15</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority low">Low</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Aldo&backgroundColor=d1f0c2&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+          </div>
+          <button class="board-col-add-card"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add card</button>
+        </div>
+
+        <!-- IN PROGRESS -->
+        <div class="board-col">
+          <div class="board-col-header">
+            <div class="board-col-title">
+              <span class="board-col-dot" style="background:#F59E0B"></span>
+              In Progress
+              <span class="board-col-count">3</span>
+            </div>
+            <button class="board-col-add"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="board-cards">
+            <div class="board-card">
+              <div class="board-card-project">ALPHA · Alpha Project</div>
+              <div class="board-card-title">Redesign task detail slide-over panel</div>
+              <div class="board-card-footer">
+                <span class="board-card-due overdue"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Aug 30</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority high">High</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">BETA · Beta Launch</div>
+              <div class="board-card-title">QA test all checkout flows end-to-end</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jul 12</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority medium">Medium</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">API · API Gateway v2</div>
+              <div class="board-card-title">Implement rate limiting middleware</div>
+              <div class="board-card-footer">
+                <span class="board-card-due overdue"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Jun 30</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority high">High</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+          </div>
+          <button class="board-col-add-card"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add card</button>
+        </div>
+
+        <!-- IN REVIEW -->
+        <div class="board-col">
+          <div class="board-col-header">
+            <div class="board-col-title">
+              <span class="board-col-dot" style="background:#8B5CF6"></span>
+              In Review
+              <span class="board-col-count">2</span>
+            </div>
+            <button class="board-col-add"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="board-cards">
+            <div class="board-card">
+              <div class="board-card-project">CUS · Customer Portal</div>
+              <div class="board-card-title">Billing page redesign — final review</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Aug 1</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority low">Low</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rara&backgroundColor=f9a8d4&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card">
+              <div class="board-card-project">ALPHA · Alpha Project</div>
+              <div class="board-card-title">User testing report — activation flows</div>
+              <div class="board-card-footer">
+                <span class="board-card-due"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Aug 20</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority medium">Medium</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+          </div>
+          <button class="board-col-add-card"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add card</button>
+        </div>
+
+        <!-- DONE -->
+        <div class="board-col">
+          <div class="board-col-header">
+            <div class="board-col-title">
+              <span class="board-col-dot" style="background:#22C55E"></span>
+              Done
+              <span class="board-col-count">3</span>
+            </div>
+            <button class="board-col-add"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="board-cards">
+            <div class="board-card" style="opacity:.75">
+              <div class="board-card-project">BETA · Beta Launch</div>
+              <div class="board-card-title">Set up staging environment & CI pipeline</div>
+              <div class="board-card-footer">
+                <span class="board-card-due" style="color:#22C55E"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Done</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority medium">Medium</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Leo&backgroundColor=d1f0c2&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card" style="opacity:.75">
+              <div class="board-card-project">API · API Gateway v2</div>
+              <div class="board-card-title">Publish the complete API endpoint reference</div>
+              <div class="board-card-footer">
+                <span class="board-card-due" style="color:#22C55E"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Done</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority low">Low</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+            <div class="board-card" style="opacity:.75">
+              <div class="board-card-project">CUS · Customer Portal</div>
+              <div class="board-card-title">Migrate auth to new session token format</div>
+              <div class="board-card-footer">
+                <span class="board-card-due" style="color:#22C55E"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Done</span>
+                <div style="display:flex;align-items:center;gap:6px"><span class="board-card-priority high">High</span><img src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid" style="width:20px;height:20px;border-radius:50%"></div>
+              </div>
+            </div>
+          </div>
+          <button class="board-col-add-card"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add card</button>
+        </div>
+
+      </div><!-- /board-kanban -->
+
+    </div><!-- /page-board -->
 
     <!-- ════════════════════════════════════════════════
          PROJECT DETAIL PAGE
@@ -3519,365 +4609,620 @@
 
       <!-- Stat cards -->
       <div class="mw-stats">
+        <!-- In Progress: image-1 tick bar style -->
         <div class="mw-stat-card" id="mw-card-inprogress" onclick="filterByStatCard('mw-group-inprogress')">
-          <div class="mw-stat-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            In Progress
+          <div class="mw-stat-icon-row">
+            <div class="mw-stat-icon blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <span class="mw-stat-label">In Progress</span>
           </div>
-          <div class="mw-stat-num">5</div>
+          <div class="mw-num-row">
+            <div class="mw-stat-num">5</div>
+            <div class="mw-stat-sublabel">of 20 tasks</div>
+          </div>
+          <div class="mw-ticks">
+            <div class="mw-tick on blue"></div><div class="mw-tick on blue"></div><div class="mw-tick on blue"></div><div class="mw-tick on blue"></div><div class="mw-tick on blue"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+          </div>
         </div>
+
+        <!-- Due This Week: image-2 donut + legend style -->
+        <!-- r=16, circ=100.53. Alpha 2/4=50%→48.26, Beta 1/4=25%→23.13, Mobile 1/4=25%→23.13. Gap=2. -->
         <div class="mw-stat-card" id="mw-card-dueweek" onclick="filterByStatCard('all')">
-          <div class="mw-stat-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Due This Week
+          <div class="mw-stat-icon-row">
+            <div class="mw-stat-icon amber"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <span class="mw-stat-label">Due This Week</span>
           </div>
-          <div class="mw-stat-num amber">4</div>
+          <div class="mw-donut-row">
+            <!-- donut: viewBox 56×56, r=22, sw=9, circ=138.23, butt linecap, gap=4 -->
+            <!-- Alpha 50%→69.12-4=65.12 off=0 | Beta 25%→34.56-4=30.56 off=-69.12 | Mobile 25%→30.56 off=-103.68 -->
+            <svg viewBox="0 0 56 56" style="width:90px;height:90px;transform:rotate(-90deg);flex-shrink:0">
+              <circle cx="28" cy="28" r="22" fill="none" stroke="white" stroke-width="9"/>
+              <circle cx="28" cy="28" r="22" fill="none" stroke="oklch(60.6% 0.25 292.717)" stroke-width="9" stroke-dasharray="67.12 71.11" stroke-dashoffset="0" stroke-linecap="butt"/>
+              <circle cx="28" cy="28" r="22" fill="none" stroke="#F59E0B" stroke-width="9" stroke-dasharray="32.56 105.67" stroke-dashoffset="-69.12" stroke-linecap="butt"/>
+              <circle cx="28" cy="28" r="22" fill="none" stroke="#22C55E" stroke-width="9" stroke-dasharray="32.56 105.67" stroke-dashoffset="-103.68" stroke-linecap="butt"/>
+            </svg>
+            <div class="mw-donut-legend">
+              <div class="mw-dl-item"><span class="mw-dl-dot" style="background:oklch(60.6% 0.25 292.717)"></span><span class="mw-dl-label">Alpha Project</span><span class="mw-dl-val">2</span><span class="mw-dl-pct">· 50%</span></div>
+              <div class="mw-dl-item"><span class="mw-dl-dot" style="background:#F59E0B"></span><span class="mw-dl-label">Beta Launch</span><span class="mw-dl-val">1</span><span class="mw-dl-pct">· 25%</span></div>
+              <div class="mw-dl-item"><span class="mw-dl-dot" style="background:#22C55E"></span><span class="mw-dl-label">Mobile MVP</span><span class="mw-dl-val">1</span><span class="mw-dl-pct">· 25%</span></div>
+            </div>
+          </div>
         </div>
+
+        <!-- Overdue: image-1 tick bar style (red) -->
         <div class="mw-stat-card" id="mw-card-overdue" onclick="filterByStatCard('mw-group-overdue')">
-          <div class="mw-stat-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Overdue
+          <div class="mw-stat-icon-row">
+            <div class="mw-stat-icon red"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <span class="mw-stat-label">Overdue</span>
           </div>
-          <div class="mw-stat-num red">3</div>
+          <div class="mw-num-row">
+            <div class="mw-stat-num">3</div>
+            <div class="mw-stat-sublabel">of 20 tasks</div>
+          </div>
+          <div class="mw-ticks">
+            <div class="mw-tick on red"></div><div class="mw-tick on red"></div><div class="mw-tick on red"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div><div class="mw-tick"></div>
+            <div class="mw-tick"></div><div class="mw-tick"></div>
+          </div>
         </div>
-        <div class="mw-stat-card" id="mw-card-completed" onclick="filterByStatCard('mw-group-completed')">
-          <div class="mw-stat-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            Completed
+
+        <!-- Completion Rate card -->
+        <div class="mw-stat-card" id="mw-card-completed" onclick="filterByStatCard('mw-group-completed')" style="justify-content:flex-start">
+          <div class="mw-stat-icon-row" style="justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="mw-stat-icon green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <span class="mw-stat-label">Completion Rate</span>
+            </div>
+            <button class="kpi-info-btn">i</button>
           </div>
-          <div class="mw-stat-num green">8</div>
+          <div class="mw-rate-body" style="flex:1">
+            <!-- left: big % + trend -->
+            <div class="mw-rate-left">
+              <div class="mw-rate-big">40%</div>
+              <div class="mw-rate-trend">
+                <span class="mw-rate-trend-val">↑ 8%</span>
+                <span class="mw-rate-trend-lbl">this week</span>
+              </div>
+            </div>
+            <!-- right: bar + stats -->
+            <div class="mw-rate-right">
+              <div class="mw-rate-bar">
+                <div class="mw-rate-seg" style="width:40%;background:#22C55E"></div>
+                <div class="mw-rate-seg" style="width:25%;background:oklch(60.6% 0.25 292.717)"></div>
+                <div class="mw-rate-seg" style="width:15%;background:#F59E0B"></div>
+              </div>
+              <div class="mw-rate-stats">
+                <div class="mw-rate-stat">
+                  <div class="mw-rate-snum green">8</div>
+                  <div class="mw-rate-slbl">Done</div>
+                </div>
+                <div class="mw-rate-stat">
+                  <div class="mw-rate-snum purple">5</div>
+                  <div class="mw-rate-slbl">Active</div>
+                </div>
+                <div class="mw-rate-stat">
+                  <div class="mw-rate-snum amber">3</div>
+                  <div class="mw-rate-slbl">At Risk</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Filter bar -->
       <div class="mw-filterbar">
-        <div class="mw-search">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Search tasks…
+        <div class="mw-filterbar-left">
+
+          <!-- Project dropdown -->
+          <div class="mw-df-wrap" id="mw-proj-wrap">
+            <button class="mw-df-btn" id="mw-proj-btn" onclick="toggleMwDd(event,'mw-proj-dd','mw-proj-wrap')">
+              <span id="mw-proj-label">All Projects</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <div class="mw-df-dd" id="mw-proj-dd">
+              <div class="mw-df-item active-item" onclick="mwSetFilter('project','','All Projects',this)">All Projects</div>
+              <div class="mw-df-sep"></div>
+              <div class="mw-df-item" onclick="mwSetFilter('project','Alpha Project','Alpha Project',this)">Alpha Project</div>
+              <div class="mw-df-item" onclick="mwSetFilter('project','Beta Launch','Beta Launch',this)">Beta Launch</div>
+              <div class="mw-df-item" onclick="mwSetFilter('project','Mobile App MVP','Mobile App MVP',this)">Mobile App MVP</div>
+              <div class="mw-df-item" onclick="mwSetFilter('project','Design System v2','Design System v2',this)">Design System v2</div>
+            </div>
+          </div>
+
+          <!-- Priority dropdown -->
+          <div class="mw-df-wrap" id="mw-pri-wrap">
+            <button class="mw-df-btn" id="mw-pri-btn" onclick="toggleMwDd(event,'mw-pri-dd','mw-pri-wrap')">
+              <span id="mw-pri-label">All Priorities</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <div class="mw-df-dd" id="mw-pri-dd">
+              <div class="mw-df-item active-item" onclick="mwSetFilter('priority','','All Priorities',this)">All Priorities</div>
+              <div class="mw-df-sep"></div>
+              <div class="mw-df-item" onclick="mwSetFilter('priority','high','High',this)">High</div>
+              <div class="mw-df-item" onclick="mwSetFilter('priority','medium','Medium',this)">Medium</div>
+              <div class="mw-df-item" onclick="mwSetFilter('priority','low','Low',this)">Low</div>
+            </div>
+          </div>
+
+          <!-- Date filter dropdown -->
+          <div class="mw-df-wrap" id="mw-due-wrap">
+            <button class="mw-df-btn" id="mw-due-btn" onclick="toggleMwDd(event,'mw-due-dd','mw-due-wrap')">
+              <span id="mw-due-label">Due date</span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <div class="mw-df-dd" id="mw-due-dd">
+              <div class="mw-df-item active-item" onclick="mwSetDue('all','Due date',this)">All</div>
+              <div class="mw-df-sep"></div>
+              <div class="mw-df-item" onclick="mwSetDue('today','Today',this)">Today</div>
+              <div class="mw-df-item" onclick="mwSetDue('week','This week',this)">This week</div>
+              <div class="mw-df-item" onclick="mwSetDue('overdue','Overdue',this)">Overdue</div>
+              <div class="mw-df-item" onclick="mwSetDue('none','No date',this)">No date</div>
+            </div>
+          </div>
         </div>
-        <select class="mw-select" id="mw-filter-project" onchange="applyMwFilters()">
-          <option value="">All Projects</option>
-          <option value="Alpha Project">Alpha Project</option>
-          <option value="Beta Launch">Beta Launch</option>
-          <option value="Mobile App MVP">Mobile App MVP</option>
-          <option value="Design System v2">Design System v2</option>
-        </select>
-        <select class="mw-select" id="mw-filter-priority" onchange="applyMwFilters()">
-          <option value="">All Priorities</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <div class="filter-chips" id="mw-due-chips">
-          <button class="chip active" onclick="filterDue(this,'all')">All</button>
-          <button class="chip" onclick="filterDue(this,'today')">Today</button>
-          <button class="chip" onclick="filterDue(this,'week')">This week</button>
-          <button class="chip" onclick="filterDue(this,'overdue')">Overdue</button>
-          <button class="chip" onclick="filterDue(this,'none')">No date</button>
+
+        <!-- View toggle: List / Table -->
+        <div class="proj-view-switcher">
+          <button class="proj-view-btn active" id="mw-view-list" onclick="mwView('list')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            List
+          </button>
+          <button class="proj-view-btn" id="mw-view-table" onclick="mwView('table')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+            Table
+          </button>
         </div>
       </div>
 
-      <!-- Task table -->
-      <div class="mw-table-wrap">
-        <table class="mw-table" id="mw-task-table">
+      <!-- Task list (div-based, Linear style) -->
+      <div class="mw-table-wrap" id="mw-task-table">
+
+        <!-- ── OVERDUE ── -->
+        <div class="task-group" id="mw-group-overdue" data-group="overdue">
+          <div class="task-group-header" onclick="toggleTaskGroup('mw-group-overdue')">
+            <span class="group-chevron">▾</span>
+            <span class="mw-group-dot overdue"></span>
+            <span class="mw-group-label">Overdue</span>
+            <span class="mw-group-count">(3)</span>
+          </div>
+          <div class="task-row" data-due="overdue" data-priority="high" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill overdue">Overdue</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name">Auth redesign implementation</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">UX</span>
+              <span class="task-due overdue">Jun 10</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="overdue" data-priority="high" data-project="Mobile App MVP">
+            <div class="mw-row-main">
+              <span class="task-status-pill overdue">Overdue</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name">Mobile checkout flow</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Mobile</span>
+              <span class="task-due overdue">Jun 14</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="overdue" data-priority="medium" data-project="Design System v2">
+            <div class="mw-row-main">
+              <span class="task-status-pill overdue">Overdue</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name">Token naming inconsistency fix</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Tokens</span>
+              <span class="task-due overdue">Jun 18</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── IN PROGRESS ── -->
+        <div class="task-group" id="mw-group-inprogress" data-group="inprogress">
+          <div class="task-group-header" onclick="toggleTaskGroup('mw-group-inprogress')">
+            <span class="group-chevron">▾</span>
+            <span class="mw-group-dot inprogress"></span>
+            <span class="mw-group-label">In Progress</span>
+            <span class="mw-group-count">(5)</span>
+          </div>
+          <div class="task-row" data-due="today" data-priority="high" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill inprogress">In Progress</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name">Produce high-fidelity mockups</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">Figma</span>
+              <span class="task-due today">Today</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="today" data-priority="high" data-project="Beta Launch">
+            <div class="mw-row-main">
+              <span class="task-status-pill inprogress">In Progress</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name">API rate limit specification</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Backend</span>
+              <span class="task-due today">Today</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="week" data-priority="medium" data-project="Design System v2">
+            <div class="mw-row-main">
+              <span class="task-status-pill inprogress">In Progress</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name">Component library export</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Components</span>
+              <span class="task-due">Jun 27</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="week" data-priority="medium" data-project="Mobile App MVP">
+            <div class="mw-row-main">
+              <span class="task-status-pill inprogress">In Progress</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name">Implement payment gateway</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Mobile</span>
+              <span class="task-due">Jun 28</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
+            <div class="mw-row-main">
+              <span class="task-status-pill inprogress">In Progress</span>
+              <span class="task-priority low">Low</span>
+              <span class="task-name">Write release notes draft</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Docs</span>
+              <span class="task-due">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TO DO ── -->
+        <div class="task-group" id="mw-group-todo" data-group="todo">
+          <div class="task-group-header" onclick="toggleTaskGroup('mw-group-todo')">
+            <span class="group-chevron">▾</span>
+            <span class="mw-group-dot todo"></span>
+            <span class="mw-group-label">To Do</span>
+            <span class="mw-group-count">(3)</span>
+          </div>
+          <div class="task-row" data-due="none" data-priority="medium" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill todo">To Do</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name">Handoff to engineering</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Handoff</span>
+              <span class="task-due">Jul 15</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
+            <div class="mw-row-main">
+              <span class="task-status-pill todo">To Do</span>
+              <span class="task-priority low">Low</span>
+              <span class="task-name">Onboarding copy finalization</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Copy</span>
+              <span class="task-due">Jul 1</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="low" data-project="Mobile App MVP">
+            <div class="mw-row-main">
+              <span class="task-status-pill todo">To Do</span>
+              <span class="task-priority low">Low</span>
+              <span class="task-name">App store submission checklist</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Mobile</span>
+              <span class="task-due">Jun 30</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── IN REVIEW ── -->
+        <div class="task-group" id="mw-group-inreview" data-group="inreview">
+          <div class="task-group-header" onclick="toggleTaskGroup('mw-group-inreview')">
+            <span class="group-chevron">▾</span>
+            <span class="mw-group-dot inreview"></span>
+            <span class="mw-group-label">In Review</span>
+            <span class="mw-group-count">(2)</span>
+          </div>
+          <div class="task-row" data-due="week" data-priority="high" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill inreview">In Review</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name">Draft information architecture</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">UX</span>
+              <span class="task-due">Jun 26</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="medium" data-project="Design System v2">
+            <div class="mw-row-main">
+              <span class="task-status-pill inreview">In Review</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name">Design system documentation</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Docs</span>
+              <span class="task-due">Jun 25</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── COMPLETED (starts collapsed) ── -->
+        <div class="task-group collapsed" id="mw-group-completed" data-group="completed">
+          <div class="task-group-header" onclick="toggleTaskGroup('mw-group-completed')">
+            <span class="group-chevron">▾</span>
+            <span class="mw-group-dot completed"></span>
+            <span class="mw-group-label">Completed</span>
+            <span class="mw-group-count">(8)</span>
+          </div>
+          <div class="task-row" data-due="none" data-priority="high" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name done-task">Finalize user research synthesis</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">Research</span>
+              <span class="task-due">Jun 10</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="medium" data-project="Design System v2">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name done-task">Audit existing components</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Components</span>
+              <span class="task-due">Jun 12</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority low">Low</span>
+              <span class="task-name done-task">Set up CI/CD pipeline</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Dev</span>
+              <span class="task-due">Jun 15</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="high" data-project="Mobile App MVP">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name done-task">Finalize screen flows</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip green">Mobile</span>
+              <span class="task-due">May 15</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="medium" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name done-task">User interview synthesis</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">Research</span>
+              <span class="task-due">May 20</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="low" data-project="Design System v2">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority low">Low</span>
+              <span class="task-name done-task">Typography scale definition</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip gray">Tokens</span>
+              <span class="task-due">May 28</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="medium" data-project="Beta Launch">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority medium">Medium</span>
+              <span class="task-name done-task">Competitor feature analysis</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip">Research</span>
+              <span class="task-due">Jun 5</span>
+            </div>
+          </div>
+          <div class="task-row" data-due="none" data-priority="high" data-project="Alpha Project">
+            <div class="mw-row-main">
+              <span class="task-status-pill done">Done</span>
+              <span class="task-priority high">High</span>
+              <span class="task-name done-task">Stakeholder alignment deck</span>
+            </div>
+            <div class="mw-row-right">
+              <img class="mw-task-av" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt="">
+              <span class="task-label-chip amber">Strategy</span>
+              <span class="task-due">Jun 8</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TABLE VIEW ── -->
+      <div class="mw-tbl-view" id="mw-tbl-view">
+        <table class="mw-tbl">
           <thead>
             <tr>
-              <th style="width:36px"></th>
+              <th style="width:110px">Status</th>
+              <th style="width:80px">Priority</th>
               <th>Task</th>
-              <th style="width:150px">Project</th>
-              <th style="width:90px">Priority</th>
-              <th style="width:110px">Due Date</th>
-              <th>Labels</th>
-              <th style="width:72px"></th>
+              <th style="width:140px">Project</th>
+              <th style="width:80px">Due</th>
+              <th style="width:80px">Label</th>
+              <th style="width:40px">Assignee</th>
             </tr>
           </thead>
-            <!-- ── OVERDUE group ── -->
-            <tbody class="task-group" id="mw-group-overdue" data-group="overdue">
-              <tr class="task-group-header" onclick="toggleTaskGroup('mw-group-overdue')">
-                <td colspan="7"><span class="group-chevron">▾</span>Overdue · 3</td>
-              </tr>
-              <tr class="task-row" data-due="overdue" data-priority="high" data-project="Alpha Project">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Auth redesign implementation</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due overdue">Jun 10</span></td>
-                <td><span class="task-label-chip">UX</span><span class="task-label-chip amber">Design</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="overdue" data-priority="high" data-project="Mobile App MVP">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Mobile checkout flow</span></td>
-                <td><span class="task-project">Mobile App MVP</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due overdue">Jun 14</span></td>
-                <td><span class="task-label-chip green">Mobile</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="overdue" data-priority="medium" data-project="Design System v2">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Token naming inconsistency fix</span></td>
-                <td><span class="task-project">Design System v2</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due overdue">Jun 18</span></td>
-                <td><span class="task-label-chip gray">Tokens</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-            </tbody>
-
-            <!-- ── IN PROGRESS group ── -->
-            <tbody class="task-group" id="mw-group-inprogress" data-group="inprogress">
-              <tr class="task-group-header" onclick="toggleTaskGroup('mw-group-inprogress')">
-                <td colspan="7"><span class="group-chevron">▾</span>In Progress · 5</td>
-              </tr>
-              <tr class="task-row" data-due="week" data-priority="high" data-project="Alpha Project">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Produce high-fidelity mockups</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due today">Today</span></td>
-                <td><span class="task-label-chip">UX</span><span class="task-label-chip">Figma</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="week" data-priority="high" data-project="Beta Launch">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">API rate limit specification</span></td>
-                <td><span class="task-project">Beta Launch</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due today">Today</span></td>
-                <td><span class="task-label-chip gray">Backend</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="week" data-priority="medium" data-project="Design System v2">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Component library export</span></td>
-                <td><span class="task-project">Design System v2</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jun 23</span></td>
-                <td><span class="task-label-chip green">Components</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="week" data-priority="medium" data-project="Mobile App MVP">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Implement payment gateway</span></td>
-                <td><span class="task-project">Mobile App MVP</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jun 24</span></td>
-                <td><span class="task-label-chip green">Mobile</span><span class="task-label-chip gray">Dev</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Write release notes draft</span></td>
-                <td><span class="task-project">Beta Launch</span></td>
-                <td><span class="task-priority low">LOW</span></td>
-                <td><span class="task-due" style="color:var(--gray-400)">—</span></td>
-                <td><span class="task-label-chip gray">Docs</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-            </tbody>
-
-            <!-- ── TODO group ── -->
-            <tbody class="task-group" id="mw-group-todo" data-group="todo">
-              <tr class="task-group-header" onclick="toggleTaskGroup('mw-group-todo')">
-                <td colspan="7"><span class="group-chevron">▾</span>To Do · 3</td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="medium" data-project="Alpha Project">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Handoff to engineering</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jul 15</span></td>
-                <td><span class="task-label-chip gray">Handoff</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Onboarding copy finalization</span></td>
-                <td><span class="task-project">Beta Launch</span></td>
-                <td><span class="task-priority low">LOW</span></td>
-                <td><span class="task-due">Jul 1</span></td>
-                <td><span class="task-label-chip gray">Copy</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="low" data-project="Mobile App MVP">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">App store submission checklist</span></td>
-                <td><span class="task-project">Mobile App MVP</span></td>
-                <td><span class="task-priority low">LOW</span></td>
-                <td><span class="task-due">Jun 30</span></td>
-                <td><span class="task-label-chip green">Mobile</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-            </tbody>
-
-            <!-- ── IN REVIEW group ── -->
-            <tbody class="task-group" id="mw-group-inreview" data-group="inreview">
-              <tr class="task-group-header" onclick="toggleTaskGroup('mw-group-inreview')">
-                <td colspan="7"><span class="group-chevron">▾</span>In Review · 2</td>
-              </tr>
-              <tr class="task-row" data-due="week" data-priority="high" data-project="Alpha Project">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Draft information architecture</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due">Jun 22</span></td>
-                <td><span class="task-label-chip">UX</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="medium" data-project="Design System v2">
-                <td><input type="checkbox" style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name">Design system documentation</span></td>
-                <td><span class="task-project">Design System v2</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jun 25</span></td>
-                <td><span class="task-label-chip gray">Docs</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-            </tbody>
-
-            <!-- ── COMPLETED group (starts collapsed) ── -->
-            <tbody class="task-group collapsed" id="mw-group-completed" data-group="completed">
-              <tr class="task-group-header" onclick="toggleTaskGroup('mw-group-completed')">
-                <td colspan="7"><span class="group-chevron">▾</span>Completed · 8</td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="high" data-project="Alpha Project">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Finalize user research synthesis</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due">Jun 10</span></td>
-                <td><span class="task-label-chip">Research</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="medium" data-project="Design System v2">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Audit existing components</span></td>
-                <td><span class="task-project">Design System v2</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jun 12</span></td>
-                <td><span class="task-label-chip green">Components</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="low" data-project="Beta Launch">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Set up CI/CD pipeline</span></td>
-                <td><span class="task-project">Beta Launch</span></td>
-                <td><span class="task-priority low">LOW</span></td>
-                <td><span class="task-due">Jun 15</span></td>
-                <td><span class="task-label-chip gray">Dev</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="high" data-project="Mobile App MVP">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Finalize screen flows</span></td>
-                <td><span class="task-project">Mobile App MVP</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due">May 15</span></td>
-                <td><span class="task-label-chip green">Mobile</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="medium" data-project="Alpha Project">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">User interview synthesis</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">May 20</span></td>
-                <td><span class="task-label-chip">Research</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="low" data-project="Design System v2">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Typography scale definition</span></td>
-                <td><span class="task-project">Design System v2</span></td>
-                <td><span class="task-priority low">LOW</span></td>
-                <td><span class="task-due">May 28</span></td>
-                <td><span class="task-label-chip gray">Tokens</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="medium" data-project="Beta Launch">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Competitor feature analysis</span></td>
-                <td><span class="task-project">Beta Launch</span></td>
-                <td><span class="task-priority medium">MED</span></td>
-                <td><span class="task-due">Jun 5</span></td>
-                <td><span class="task-label-chip">Research</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-              <tr class="task-row" data-due="none" data-priority="high" data-project="Alpha Project">
-                <td><input type="checkbox" checked style="accent-color:var(--blue-500)"></td>
-                <td><span class="task-name done-task">Stakeholder alignment deck</span></td>
-                <td><span class="task-project">Alpha Project</span></td>
-                <td><span class="task-priority high">HIGH</span></td>
-                <td><span class="task-due">Jun 8</span></td>
-                <td><span class="task-label-chip amber">Strategy</span></td>
-                <td><div class="task-actions">
-                  <button class="add-today-btn" title="Add to My Day"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-                  <button class="task-more-btn" title="More options"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button>
-                </div></td>
-              </tr>
-            </tbody>
-
+          <tbody>
+            <!-- Overdue -->
+            <tr data-due="overdue" data-priority="high" data-project="Alpha Project">
+              <td><span class="task-status-pill overdue">Overdue</span></td>
+              <td><span class="task-priority high">High</span></td>
+              <td class="td-task">Auth redesign implementation</td>
+              <td class="td-proj">Alpha Project</td>
+              <td class="td-due overdue">Jun 10</td>
+              <td><span class="task-label-chip">UX</span></td>
+              <td><img class="mw-tbl td-av" style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="overdue" data-priority="high" data-project="Mobile App MVP">
+              <td><span class="task-status-pill overdue">Overdue</span></td>
+              <td><span class="task-priority high">High</span></td>
+              <td class="td-task">Mobile checkout flow</td>
+              <td class="td-proj">Mobile App MVP</td>
+              <td class="td-due overdue">Jun 14</td>
+              <td><span class="task-label-chip green">Mobile</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="overdue" data-priority="medium" data-project="Design System v2">
+              <td><span class="task-status-pill overdue">Overdue</span></td>
+              <td><span class="task-priority medium">Medium</span></td>
+              <td class="td-task">Token naming inconsistency fix</td>
+              <td class="td-proj">Design System v2</td>
+              <td class="td-due overdue">Jun 18</td>
+              <td><span class="task-label-chip gray">Tokens</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <!-- In Progress -->
+            <tr data-due="today" data-priority="high" data-project="Alpha Project">
+              <td><span class="task-status-pill inprogress">In Progress</span></td>
+              <td><span class="task-priority high">High</span></td>
+              <td class="td-task">Produce high-fidelity mockups</td>
+              <td class="td-proj">Alpha Project</td>
+              <td class="td-due today">Today</td>
+              <td><span class="task-label-chip">Figma</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="today" data-priority="high" data-project="Beta Launch">
+              <td><span class="task-status-pill inprogress">In Progress</span></td>
+              <td><span class="task-priority high">High</span></td>
+              <td class="td-task">API rate limit specification</td>
+              <td class="td-proj">Beta Launch</td>
+              <td class="td-due today">Today</td>
+              <td><span class="task-label-chip gray">Backend</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="week" data-priority="medium" data-project="Design System v2">
+              <td><span class="task-status-pill inprogress">In Progress</span></td>
+              <td><span class="task-priority medium">Medium</span></td>
+              <td class="td-task">Component library export</td>
+              <td class="td-proj">Design System v2</td>
+              <td class="td-due">Jun 27</td>
+              <td><span class="task-label-chip green">Components</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="week" data-priority="medium" data-project="Mobile App MVP">
+              <td><span class="task-status-pill inprogress">In Progress</span></td>
+              <td><span class="task-priority medium">Medium</span></td>
+              <td class="td-task">Implement payment gateway</td>
+              <td class="td-proj">Mobile App MVP</td>
+              <td class="td-due">Jun 28</td>
+              <td><span class="task-label-chip green">Mobile</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="none" data-priority="low" data-project="Beta Launch">
+              <td><span class="task-status-pill inprogress">In Progress</span></td>
+              <td><span class="task-priority low">Low</span></td>
+              <td class="td-task">Write release notes draft</td>
+              <td class="td-proj">Beta Launch</td>
+              <td class="td-due">—</td>
+              <td><span class="task-label-chip gray">Docs</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <!-- In Review -->
+            <tr data-due="week" data-priority="high" data-project="Alpha Project">
+              <td><span class="task-status-pill inreview">In Review</span></td>
+              <td><span class="task-priority high">High</span></td>
+              <td class="td-task">Draft information architecture</td>
+              <td class="td-proj">Alpha Project</td>
+              <td class="td-due">Jun 26</td>
+              <td><span class="task-label-chip">UX</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="none" data-priority="medium" data-project="Design System v2">
+              <td><span class="task-status-pill inreview">In Review</span></td>
+              <td><span class="task-priority medium">Medium</span></td>
+              <td class="td-task">Design system documentation</td>
+              <td class="td-proj">Design System v2</td>
+              <td class="td-due">Jun 25</td>
+              <td><span class="task-label-chip gray">Docs</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <!-- To Do -->
+            <tr data-due="none" data-priority="medium" data-project="Alpha Project">
+              <td><span class="task-status-pill todo">To Do</span></td>
+              <td><span class="task-priority medium">Medium</span></td>
+              <td class="td-task">Handoff to engineering</td>
+              <td class="td-proj">Alpha Project</td>
+              <td class="td-due">Jul 15</td>
+              <td><span class="task-label-chip gray">Handoff</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="none" data-priority="low" data-project="Beta Launch">
+              <td><span class="task-status-pill todo">To Do</span></td>
+              <td><span class="task-priority low">Low</span></td>
+              <td class="td-task">Onboarding copy finalization</td>
+              <td class="td-proj">Beta Launch</td>
+              <td class="td-due">Jul 1</td>
+              <td><span class="task-label-chip gray">Copy</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+            <tr data-due="none" data-priority="low" data-project="Mobile App MVP">
+              <td><span class="task-status-pill todo">To Do</span></td>
+              <td><span class="task-priority low">Low</span></td>
+              <td class="td-task">App store submission checklist</td>
+              <td class="td-proj">Mobile App MVP</td>
+              <td class="td-due">Jun 30</td>
+              <td><span class="task-label-chip green">Mobile</span></td>
+              <td><img style="width:22px;height:22px;border-radius:50%;object-fit:cover" src="https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid" alt=""></td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -3887,19 +5232,24 @@
     <div id="page-team" class="content-scroll" style="display:none">
 
       <!-- Header -->
-      <div class="mw-header">
+      <div class="mw-header" style="align-items:center">
         <div>
           <div class="mw-title">Team Workload</div>
           <div class="mw-subtitle">This week · Jun 16–22, 2026</div>
         </div>
-        <button style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:none;background:var(--blue-600);color:white;font-size:13px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Assign task
-        </button>
+        <div class="tw-legend" style="margin-bottom:0;flex-wrap:nowrap">
+          <span class="tw-legend-dot available"></span>Available &lt;3 tasks
+          <span class="tw-sep">·</span>
+          <span class="tw-legend-dot balanced"></span>Balanced 3–5
+          <span class="tw-sep">·</span>
+          <span class="tw-legend-dot capacity"></span>At capacity 6–9
+          <span class="tw-sep">·</span>
+          <span class="tw-legend-dot overloaded"></span>Overloaded &gt;9
+        </div>
       </div>
 
       <!-- KPI Cards -->
-      <div class="kpi-strip" style="padding: 20px 32px 0;">
+      <div class="kpi-strip" style="padding: 0 0 16px 0;">
         <!-- Total Tasks -->
         <div class="kpi-cell">
           <div class="kpi-header">
@@ -3975,32 +5325,6 @@
         </div>
       </div>
 
-      <!-- Filters -->
-      <div class="tw-filters">
-        <div class="filter-chips">
-          <button class="chip active">This week</button>
-          <button class="chip">This sprint</button>
-          <button class="chip">This month</button>
-        </div>
-        <select class="mw-select">
-          <option>All Projects</option>
-          <option>Alpha Project</option>
-          <option>Beta Launch</option>
-          <option>Mobile App MVP</option>
-          <option>Design System v2</option>
-        </select>
-      </div>
-
-      <!-- Legend -->
-      <div class="tw-legend">
-        <span class="tw-legend-dot available"></span>Available &lt;3 tasks
-        <span class="tw-sep">·</span>
-        <span class="tw-legend-dot balanced"></span>Balanced 3–5
-        <span class="tw-sep">·</span>
-        <span class="tw-legend-dot capacity"></span>At capacity 6–9
-        <span class="tw-sep">·</span>
-        <span class="tw-legend-dot overloaded"></span>Overloaded &gt;9
-      </div>
 
       <!-- Workload Table -->
       <div class="tw-table-wrap">
@@ -5437,8 +6761,8 @@
       });
     }
     /* ── Page Navigation ── */
-    const PAGE_DISPLAY = { dashboard: 'flex', projects: 'flex', 'project-detail': 'flex', mywork: 'flex', team: 'flex', settings: 'flex' };
-    const PAGE_TITLES  = { dashboard: 'Dashboard', projects: 'Projects', 'project-detail': 'Alpha Project', mywork: 'My Work', team: 'Team Workload', settings: 'Settings' };
+    const PAGE_DISPLAY = { dashboard: 'flex', goals: 'flex', 'goal-detail': 'flex', projects: 'flex', board: 'flex', 'project-detail': 'flex', mywork: 'flex', team: 'flex', settings: 'flex' };
+    const PAGE_TITLES  = { dashboard: 'Dashboard', goals: 'Goals', 'goal-detail': '1000 Dribbble Shots', projects: 'Projects', board: 'Board', 'project-detail': 'Alpha Project', mywork: 'My Work', team: 'Team Workload', settings: 'Settings' };
     function navigate(page) {
       Object.keys(PAGE_DISPLAY).forEach(p => {
         const el = document.getElementById('page-' + p);
@@ -5618,27 +6942,73 @@
     });
   }
 
-  /* Due date chip filter */
-  function filterDue(btn, mode) {
-    document.querySelectorAll('#mw-due-chips .chip').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('#mw-task-table .task-row').forEach(row => {
+  /* ── My Work filter state ── */
+  let _mwFilters = { project: '', priority: '' };
+  let _mwDueMode = 'all';
+
+  /* Dropdown toggle */
+  function toggleMwDd(e, ddId, wrapId) {
+    e.stopPropagation();
+    const dd = document.getElementById(ddId);
+    const isOpen = dd.classList.contains('open');
+    document.querySelectorAll('.mw-df-dd').forEach(d => d.classList.remove('open'));
+    if (!isOpen) dd.classList.add('open');
+  }
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.mw-df-dd').forEach(d => d.classList.remove('open'));
+  });
+
+  /* Set project / priority filter */
+  function mwSetFilter(key, value, label, itemEl) {
+    _mwFilters[key] = value;
+    const btnId  = key === 'project' ? 'mw-proj-btn'   : 'mw-pri-btn';
+    const lblId  = key === 'project' ? 'mw-proj-label' : 'mw-pri-label';
+    const ddId   = key === 'project' ? 'mw-proj-dd'    : 'mw-pri-dd';
+    document.getElementById(lblId).textContent = label;
+    document.getElementById(btnId).classList.toggle('has-filter', !!value);
+    document.querySelectorAll('#' + ddId + ' .mw-df-item').forEach(i => i.classList.remove('active-item'));
+    itemEl.classList.add('active-item');
+    document.getElementById(ddId).classList.remove('open');
+    applyMwFilters();
+  }
+
+  /* View toggle */
+  function mwView(view) {
+    document.querySelectorAll('#mw-view-list, #mw-view-table').forEach(b => b.classList.remove('active'));
+    document.getElementById('mw-view-' + view).classList.add('active');
+    document.getElementById('mw-task-table').style.display = view === 'list' ? '' : 'none';
+    document.getElementById('mw-tbl-view').style.display   = view === 'table' ? 'flex' : 'none';
+  }
+
+  /* Due date dropdown filter */
+  function mwSetDue(mode, label, itemEl) {
+    _mwDueMode = mode;
+    document.getElementById('mw-due-label').textContent = label;
+    document.getElementById('mw-due-btn').classList.toggle('has-filter', mode !== 'all');
+    document.querySelectorAll('#mw-due-dd .mw-df-item').forEach(i => i.classList.remove('active-item'));
+    itemEl.classList.add('active-item');
+    document.getElementById('mw-due-dd').classList.remove('open');
+    const rows = [...document.querySelectorAll('#mw-task-table .task-row'),
+                  ...document.querySelectorAll('#mw-tbl-view tbody tr')];
+    rows.forEach(row => {
       const due = row.dataset.due || '';
-      let show = false;
-      if (mode === 'all')    show = true;
-      else if (mode === 'today')   show = due === 'today';
-      else if (mode === 'week')    show = due === 'week' || due === 'today';
-      else if (mode === 'overdue') show = due === 'overdue';
-      else if (mode === 'none')    show = due === 'none';
+      const show = mode === 'all' || (mode === 'today' && due === 'today') ||
+                   (mode === 'week' && (due === 'week' || due === 'today')) ||
+                   (mode === 'overdue' && due === 'overdue') || (mode === 'none' && due === 'none');
       row.style.display = show ? '' : 'none';
     });
   }
 
-  /* Project / priority filter selects */
+  /* Project / priority filters */
   function applyMwFilters() {
-    const project  = document.getElementById('mw-filter-project').value;
-    const priority = document.getElementById('mw-filter-priority').value;
+    const project  = _mwFilters.project;
+    const priority = _mwFilters.priority;
     document.querySelectorAll('#mw-task-table .task-row').forEach(row => {
+      const matchProj = !project  || row.dataset.project  === project;
+      const matchPri  = !priority || row.dataset.priority === priority;
+      row.style.display = (matchProj && matchPri) ? '' : 'none';
+    });
+    document.querySelectorAll('#mw-tbl-view tbody tr').forEach(row => {
       const matchProj = !project  || row.dataset.project  === project;
       const matchPri  = !priority || row.dataset.priority === priority;
       row.style.display = (matchProj && matchPri) ? '' : 'none';

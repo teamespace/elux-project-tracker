@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Critical Issues — Elux Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gray-50:#F9FAFB; --gray-100:#F3F4F6; --gray-200:#E5E7EB; --gray-300:#D1D5DB;
+    --gray-400:#9CA3AF; --gray-500:#6B7280; --gray-600:#4B5563; --gray-700:#374151;
+    --gray-900:#111827; --blue-50:#EFF6FF; --blue-100:#DBEAFE;
+    --blue-500:#3B82F6; --blue-600:#2563EB; --red-500:#EF4444; --red-600:#DC2626;
+    --amber-500:#F59E0B;
+  }
+  html, body { height: 100%; margin: 0; padding: 0; }
+  body { font-family: 'Geist', -apple-system, sans-serif; background: #fafafa; display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 64px; height: 100vh; background: transparent;
+    display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
+    transition: width 0.22s ease;
+  }
+  .sidebar.expanded { width: 240px; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 16px 0 14px; }
+  .sidebar.expanded .sidebar-brand { justify-content: flex-start; padding-left: 14px; gap: 10px; }
+  .brand-icon { width: 28px; height: 28px; background: #2563EB; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .brand-name { display: none; font-size: 14px; font-weight: 600; color: var(--gray-700); white-space: nowrap; }
+  .sidebar.expanded .brand-name { display: inline; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow-y: auto; }
+  .sidebar.expanded .sidebar-nav { align-items: flex-start; }
+  .nav-label { display: none; font-size: 13px; white-space: nowrap; }
+  .sidebar.expanded .nav-label { display: inline; }
+  .nav-item {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 10px; color: var(--gray-400);
+    cursor: pointer; text-decoration: none; position: relative;
+    transition: background 0.1s, color 0.1s; font-size: 0;
+  }
+  .sidebar.expanded .nav-item { justify-content: flex-start; width: calc(100% - 16px); margin: 0 8px; padding: 0 10px; gap: 10px; border-radius: 8px; font-size: 13px; color: var(--gray-600); }
+  .sidebar.expanded .nav-item.active { color: var(--blue-600); }
+  .nav-item:hover { background: rgba(0,0,0,0.06); color: var(--gray-700); }
+  .nav-item.active { background: white; color: var(--blue-600); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.6; }
+  .nav-item:hover .nav-icon, .nav-item.active .nav-icon { opacity: 1; }
+  .sidebar-footer { padding: 12px 0 16px; display: flex; justify-content: center; }
+  .sidebar.expanded .sidebar-footer { justify-content: flex-start; padding: 12px 14px 16px; gap: 10px; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #6366F1; color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .user-info { display: none; }
+  .sidebar.expanded .user-info { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+  .user-name { font-size: 13px; font-weight: 600; color: #1F2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Content */
+  .content-card { flex: 1; margin: 8px 8px 8px 0; background: white; border-radius: 12px; border: 1px solid rgba(0,0,0,0.09); display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Topbar */
+  .topbar { height: 52px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-200); flex-shrink: 0; }
+  .topbar-left { display: flex; align-items: center; gap: 0; }
+  .topbar-sidebar-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 7px; border: none; background: transparent; color: var(--gray-400); cursor: pointer; transition: background 0.1s; }
+  .topbar-sidebar-toggle:hover { background: var(--gray-100); color: var(--gray-700); }
+  .topbar-divider { width: 1px; height: 18px; background: var(--gray-200); margin: 0 12px; }
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-400); }
+  .breadcrumb a { color: var(--gray-400); text-decoration: none; transition: color 0.1s; }
+  .breadcrumb a:hover { color: var(--gray-700); }
+  .breadcrumb .sep { color: var(--gray-300); }
+  .breadcrumb .current { color: var(--gray-900); font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .search-bar { display: flex; align-items: center; gap: 8px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--gray-400); cursor: text; width: 200px; }
+  .search-kbd { margin-left: auto; font-size: 10px; color: var(--gray-400); background: white; border: 1px solid var(--gray-200); border-radius: 4px; padding: 1px 4px; }
+  .btn-icon { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-500); position: relative; }
+  .btn-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: var(--blue-500); border-radius: 50%; border: 1.5px solid white; }
+
+  /* Page content */
+  .page-scroll { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .page-header { margin-bottom: 24px; }
+  .page-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .page-title { font-size: 22px; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 10px; }
+  .ci-pulse { width: 8px; height: 8px; background: #EF4444; border-radius: 50%; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); flex-shrink: 0; }
+  .page-meta { font-size: 13px; color: var(--gray-400); display: flex; align-items: center; gap: 12px; }
+  .page-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* Toolbar */
+  .ci-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .ci-search { display: flex; align-items: center; gap: 8px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px 12px; flex: 1; max-width: 320px; }
+  .ci-search input { border: none; background: none; font-size: 13px; color: var(--gray-700); outline: none; width: 100%; font-family: inherit; }
+  .ci-search input::placeholder { color: var(--gray-400); }
+  .fdd-wrap { position: relative; }
+  .fdd-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-family: 'Geist', sans-serif; transition: border-color 0.1s, background 0.1s; user-select: none; }
+  .fdd-btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .fdd-btn.active { border-color: var(--blue-500); color: var(--blue-600); background: var(--blue-50); }
+  .fdd-btn.active svg { transform: rotate(180deg); }
+  .fdd-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 5px; z-index: 200; min-width: 160px; }
+  .fdd-menu.open { display: block; }
+  .fdd-item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; font-size: 13px; color: var(--gray-700); border-radius: 6px; cursor: pointer; }
+  .fdd-item:hover { background: var(--gray-50); }
+  .fdd-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue-600); cursor: pointer; flex-shrink: 0; }
+
+  /* Table */
+  .ci-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+  .ci-full-table { width: 100%; border-collapse: collapse; }
+  .ci-full-table th { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 16px; border-bottom: 1px solid var(--gray-200); text-align: left; background: var(--gray-50); }
+  .ci-full-table td { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); font-size: 13.5px; vertical-align: middle; }
+  .ci-full-table tbody tr:last-child td { border-bottom: none; }
+  .ci-full-table tbody tr:hover td { background: var(--gray-50); cursor: pointer; }
+  .ci-issue-title { font-weight: 500; color: var(--gray-900); margin-bottom: 2px; }
+  .ci-issue-sub { font-size: 12px; color: var(--gray-400); }
+  .pri-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .04em; display: inline-block; }
+  .pri-high { background:#FEE2E2;color:#991B1B; }
+  .pri-med  { background:#FEF3C7;color:#92400E; }
+  .status-badge { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px; display: inline-block; }
+  .st-overdue     { background:#FEE2E2;color:#991B1B; }
+  .st-atrisk      { background:#FEF3C7;color:#92400E; }
+  .st-notstarted  { background:var(--gray-100);color:var(--gray-500); }
+  .col-proj { color: var(--gray-500); font-size: 13px; }
+  .col-assignee { color: var(--gray-600); font-size: 13px; }
+  .view-btn-sm { font-size: 12px; color: var(--gray-500); background: white; border: 1px solid var(--gray-200); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; transition: color 0.1s, border-color 0.1s; }
+  .view-btn-sm:hover { color: var(--gray-900); border-color: var(--gray-400); }
+
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">E</div>
+    <span class="brand-name">Elux Space</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="dashboard-mockup-v3.html" title="Dashboard">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="#" title="Goals"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span class="nav-label">Goals</span></a>
+    <a class="nav-item" href="#" title="Projects"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg><span class="nav-label">Projects</span></a>
+    <a class="nav-item" href="#" title="Board"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span class="nav-label">Board</span></a>
+    <a class="nav-item" href="#" title="My Work"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span class="nav-label">My Work</span></a>
+    <a class="nav-item" href="#" title="Team"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-label">Team</span></a>
+    <a class="nav-item" href="#" title="Docs"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="nav-label">Docs</span></a>
+    <a class="nav-item" href="#" title="Settings" style="margin-top:auto"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-label">Settings</span></a>
+    <a class="nav-item" href="#" title="Help"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="nav-label">Help</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar">RA</div>
+    <div class="user-info">
+      <div class="user-name">Rasya Ardiansyah</div>
+      <div class="user-role">Product Designer</div>
+    </div>
+  </div>
+</aside>
+
+<div class="content-card">
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('expanded')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+      </button>
+      <div class="topbar-divider"></div>
+      <nav class="breadcrumb">
+        <a href="dashboard-mockup-v3.html">Dashboard</a>
+        <svg class="sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="current">Critical Issues</span>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Search...</span>
+        <span class="search-kbd">⌘K</span>
+      </div>
+      <div class="btn-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="btn-notif-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-scroll">
+    <div class="page-header">
+      <div class="page-title-row">
+        <div class="page-title">
+          <div class="ci-pulse"></div>
+          Critical Issues
+          <span style="font-size:14px;font-weight:500;color:var(--gray-400);background:var(--gray-100);border-radius:10px;padding:2px 10px">5</span>
+        </div>
+        <button style="display:inline-flex;align-items:center;gap:6px;background:var(--gray-900);color:white;border:none;border-radius:8px;padding:0 14px;height:36px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          New Issue
+        </button>
+      </div>
+      <div class="page-meta">
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> 3 High priority</span>
+        <span>·</span>
+        <span>2 Overdue</span>
+        <span>·</span>
+        <span>Last updated 10m ago</span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="ci-toolbar">
+      <div class="ci-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gray-400);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="ci-q" type="text" placeholder="Search issues..." oninput="runFilter()">
+      </div>
+      <div class="fdd-wrap">
+        <button class="fdd-btn" onclick="toggleDD(this)">
+          Status
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="fdd-menu" data-group="status">
+          <label class="fdd-item"><input type="checkbox" data-f="Overdue" checked onchange="runFilter()"> Overdue</label>
+          <label class="fdd-item"><input type="checkbox" data-f="At Risk" checked onchange="runFilter()"> At Risk</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Not Started" checked onchange="runFilter()"> Not Started</label>
+        </div>
+      </div>
+      <div class="fdd-wrap">
+        <button class="fdd-btn" onclick="toggleDD(this)">
+          Priority
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="fdd-menu" data-group="priority">
+          <label class="fdd-item"><input type="checkbox" data-f="High" checked onchange="runFilter()"> High</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Medium" checked onchange="runFilter()"> Medium</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="ci-card">
+      <table class="ci-full-table" id="ci-table">
+        <thead>
+          <tr>
+            <th style="width:90px">Priority</th>
+            <th>Issue</th>
+            <th style="width:160px">Project</th>
+            <th style="width:130px">Assignee</th>
+            <th style="width:130px">Status</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-priority="High" data-status="Overdue">
+            <td><span class="pri-badge pri-high">HIGH</span></td>
+            <td><div class="ci-issue-title">Auth redesign implementation</div><div class="ci-issue-sub">Blocking login flow for new users</div></td>
+            <td class="col-proj">Alpha Project</td>
+            <td class="col-assignee">Dito</td>
+            <td><span class="status-badge st-overdue">Overdue</span></td>
+            <td><button class="view-btn-sm">View</button></td>
+          </tr>
+          <tr data-priority="High" data-status="At Risk">
+            <td><span class="pri-badge pri-high">HIGH</span></td>
+            <td><div class="ci-issue-title">API rate limit specification</div><div class="ci-issue-sub">Missing specs before dev handoff</div></td>
+            <td class="col-proj">Beta Launch</td>
+            <td class="col-assignee" style="color:var(--gray-400)">Unassigned</td>
+            <td><span class="status-badge st-atrisk">At Risk</span></td>
+            <td><button class="view-btn-sm">View</button></td>
+          </tr>
+          <tr data-priority="High" data-status="Overdue">
+            <td><span class="pri-badge pri-high">HIGH</span></td>
+            <td><div class="ci-issue-title">Mobile checkout flow blocked</div><div class="ci-issue-sub">Payment gateway integration stalled</div></td>
+            <td class="col-proj">Mobile App MVP</td>
+            <td class="col-assignee">Dito</td>
+            <td><span class="status-badge st-overdue">Overdue</span></td>
+            <td><button class="view-btn-sm">View</button></td>
+          </tr>
+          <tr data-priority="Medium" data-status="At Risk">
+            <td><span class="pri-badge pri-med">MED</span></td>
+            <td><div class="ci-issue-title">Token naming inconsistency</div><div class="ci-issue-sub">Affecting component library export</div></td>
+            <td class="col-proj">Design System v2</td>
+            <td class="col-assignee">Rasya</td>
+            <td><span class="status-badge st-atrisk">At Risk</span></td>
+            <td><button class="view-btn-sm">View</button></td>
+          </tr>
+          <tr data-priority="Medium" data-status="Not Started">
+            <td><span class="pri-badge pri-med">MED</span></td>
+            <td><div class="ci-issue-title">Onboarding copy finalization</div><div class="ci-issue-sub">Copy needed for QA sign-off</div></td>
+            <td class="col-proj">Internal Tools</td>
+            <td class="col-assignee">Rara</td>
+            <td><span class="status-badge st-notstarted">Not Started</span></td>
+            <td><button class="view-btn-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /page-scroll -->
+</main>
+</div>
+
+<script>
+  let activeDD = null;
+  function toggleDD(btn) {
+    const wrap = btn.closest('.fdd-wrap');
+    const menu = wrap.querySelector('.fdd-menu');
+    const isOpen = menu.classList.contains('open');
+    if (activeDD && activeDD !== wrap) {
+      activeDD.querySelector('.fdd-menu').classList.remove('open');
+      activeDD.querySelector('.fdd-btn').classList.remove('active');
+    }
+    menu.classList.toggle('open', !isOpen);
+    btn.classList.toggle('active', !isOpen);
+    activeDD = !isOpen ? wrap : null;
+  }
+  document.addEventListener('click', e => {
+    if (activeDD && !e.target.closest('.fdd-wrap')) {
+      activeDD.querySelector('.fdd-menu').classList.remove('open');
+      activeDD.querySelector('.fdd-btn').classList.remove('active');
+      activeDD = null;
+    }
+  });
+  function runFilter() {
+    const q = document.getElementById('ci-q').value.toLowerCase();
+    const stChecked  = [...document.querySelectorAll('.fdd-menu[data-group="status"] input:checked')].map(c => c.dataset.f);
+    const priChecked = [...document.querySelectorAll('.fdd-menu[data-group="priority"] input:checked')].map(c => c.dataset.f);
+    document.querySelectorAll('#ci-table tbody tr').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const pri  = row.dataset.priority || '';
+      const st   = row.dataset.status   || '';
+      const matchQ = !q || text.includes(q);
+      const matchP = priChecked.length === 0 || priChecked.includes(pri);
+      const matchS = stChecked.length  === 0 || stChecked.includes(st);
+      row.style.display = (matchQ && matchP && matchS) ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

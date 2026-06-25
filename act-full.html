@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recent Activity — Elux Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gray-50:#F9FAFB; --gray-100:#F3F4F6; --gray-200:#E5E7EB; --gray-300:#D1D5DB;
+    --gray-400:#9CA3AF; --gray-500:#6B7280; --gray-600:#4B5563; --gray-700:#374151;
+    --gray-900:#111827; --blue-50:#EFF6FF; --blue-100:#DBEAFE;
+    --blue-500:#3B82F6; --blue-600:#2563EB;
+  }
+  html, body { height: 100%; margin: 0; padding: 0; }
+  body { font-family: 'Geist', -apple-system, sans-serif; background: #fafafa; display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar { width: 64px; height: 100vh; background: transparent; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 0.22s ease; }
+  .sidebar.expanded { width: 240px; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 16px 0 14px; }
+  .sidebar.expanded .sidebar-brand { justify-content: flex-start; padding-left: 14px; gap: 10px; }
+  .brand-icon { width: 28px; height: 28px; background: #2563EB; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .brand-name { display: none; font-size: 14px; font-weight: 600; color: var(--gray-700); white-space: nowrap; }
+  .sidebar.expanded .brand-name { display: inline; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow-y: auto; }
+  .sidebar.expanded .sidebar-nav { align-items: flex-start; }
+  .nav-label { display: none; font-size: 13px; white-space: nowrap; }
+  .sidebar.expanded .nav-label { display: inline; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; color: var(--gray-400); cursor: pointer; text-decoration: none; transition: background 0.1s, color 0.1s; font-size: 0; }
+  .sidebar.expanded .nav-item { justify-content: flex-start; width: calc(100% - 16px); margin: 0 8px; padding: 0 10px; gap: 10px; border-radius: 8px; font-size: 13px; color: var(--gray-600); }
+  .sidebar.expanded .nav-item.active { color: var(--blue-600); }
+  .nav-item:hover { background: rgba(0,0,0,0.06); color: var(--gray-700); }
+  .nav-item.active { background: white; color: var(--blue-600); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.6; }
+  .nav-item:hover .nav-icon, .nav-item.active .nav-icon { opacity: 1; }
+  .sidebar-footer { padding: 12px 0 16px; display: flex; justify-content: center; }
+  .sidebar.expanded .sidebar-footer { justify-content: flex-start; padding: 12px 14px 16px; gap: 10px; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #6366F1; color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .user-info { display: none; }
+  .sidebar.expanded .user-info { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+  .user-name { font-size: 13px; font-weight: 600; color: #1F2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Content */
+  .content-card { flex: 1; margin: 8px 8px 8px 0; background: white; border-radius: 12px; border: 1px solid rgba(0,0,0,0.09); display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Topbar */
+  .topbar { height: 52px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-200); flex-shrink: 0; }
+  .topbar-left { display: flex; align-items: center; }
+  .topbar-sidebar-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 7px; border: none; background: transparent; color: var(--gray-400); cursor: pointer; transition: background 0.1s; }
+  .topbar-sidebar-toggle:hover { background: var(--gray-100); color: var(--gray-700); }
+  .topbar-divider { width: 1px; height: 18px; background: var(--gray-200); margin: 0 12px; }
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-400); }
+  .breadcrumb a { color: var(--gray-400); text-decoration: none; transition: color 0.1s; }
+  .breadcrumb a:hover { color: var(--gray-700); }
+  .breadcrumb .sep { color: var(--gray-300); }
+  .breadcrumb .current { color: var(--gray-900); font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .search-bar { display: flex; align-items: center; gap: 8px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 8px; padding: 6px 12px; font-size: 13px; color: var(--gray-400); cursor: text; width: 200px; }
+  .search-kbd { margin-left: auto; font-size: 10px; color: var(--gray-400); background: white; border: 1px solid var(--gray-200); border-radius: 4px; padding: 1px 4px; }
+  .btn-icon { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--gray-200); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-500); position: relative; }
+  .btn-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: var(--blue-500); border-radius: 50%; border: 1.5px solid white; }
+
+  /* Page content */
+  .page-scroll { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .page-header { margin-bottom: 24px; }
+  .page-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .page-title { font-size: 22px; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 10px; }
+  .page-meta { font-size: 13px; color: var(--gray-400); display: flex; align-items: center; gap: 12px; }
+
+  /* Toolbar */
+  .act-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .act-search { display: flex; align-items: center; gap: 8px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px 12px; flex: 1; max-width: 320px; }
+  .act-search input { border: none; background: none; font-size: 13px; color: var(--gray-700); outline: none; width: 100%; font-family: inherit; }
+  .act-search input::placeholder { color: var(--gray-400); }
+  .fdd-wrap { position: relative; }
+  .fdd-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: white; border: 1px solid var(--gray-200); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-family: 'Geist', sans-serif; transition: border-color 0.1s, background 0.1s; user-select: none; }
+  .fdd-btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .fdd-btn.active { border-color: var(--blue-500); color: var(--blue-600); background: var(--blue-50); }
+  .fdd-btn.active svg { transform: rotate(180deg); }
+  .fdd-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 5px; z-index: 200; min-width: 160px; }
+  .fdd-menu.open { display: block; }
+  .fdd-item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; font-size: 13px; color: var(--gray-700); border-radius: 6px; cursor: pointer; }
+  .fdd-item:hover { background: var(--gray-50); }
+  .fdd-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue-600); cursor: pointer; flex-shrink: 0; }
+
+  /* Activity list */
+  .act-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+  .act-full-item { display: flex; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--gray-100); transition: background 0.1s; cursor: pointer; }
+  .act-full-item:last-child { border-bottom: none; }
+  .act-full-item:hover { background: var(--gray-50); }
+  .act-avatar { width: 34px; height: 34px; border-radius: 50%; font-size: 12px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .act-right { flex: 1; min-width: 0; padding-top: 1px; }
+  .act-text { font-size: 13.5px; color: var(--gray-700); line-height: 1.5; }
+  .act-text strong { color: var(--gray-900); font-weight: 600; }
+  .act-text a { color: var(--blue-600); font-weight: 500; text-decoration: none; }
+  .act-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .act-tag { font-size: 11.5px; color: var(--blue-600); background: var(--blue-50); border-radius: 4px; padding: 1px 8px; font-weight: 500; }
+  .act-time { font-size: 11.5px; color: var(--gray-400); }
+
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">E</div>
+    <span class="brand-name">Elux Space</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="dashboard-mockup-v3.html" title="Dashboard">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="#" title="Goals"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span class="nav-label">Goals</span></a>
+    <a class="nav-item" href="#" title="Projects"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg><span class="nav-label">Projects</span></a>
+    <a class="nav-item" href="#" title="Board"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span class="nav-label">Board</span></a>
+    <a class="nav-item" href="#" title="My Work"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span class="nav-label">My Work</span></a>
+    <a class="nav-item" href="#" title="Team"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-label">Team</span></a>
+    <a class="nav-item" href="#" title="Docs"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="nav-label">Docs</span></a>
+    <a class="nav-item" href="#" title="Settings" style="margin-top:auto"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-label">Settings</span></a>
+    <a class="nav-item" href="#" title="Help"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="nav-label">Help</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar">RA</div>
+    <div class="user-info">
+      <div class="user-name">Rasya Ardiansyah</div>
+      <div class="user-role">Product Designer</div>
+    </div>
+  </div>
+</aside>
+
+<div class="content-card">
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('expanded')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+      </button>
+      <div class="topbar-divider"></div>
+      <nav class="breadcrumb">
+        <a href="dashboard-mockup-v3.html">Dashboard</a>
+        <svg class="sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="current">Recent Activity</span>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Search...</span>
+        <span class="search-kbd">⌘K</span>
+      </div>
+      <div class="btn-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="btn-notif-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-scroll">
+    <div class="page-header">
+      <div class="page-title-row">
+        <div class="page-title">
+          Recent Activity
+          <span style="font-size:14px;font-weight:500;color:var(--gray-400);background:var(--gray-100);border-radius:10px;padding:2px 10px">10</span>
+        </div>
+      </div>
+      <div class="page-meta">
+        <span>Workspace · All members</span>
+        <span>·</span>
+        <span>Last 7 days</span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="act-toolbar">
+      <div class="act-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gray-400);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="act-q" type="text" placeholder="Search activity..." oninput="runFilter()">
+      </div>
+      <div class="fdd-wrap">
+        <button class="fdd-btn" onclick="toggleDD(this)">
+          Action
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="fdd-menu" data-group="action">
+          <label class="fdd-item"><input type="checkbox" data-f="moved" checked onchange="runFilter()"> Moved</label>
+          <label class="fdd-item"><input type="checkbox" data-f="created" checked onchange="runFilter()"> Created</label>
+          <label class="fdd-item"><input type="checkbox" data-f="completed" checked onchange="runFilter()"> Completed</label>
+          <label class="fdd-item"><input type="checkbox" data-f="commented" checked onchange="runFilter()"> Commented</label>
+          <label class="fdd-item"><input type="checkbox" data-f="assigned" checked onchange="runFilter()"> Assigned</label>
+        </div>
+      </div>
+      <div class="fdd-wrap">
+        <button class="fdd-btn" onclick="toggleDD(this)">
+          Person
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="fdd-menu" data-group="person">
+          <label class="fdd-item"><input type="checkbox" data-f="Rasya" checked onchange="runFilter()"> Rasya</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Dito" checked onchange="runFilter()"> Dito</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Maya" checked onchange="runFilter()"> Maya</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Rara" checked onchange="runFilter()"> Rara</label>
+          <label class="fdd-item"><input type="checkbox" data-f="Lintang" checked onchange="runFilter()"> Lintang</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity list -->
+    <div class="act-card">
+      <div id="act-list">
+        <div class="act-full-item" data-text="rasya moved login flow in review" data-type="moved" data-person="Rasya">
+          <div class="act-avatar" style="background:#6366F1">RA</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Rasya</strong> moved <a href="#">"Login flow"</a> to In Review</div>
+            <div class="act-meta"><span class="act-tag">Alpha Project</span><span class="act-time">10m ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="maya created epic analytics v2" data-type="created" data-person="Maya">
+          <div class="act-avatar" style="background:#22C55E">M</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Maya</strong> created epic <a href="#">"Analytics v2"</a></div>
+            <div class="act-meta"><span class="act-tag">Analytics Dashboard</span><span class="act-time">1h ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="dito completed db schema review" data-type="completed" data-person="Dito">
+          <div class="act-avatar" style="background:#3B82F6">D</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Dito</strong> completed <a href="#">"DB schema review"</a></div>
+            <div class="act-meta"><span class="act-tag">API Gateway</span><span class="act-time">2h ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="rasya commented figma export spec design system" data-type="commented" data-person="Rasya">
+          <div class="act-avatar" style="background:#6366F1">RA</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Rasya</strong> commented on <a href="#">"Figma export spec"</a></div>
+            <div class="act-meta"><span class="act-tag">Design System v2</span><span class="act-time">3h ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="rara assigned onboarding copy internal tools" data-type="assigned" data-person="Rara">
+          <div class="act-avatar" style="background:#F59E0B">R</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Rara</strong> assigned <a href="#">"Onboarding copy"</a> to herself</div>
+            <div class="act-meta"><span class="act-tag">Internal Tools</span><span class="act-time">5h ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="lintang created goal q3 public launch beta" data-type="created" data-person="Lintang">
+          <div class="act-avatar" style="background:#EC4899">L</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Lintang</strong> created goal <a href="#">"Q3 Public Launch"</a></div>
+            <div class="act-meta"><span class="act-tag">Beta Launch</span><span class="act-time">Yesterday</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="dito updated priority auth redesign alpha" data-type="moved" data-person="Dito">
+          <div class="act-avatar" style="background:#3B82F6">D</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Dito</strong> updated priority of <a href="#">"Auth redesign"</a> to High</div>
+            <div class="act-meta"><span class="act-tag">Alpha Project</span><span class="act-time">Yesterday</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="maya closed milestone beta prep launch" data-type="completed" data-person="Maya">
+          <div class="act-avatar" style="background:#22C55E">M</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Maya</strong> closed milestone <a href="#">"Beta Prep"</a></div>
+            <div class="act-meta"><span class="act-tag">Beta Launch</span><span class="act-time">2 days ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="rasya created task ios push notification mobile" data-type="created" data-person="Rasya">
+          <div class="act-avatar" style="background:#6366F1">RA</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Rasya</strong> created task <a href="#">"iOS push notification spec"</a></div>
+            <div class="act-meta"><span class="act-tag">Mobile App MVP</span><span class="act-time">2 days ago</span></div>
+          </div>
+        </div>
+        <div class="act-full-item" data-text="lintang completed self serve billing customer portal" data-type="completed" data-person="Lintang">
+          <div class="act-avatar" style="background:#EC4899">L</div>
+          <div class="act-right">
+            <div class="act-text"><strong>Lintang</strong> completed <a href="#">"Self-serve billing setup"</a></div>
+            <div class="act-meta"><span class="act-tag">Customer Portal</span><span class="act-time">3 days ago</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-scroll -->
+</main>
+</div>
+
+<script>
+  let activeDD = null;
+  function toggleDD(btn) {
+    const wrap = btn.closest('.fdd-wrap');
+    const menu = wrap.querySelector('.fdd-menu');
+    const isOpen = menu.classList.contains('open');
+    if (activeDD && activeDD !== wrap) {
+      activeDD.querySelector('.fdd-menu').classList.remove('open');
+      activeDD.querySelector('.fdd-btn').classList.remove('active');
+    }
+    menu.classList.toggle('open', !isOpen);
+    btn.classList.toggle('active', !isOpen);
+    activeDD = !isOpen ? wrap : null;
+  }
+  document.addEventListener('click', e => {
+    if (activeDD && !e.target.closest('.fdd-wrap')) {
+      activeDD.querySelector('.fdd-menu').classList.remove('open');
+      activeDD.querySelector('.fdd-btn').classList.remove('active');
+      activeDD = null;
+    }
+  });
+  function runFilter() {
+    const q = document.getElementById('act-q').value.toLowerCase();
+    const typeChecked   = [...document.querySelectorAll('.fdd-menu[data-group="action"] input:checked')].map(c => c.dataset.f);
+    const personChecked = [...document.querySelectorAll('.fdd-menu[data-group="person"] input:checked')].map(c => c.dataset.f);
+    document.querySelectorAll('#act-list .act-full-item').forEach(item => {
+      const text   = (item.dataset.text || '').toLowerCase() + item.textContent.toLowerCase();
+      const type   = item.dataset.type   || '';
+      const person = item.dataset.person || '';
+      const matchQ = !q || text.includes(q);
+      const matchT = typeChecked.length   === 0 || typeChecked.includes(type);
+      const matchP = personChecked.length === 0 || personChecked.includes(person);
+      item.style.display = (matchQ && matchT && matchP) ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>
