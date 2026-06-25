@@ -1,8 +1,8 @@
 # Elux Project Tracker — System Blueprint
 
-**Version:** 1.0  
-**Last Updated:** 2026-06-17  
-**Status:** Pre-development reference  
+**Version:** 1.1  
+**Last Updated:** 2026-06-25  
+**Status:** Phase 2 complete — Phase 3 (backend) in progress  
 **Audience:** Engineers, tech leads, contributors
 
 ---
@@ -31,10 +31,12 @@ Elux Project Tracker is an internal project management tool built for Elux, an A
 The tracker organizes work at four levels of granularity:
 
 ```
-Goal → Epic → Task → Subtask
+Goal → Project → Task → Subtask
 ```
 
-Goals represent high-level business objectives. Epics are workstreams under a goal. Tasks are actionable units of work assigned to team members. Subtasks break a task into discrete steps.
+Goals represent high-level business objectives. Projects are workstreams under a goal (previously called "Epics" in early docs — renamed to match the frontend). Tasks are actionable units of work assigned to team members. Subtasks break a task into discrete steps.
+
+> **Naming note:** All references to "Epic/Epics" in this document mean "Project/Projects". The database table is `projects`. The frontend pages are `app/pages/projects/`. The old term is deprecated.
 
 Supporting entities include Comments, Docs, Templates, Time Entries, and Changelogs — all scoped to their parent entity.
 

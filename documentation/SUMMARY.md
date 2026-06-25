@@ -42,8 +42,10 @@ Full revamp of an internal project tracker for **Elux**, an AI-native product de
 ## Feature Hierarchy
 
 ```
-Goal → Epic → Task → Subtask + Comments
+Goal → Project → Task → Subtask + Comments
 ```
+
+> **Note:** The original docs used "Epic" but the frontend was built with "Project" (`app/pages/projects/`, IDs `p1`–`p8`). The database table is `projects`. The term "Epic" is retired.
 
 ---
 
@@ -51,8 +53,8 @@ Goal → Epic → Task → Subtask + Comments
 
 ### Core (revamped from existing)
 - Dashboard — helicopter/project-level overview
-- Goals — with KPI tracking and linked epics
-- Epics — list + side panel (tabs: Overview, Tasks, Docs)
+- Goals — with KPI tracking and linked projects
+- Projects — list + side panel (tabs: Overview, Tasks, Docs)
 - Board/Kanban — To Do, In Progress, Review, Done
 - My Work — personal tasks grouped by status
 - My Day — today's priority tasks only (subset of My Work)
@@ -129,30 +131,29 @@ Goal → Epic → Task → Subtask + Comments
 | Phase | Goal | Status |
 |---|---|---|
 | 0 | Documentation | ✅ Done |
-| 1 | Design Foundation | ⬜ Next |
-| 2 | Frontend with dummy data | ⬜ |
-| 3 | Backend migration (PocketBase → Cloudflare) | ⬜ |
+| 1 | Design Foundation | ✅ Done |
+| 2 | Frontend with dummy data | ✅ Done |
+| 3 | Backend — D1 schema + API routes + seed | 🔄 Next (`backend/phase3-backend.md`) |
 | 4 | New features | ⬜ |
 | 5 | Polish + Deploy | ⬜ |
 | 6 | AI Assistant | ⬜ |
 
 ---
 
-## Phase 1 — What to do next
+## Phase 3 — What to do next
 
-**Goal:** Set up the Nuxt 4 project with full design foundation. No real data yet.
+**Goal:** Implement the full backend (D1 schema, API routes, seed data) so the frontend can swap dummy data for real API calls.
 
-Tasks:
-1. Init Nuxt 4 project (`nuxi init`)
-2. Install and configure Nuxt UI v3 + Tailwind CSS v4
-3. Install Phosphor Icons (`@phosphor-icons/vue`)
-4. Set up design tokens (CSS custom properties — see `design.md`)
-5. Build base layout: fixed sidebar (240px) + header + main content area
-6. Build sidebar navigation with active states
-7. Set up Nuxt Auth Utils (auth middleware, session types)
-8. Configure Cloudflare Pages deployment (`wrangler.toml`, `nitro.config`)
-9. Set up Drizzle ORM with D1 binding
-10. Define full database schema (see `blueprint.md` for SQL DDL)
+Run `backend/phase3-backend.md` in OpenCode. It covers:
+1. `server/database/schema.ts` — Drizzle schema for all tables
+2. `server/utils/auth.ts` — session type declaration
+3. `server/middleware/auth.ts` — protect all `/api/*` routes
+4. Auth routes: login, logout, me
+5. API routes: goals, kpis, projects, tasks, subtasks, users, dashboard, my-work, team, search, activity, critical-issues
+6. `server/database/seed.ts` — seed data matching the frontend dummy data exactly
+7. Frontend swap instructions — replace hardcoded arrays with `useAsyncData` + `$fetch`
+
+After Phase 3: delete `server/api/__seed.post.ts`, then start Phase 4 (new features).
 
 ---
 
