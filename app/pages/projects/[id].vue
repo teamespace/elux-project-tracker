@@ -239,6 +239,14 @@ function progFillColor(sc: string) {
 }
 
 const showSide = ref(true)
+const openDropdown = ref<string | null>(null)
+const collapsedSections = ref(new Set<string>())
+const showAddAssignee = ref(false)
+const showAddLink = ref(false)
+const newLinkLabel = ref('')
+const newLinkUrl = ref('')
+const editingInline = ref<string | null>(null)
+const inlineValue = ref('')
 
 const editState = reactive({
   status: proj.value!.statusLabel,
@@ -250,15 +258,9 @@ const editState = reactive({
   endDate: proj.value!.endDate,
   category: proj.value!.category,
   labels: [...proj.value!.labels],
+  assignees: proj.value!.assignees.map(a => ({ ...a })),
+  quickLinks: proj.value!.quickLinks.map(l => ({ ...l })),
 })
-
-function toggleEdit(field: string) {
-  editingField.value = editingField.value === field ? null : field
-}
-
-function closeEdit() {
-  editingField.value = null
-}
 
 const statusOptions = [
   { label: 'On Track',    cls: 'cs-track',   color: '#059669' },
@@ -280,21 +282,43 @@ const userOptions = [
   { name: 'Rara',  seed: 'Rara',  bg: 'f9a8d4' },
 ]
 
+const availableAssignees = computed(() =>
+  userOptions.filter(u => !editState.assignees.find(a => a.name === u.name))
+)
+
+function toggleDropdown(field: string, e: MouseEvent) {
+  e.stopPropagation()
+  openDropdown.value = openDropdown.value === field ? null : field
+  editingInline.value = null
+}
+
+function closeAll() {
+  openDropdown.value = null
+  if (editingInline.value) saveInline()
+  showAddAssignee.value = false
+  showAddLink.value = false
+}
+
+function toggleSection(id: string) {
+  if (collapsedSections.value.has(id)) collapsedSections.value.delete(id)
+  else collapsedSections.value.add(id)
+}
+
 function setStatus(opt: typeof statusOptions[0]) {
   editState.status = opt.label
   editState.statusClass = opt.cls
-  closeEdit()
+  openDropdown.value = null
 }
 
 function setPriority(opt: typeof priorityOptions[0]) {
   editState.priority = opt.label
   editState.priorityColor = opt.color
-  closeEdit()
+  openDropdown.value = null
 }
 
 function setOwner(u: typeof userOptions[0]) {
   editState.owner = u.name
-  closeEdit()
+  openDropdown.value = null
 }
 
 function ownerAvatar() {
@@ -302,17 +326,59 @@ function ownerAvatar() {
   return u ? avatarUrl(u.seed, u.bg) : avatarUrl('Rasya', 'b6e3f4')
 }
 
-function handleOutsideClick() {
-  editingField.value = null
+function startInline(field: string, current: string, e: MouseEvent) {
+  e.stopPropagation()
+  openDropdown.value = null
+  editingInline.value = field
+  inlineValue.value = field === 'labels' ? editState.labels.join(', ') : current
+  nextTick(() => {
+    const el = document.getElementById('inline-' + field) as HTMLInputElement | null
+    el?.focus(); el?.select()
+  })
 }
 
-onMounted(() => {
-  document.addEventListener('click', handleOutsideClick)
-})
+function saveInline() {
+  const field = editingInline.value
+  if (!field) return
+  if (field === 'labels') {
+    editState.labels = inlineValue.value.split(',').map(s => s.trim()).filter(Boolean)
+  } else if (field === 'startDate') {
+    editState.startDate = inlineValue.value
+  } else if (field === 'endDate') {
+    editState.endDate = inlineValue.value
+  } else if (field === 'category') {
+    editState.category = inlineValue.value
+  }
+  editingInline.value = null
+}
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleOutsideClick)
-})
+function addAssignee(u: typeof userOptions[0]) {
+  editState.assignees.push({ seed: u.seed, bg: u.bg, name: u.name })
+  showAddAssignee.value = false
+}
+
+function removeAssignee(name: string) {
+  const idx = editState.assignees.findIndex(a => a.name === name)
+  if (idx !== -1) editState.assignees.splice(idx, 1)
+}
+
+function submitLink() {
+  const label = newLinkLabel.value.trim()
+  if (!label) return
+  const url = newLinkUrl.value.trim()
+  const icon = url.includes('figma') ? 'figma' : url.includes('notion') ? 'notion' : 'file'
+  editState.quickLinks.push({ label, url, icon })
+  newLinkLabel.value = ''
+  newLinkUrl.value = ''
+  showAddLink.value = false
+}
+
+function removeLink(idx: number) {
+  editState.quickLinks.splice(idx, 1)
+}
+
+onMounted(() => document.addEventListener('click', closeAll))
+onUnmounted(() => document.removeEventListener('click', closeAll))
 </script>
 
 <template>
@@ -587,228 +653,191 @@ onUnmounted(() => {
         </div>
         <div class="pd-side-card">
 
-        <!-- Properties Card -->
+        <!-- ── PROPERTIES ── -->
         <div class="pd-panel-sec">
-          <div class="pd-panel-hdr">
+          <div class="pd-panel-hdr" @click="toggleSection('props')">
             <div style="display:flex;align-items:center;gap:8px">
-              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <svg class="pd-panel-chevron" :class="{ collapsed: collapsedSections.has('props') }" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span class="pd-panel-title">Properties</span>
             </div>
-            <button class="pd-panel-btn">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </button>
           </div>
 
-          <!-- STATUS -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('status')">
-            <div class="pd-prop-lbl">Status</div>
-            <div class="pd-prop-val">
-              <span class="pdh-dot" :class="editState.statusClass + '-dot'" style="margin-right:5px"/>
-              {{ editState.status }}
+          <div v-show="!collapsedSections.has('props')" class="pd-panel-body">
+            <!-- STATUS -->
+            <div class="pd-prop-row" @click.stop="toggleDropdown('status', $event)">
+              <div class="pd-prop-lbl">Status</div>
+              <div class="pd-prop-val pd-prop-dd-wrap">
+                <span class="pdh-dot" :class="editState.statusClass + '-dot'"/>
+                {{ editState.status }}
+                <div v-if="openDropdown === 'status'" class="pd-float-dd" @click.stop>
+                  <button v-for="opt in statusOptions" :key="opt.label" class="pd-dd-item" @click="setStatus(opt)">
+                    <span class="pdh-dot" :class="opt.cls + '-dot'"/>
+                    {{ opt.label }}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div v-if="editingField === 'status'" class="pd-dropdown">
-            <div
-              v-for="opt in statusOptions" :key="opt.label"
-              class="pd-dd-item"
-              @click.stop="setStatus(opt)"
-            >
-              <span class="pdh-dot" :class="opt.cls + '-dot'" style="margin-right:5px"/>
-              {{ opt.label }}
-            </div>
-          </div>
 
-          <!-- PRIORITY -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('priority')">
-            <div class="pd-prop-lbl">Priority</div>
-            <div class="pd-prop-val pd-prop-val--priority">
-              <svg class="pd-priority-icon" width="12" height="12" viewBox="0 0 16 16" :fill="editState.priorityColor">
-                <path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/>
-              </svg>
-              <span class="pd-priority-text" :style="{ color: editState.priorityColor }">{{ editState.priority }}</span>
+            <!-- PRIORITY -->
+            <div class="pd-prop-row" @click.stop="toggleDropdown('priority', $event)">
+              <div class="pd-prop-lbl">Priority</div>
+              <div class="pd-prop-val pd-prop-dd-wrap">
+                <svg width="11" height="11" viewBox="0 0 16 16" :fill="editState.priorityColor"><path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/></svg>
+                <span :style="{ color: editState.priorityColor, fontWeight: 600 }">{{ editState.priority }}</span>
+                <div v-if="openDropdown === 'priority'" class="pd-float-dd" @click.stop>
+                  <button v-for="opt in priorityOptions" :key="opt.label" class="pd-dd-item" @click="setPriority(opt)">
+                    <svg width="11" height="11" viewBox="0 0 16 16" :fill="opt.color"><path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/></svg>
+                    <span>{{ opt.label }}</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div v-if="editingField === 'priority'" class="pd-dropdown">
-            <div
-              v-for="opt in priorityOptions" :key="opt.label"
-              class="pd-dd-item"
-              @click.stop="setPriority(opt)"
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" :fill="opt.color"><path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/></svg>
-              <span style="font-size:12.5px">{{ opt.label }}</span>
-            </div>
-          </div>
-          <!-- OWNER -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('owner')">
-            <div class="pd-prop-lbl">Owner</div>
-            <div class="pd-prop-val pd-prop-val--owner">
-              <img :src="ownerAvatar()" :alt="editState.owner" class="pd-owner-avatar">
-              <span class="pd-owner-name">{{ editState.owner }}</span>
-            </div>
-          </div>
-          <div v-if="editingField === 'owner'" class="pd-dropdown">
-            <div
-              v-for="u in userOptions"
-              :key="u.name"
-              class="pd-dd-item"
-              @click.stop="setOwner(u)"
-            >
-              <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" class="pd-owner-avatar">
-              <span style="font-size:12.5px">{{ u.name }}</span>
-            </div>
-          </div>
 
-          <!-- START DATE -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('startDate')">
-            <div class="pd-prop-lbl">Start</div>
-            <div class="pd-prop-val">
-              {{ editState.startDate }}
+            <!-- OWNER -->
+            <div class="pd-prop-row" @click.stop="toggleDropdown('owner', $event)">
+              <div class="pd-prop-lbl">Owner</div>
+              <div class="pd-prop-val pd-prop-dd-wrap">
+                <img :src="ownerAvatar()" :alt="editState.owner" class="pd-owner-avatar">
+                <span>{{ editState.owner }}</span>
+                <div v-if="openDropdown === 'owner'" class="pd-float-dd" @click.stop>
+                  <button v-for="u in userOptions" :key="u.name" class="pd-dd-item" @click="setOwner(u)">
+                    <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" class="pd-owner-avatar">
+                    {{ u.name }}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div v-if="editingField === 'startDate'" class="pd-dropdown pd-dropdown--input">
-            <input
-              v-model="editState.startDate"
-              type="text"
-              placeholder="e.g. Jan 6, 2026"
-              class="pd-dd-input"
-              @keydown.enter="closeEdit"
-              @keydown.escape="closeEdit"
-              @click.stop
-            >
-            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
-          </div>
 
-          <!-- DUE DATE -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('endDate')">
-            <div class="pd-prop-lbl">Due</div>
-            <div class="pd-prop-val" :class="{ 'pd-prop-val--red': proj.endDateRed }">
-              {{ editState.endDate }}
+            <!-- START -->
+            <div class="pd-prop-row" @click.stop="startInline('startDate', editState.startDate, $event)">
+              <div class="pd-prop-lbl">Start</div>
+              <div class="pd-prop-val">
+                <input v-if="editingInline === 'startDate'" :id="'inline-startDate'" v-model="inlineValue" class="pd-inline-input" @blur="saveInline" @keydown.enter="saveInline" @keydown.escape="editingInline = null" @click.stop>
+                <span v-else>{{ editState.startDate }}</span>
+              </div>
             </div>
-          </div>
-          <div v-if="editingField === 'endDate'" class="pd-dropdown pd-dropdown--input">
-            <input
-              v-model="editState.endDate"
-              type="text"
-              placeholder="e.g. Aug 30, 2025"
-              class="pd-dd-input"
-              @keydown.enter="closeEdit"
-              @keydown.escape="closeEdit"
-              @click.stop
-            >
-            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
-          </div>
 
-          <!-- CATEGORY -->
-          <div class="pd-prop-row" @click.stop="toggleEdit('category')">
-            <div class="pd-prop-lbl">Category</div>
-            <div class="pd-prop-val">{{ editState.category }}</div>
-          </div>
-          <div v-if="editingField === 'category'" class="pd-dropdown pd-dropdown--input">
-            <input
-              v-model="editState.category"
-              type="text"
-              placeholder="e.g. Core product"
-              class="pd-dd-input"
-              @keydown.enter="closeEdit"
-              @keydown.escape="closeEdit"
-              @click.stop
-            >
-            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
-          </div>
+            <!-- DUE -->
+            <div class="pd-prop-row" @click.stop="startInline('endDate', editState.endDate, $event)">
+              <div class="pd-prop-lbl">Due</div>
+              <div class="pd-prop-val">
+                <input v-if="editingInline === 'endDate'" :id="'inline-endDate'" v-model="inlineValue" class="pd-inline-input pd-inline-input--red" @blur="saveInline" @keydown.enter="saveInline" @keydown.escape="editingInline = null" @click.stop>
+                <span v-else :class="{ 'pd-prop-val--red': proj.endDateRed }">{{ editState.endDate }}</span>
+              </div>
+            </div>
 
-          <!-- LABELS -->
-          <div v-if="editState.labels.length" class="pd-prop-row pd-prop-row--labels">
-            <div class="pd-prop-lbl">Labels</div>
-            <div class="pd-prop-val pd-prop-val--labels">
-              <span v-for="lb in editState.labels" :key="lb" class="pd-label">{{ lb }}</span>
+            <!-- CATEGORY -->
+            <div class="pd-prop-row" @click.stop="startInline('category', editState.category, $event)">
+              <div class="pd-prop-lbl">Category</div>
+              <div class="pd-prop-val">
+                <input v-if="editingInline === 'category'" :id="'inline-category'" v-model="inlineValue" class="pd-inline-input" @blur="saveInline" @keydown.enter="saveInline" @keydown.escape="editingInline = null" @click.stop>
+                <span v-else>{{ editState.category }}</span>
+              </div>
+            </div>
+
+            <!-- LABELS -->
+            <div class="pd-prop-row pd-prop-row--labels" @click.stop="startInline('labels', editState.labels.join(', '), $event)">
+              <div class="pd-prop-lbl">Labels</div>
+              <div class="pd-prop-val pd-prop-val--labels">
+                <input v-if="editingInline === 'labels'" :id="'inline-labels'" v-model="inlineValue" class="pd-inline-input" placeholder="UX, Q3" @blur="saveInline" @keydown.enter="saveInline" @keydown.escape="editingInline = null" @click.stop>
+                <template v-else>
+                  <span v-for="lb in editState.labels" :key="lb" class="pd-label">{{ lb }}</span>
+                </template>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Progress -->
+        <!-- ── PROGRESS ── -->
         <div class="pd-panel-sec">
-          <div class="pd-panel-hdr">
+          <div class="pd-panel-hdr" @click="toggleSection('prog')">
             <div style="display:flex;align-items:center;gap:8px">
-              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <svg class="pd-panel-chevron" :class="{ collapsed: collapsedSections.has('prog') }" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span class="pd-panel-title">Progress</span>
             </div>
           </div>
-          <div class="pd-prog-nums">
-            <div class="pd-prog-num-item">
-              <div class="pd-prog-num">{{ proj.doneT }}</div>
-              <div class="pd-prog-num-lbl">Done</div>
+          <div v-show="!collapsedSections.has('prog')" class="pd-panel-body">
+            <div class="pd-prog-nums">
+              <div class="pd-prog-num-item"><div class="pd-prog-num">{{ proj.doneT }}</div><div class="pd-prog-num-lbl">Done</div></div>
+              <div class="pd-prog-num-item"><div class="pd-prog-num">{{ leftTasks }}</div><div class="pd-prog-num-lbl">Left</div></div>
+              <div class="pd-prog-num-item"><div class="pd-prog-num pd-prog-num--blue">{{ proj.progress }}%</div><div class="pd-prog-num-lbl">Complete</div></div>
             </div>
-            <div class="pd-prog-num-item">
-              <div class="pd-prog-num">{{ leftTasks }}</div>
-              <div class="pd-prog-num-lbl">Left</div>
-            </div>
-            <div class="pd-prog-num-item">
-              <div class="pd-prog-num pd-prog-num--blue">{{ proj.progress }}%</div>
-              <div class="pd-prog-num-lbl">Complete</div>
-            </div>
-          </div>
-          <div class="pd-prog-bar-wrap">
-            <div class="pd-prog-bar">
-              <div class="pd-prog-bar-fill" :style="{ width: proj.progress + '%', background: '#3B82F6' }"/>
-            </div>
+            <div class="pd-prog-bar-wrap"><div class="pd-prog-bar"><div class="pd-prog-bar-fill" :style="{ width: proj.progress + '%' }"/></div></div>
           </div>
         </div>
 
-        <!-- Assignees -->
+        <!-- ── ASSIGNEES ── -->
         <div class="pd-panel-sec">
-          <div class="pd-panel-hdr">
+          <div class="pd-panel-hdr" @click="toggleSection('assign')">
             <div style="display:flex;align-items:center;gap:8px">
-              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <svg class="pd-panel-chevron" :class="{ collapsed: collapsedSections.has('assign') }" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span class="pd-panel-title">Assignees</span>
             </div>
-            <button class="pd-panel-btn">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
+            <div class="pd-panel-hdr-right pd-prop-dd-wrap" @click.stop>
+              <button v-if="availableAssignees.length" class="pd-panel-btn" @click.stop="showAddAssignee = !showAddAssignee; showAddLink = false">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+              <div v-if="showAddAssignee" class="pd-float-dd pd-float-dd--left" @click.stop>
+                <button v-for="u in availableAssignees" :key="u.name" class="pd-dd-item" @click="addAssignee(u)">
+                  <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" class="pd-owner-avatar"> {{ u.name }}
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="pd-assignees">
-            <div v-for="a in proj.assignees" :key="a.seed" class="pd-assignee-row">
-              <img
-                :src="avatarUrl(a.seed, a.bg)"
-                :alt="a.name"
-                :title="a.name"
-                class="pd-av-lg"
-              >
+          <div v-show="!collapsedSections.has('assign')" class="pd-panel-body">
+            <div v-for="a in editState.assignees" :key="a.name" class="pd-assignee-row">
+              <img :src="avatarUrl(a.seed, a.bg)" :alt="a.name" class="pd-av-lg">
               <span class="pd-assignee-name">{{ a.name }}</span>
+              <button class="pd-assignee-remove" @click.stop="removeAssignee(a.name)" title="Remove">
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Quick Links -->
-        <div v-if="proj.quickLinks.length" class="pd-panel-sec">
-          <div class="pd-panel-hdr">
+        <!-- ── QUICK LINKS ── -->
+        <div class="pd-panel-sec">
+          <div class="pd-panel-hdr" @click="toggleSection('ql')">
             <div style="display:flex;align-items:center;gap:8px">
-              <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <svg class="pd-panel-chevron" :class="{ collapsed: collapsedSections.has('ql') }" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span class="pd-panel-title">Quick links</span>
             </div>
-            <button class="pd-panel-btn">
+            <button class="pd-panel-btn" @click.stop="showAddLink = !showAddLink; showAddAssignee = false">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </button>
           </div>
-          <div class="pd-ql-list">
-            <a v-for="ql in proj.quickLinks" :key="ql.label" :href="ql.url" target="_blank" class="pd-ql-row">
+          <div v-show="!collapsedSections.has('ql')" class="pd-panel-body">
+            <div v-for="(ql, i) in editState.quickLinks" :key="ql.label" class="pd-ql-row group">
               <div class="pd-ql-icon">
                 <svg v-if="ql.icon === 'figma'" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" fill="#F24E1E"/><path d="M8 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" fill="white"/></svg>
                 <svg v-else-if="ql.icon === 'notion'" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" fill="#111827"/><path d="M5 5h6M5 8h4" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
-                <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/><path d="M9 2v4h4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/></svg>
               </div>
               <span class="pd-ql-label">{{ ql.label }}</span>
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="pd-ql-ext"><path d="M12 4H4m8 0v8M4 12l8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
+              <button class="pd-ql-delete" @click.stop="removeLink(i)" title="Remove">
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+              <a :href="ql.url" target="_blank" class="pd-ql-ext" @click.stop>
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M12 4H4m8 0v8M4 12l8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+            <!-- Add link form -->
+            <div v-if="showAddLink" class="pd-add-link-form" @click.stop>
+              <input v-model="newLinkLabel" class="pd-add-link-input" placeholder="Label" @keydown.escape="showAddLink = false">
+              <input v-model="newLinkUrl" class="pd-add-link-input" placeholder="URL" @keydown.enter="submitLink" @keydown.escape="showAddLink = false">
+              <div class="pd-add-link-row">
+                <button class="pd-add-link-submit" @click="submitLink">Add</button>
+                <button class="pd-add-link-cancel" @click="showAddLink = false">Cancel</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1069,58 +1098,114 @@ onUnmounted(() => {
 .pd-prog-bar { height:4px; background:#F3F4F6; border-radius:2px; overflow:hidden; }
 .pd-prog-bar-fill { height:100%; border-radius:2px; transition:width .3s; background:#3B82F6; }
 
-/* assignees */
-.pd-assignees { display:flex; flex-direction:column; gap:10px; }
-.pd-assignee-row { display:flex; align-items:center; gap:10px; }
-.pd-av-lg { width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 0 0 1px #E5E7EB; flex-shrink:0; }
-.pd-assignee-name { font-size:12.5px; color:#111827; }
+/* panel body spacing */
+.pd-panel-body { display:flex; flex-direction:column; }
 
-/* quick links */
-.pd-ql-list { display:flex; flex-direction:column; gap:8px; }
-.pd-ql-row { display:flex; align-items:center; gap:10px; padding:6px 4px; border-radius:6px; text-decoration:none; color:#111827; }
-.pd-ql-row:hover { background:#F9FAFB; }
-.pd-ql-icon { width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F9FAFB; }
-.pd-ql-label { flex:1; font-size:12.5px; color:#111827; }
-.pd-ql-ext { color:#9CA3AF; flex-shrink:0; }
-.pd-ql-row:hover .pd-ql-ext { color:#6B7280; }
+/* chevron collapse */
+.pd-panel-chevron { color:#6B7280; flex-shrink:0; transition:transform .15s; }
+.pd-panel-chevron.collapsed { transform:rotate(-90deg); }
+.pd-panel-hdr { cursor:pointer; user-select:none; }
+.pd-panel-hdr-right { position:relative; }
 
-/* dropdown panel */
-.pd-dropdown {
+/* floating dropdown anchor */
+.pd-prop-dd-wrap { position:relative; gap:6px; }
+.pd-float-dd {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 160px;
   background: #fff;
   border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   padding: 4px;
-  margin: 0 4px 8px;
-  z-index: 10;
-  position: relative;
+  z-index: 100;
 }
+.pd-float-dd--left { right:auto; left:0; }
 
 .pd-dd-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 7px 10px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 12.5px;
   color: #111827;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
 }
+.pd-dd-item:hover { background: #F9FAFB; }
 
-.pd-dd-item:hover {
-  background: #F9FAFB;
+/* inline input */
+.pd-inline-input {
+  width: 100%;
+  border: 1px solid oklch(60.6% 0.25 292.717);
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 12.5px;
+  color: #111827;
+  outline: none;
+  font-family: inherit;
+  background: #fff;
+  box-shadow: 0 0 0 2px oklch(96% 0.04 292.717);
 }
+.pd-inline-input--red { color:#EF4444; }
 
-/* text input variant */
-.pd-dropdown--input {
-  display: flex;
-  gap: 6px;
+/* assignees */
+.pd-assignees { display:flex; flex-direction:column; gap:10px; }
+.pd-assignee-row { display:flex; align-items:center; gap:10px; position:relative; }
+.pd-av-lg { width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 0 0 1px #E5E7EB; flex-shrink:0; }
+.pd-assignee-name { flex:1; font-size:12.5px; color:#111827; }
+.pd-assignee-remove {
+  display: none;
   align-items: center;
-  padding: 8px;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  cursor: pointer;
+  color: #9CA3AF;
+  flex-shrink: 0;
+  padding: 0;
 }
+.pd-assignee-row:hover .pd-assignee-remove { display:flex; }
+.pd-assignee-remove:hover { background:#FEE2E2; border-color:#FECACA; color:#DC2626; }
 
-.pd-dd-input {
-  flex: 1;
+/* quick links */
+.pd-ql-list { display:flex; flex-direction:column; gap:4px; }
+.pd-ql-row { display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:6px; color:#111827; }
+.pd-ql-row:hover { background:#F9FAFB; }
+.pd-ql-icon { width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F9FAFB; }
+.pd-ql-label { flex:1; font-size:12.5px; color:#111827; }
+.pd-ql-delete {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  cursor: pointer;
+  color: #9CA3AF;
+  flex-shrink: 0;
+  padding: 0;
+}
+.pd-ql-row:hover .pd-ql-delete { display:flex; }
+.pd-ql-delete:hover { background:#FEE2E2; border-color:#FECACA; color:#DC2626; }
+.pd-ql-ext { color:#9CA3AF; flex-shrink:0; text-decoration:none; display:flex; align-items:center; }
+.pd-ql-ext:hover { color:#6B7280; }
+
+/* add link form */
+.pd-add-link-form { display:flex; flex-direction:column; gap:6px; padding:8px 4px 4px; border-top:1px solid #F3F4F6; margin-top:4px; }
+.pd-add-link-input {
+  width: 100%;
   border: 1px solid #E5E7EB;
   border-radius: 6px;
   padding: 5px 8px;
@@ -1128,27 +1213,12 @@ onUnmounted(() => {
   color: #111827;
   outline: none;
   font-family: inherit;
+  box-sizing: border-box;
 }
-
-.pd-dd-input:focus {
-  border-color: oklch(60.6% 0.25 292.717);
-  box-shadow: 0 0 0 2px oklch(96% 0.04 292.717);
-}
-
-.pd-dd-save {
-  padding: 5px 10px;
-  background: oklch(60.6% 0.25 292.717);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.pd-dd-save:hover {
-  background: oklch(52% 0.27 292.717);
-}
+.pd-add-link-input:focus { border-color:oklch(60.6% 0.25 292.717); box-shadow:0 0 0 2px oklch(96% 0.04 292.717); }
+.pd-add-link-row { display:flex; gap:6px; }
+.pd-add-link-submit { flex:1; padding:5px 0; background:oklch(60.6% 0.25 292.717); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; }
+.pd-add-link-submit:hover { background:oklch(52% 0.27 292.717); }
+.pd-add-link-cancel { flex:1; padding:5px 0; background:#F3F4F6; color:#4B5563; border:none; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; }
+.pd-add-link-cancel:hover { background:#E5E7EB; }
 </style>
