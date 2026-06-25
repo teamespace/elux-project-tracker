@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Project' })
+definePageMeta({ layout: false, title: 'Project' })
 
 const route = useRoute()
 const id = route.params.id as string
@@ -314,20 +314,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <template #header>
-    <AppHeader>
-      <template #breadcrumb>
-        <div class="pdh-crumb">
-          <NuxtLink to="/projects" class="pdh-crumb-link">Projects</NuxtLink>
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="pdh-crumb-cur">{{ proj.name }}</span>
-        </div>
-      </template>
-    </AppHeader>
-  </template>
+  <NuxtLayout name="default">
+    <template #header>
+      <AppHeader>
+        <template #breadcrumb>
+          <div class="pdh-crumb">
+            <NuxtLink to="/projects" class="pdh-crumb-link">Projects</NuxtLink>
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="pdh-crumb-cur">{{ proj.name }}</span>
+          </div>
+        </template>
+      </AppHeader>
+    </template>
 
-  <!-- bleed out of layout px-6 py-5 -->
-  <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
+    <!-- bleed out of layout px-6 py-5 -->
+    <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
 
     <!-- ══ HEADER ══ -->
     <div class="pdh">
@@ -801,6 +802,7 @@ onUnmounted(() => {
       </div>
     </div>
   </div>
+</NuxtLayout>
 </template>
 
 <style scoped>
