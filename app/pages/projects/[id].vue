@@ -332,6 +332,10 @@ onUnmounted(() => {
     <!-- bleed out of layout px-6 py-5 -->
     <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
 
+    <!-- ══ TWO-COLUMN LAYOUT ══ -->
+    <div class="pd-layout" :class="{ 'pd-layout--collapsed': !showSide }">
+    <div class="pd-left">
+
     <!-- ══ HEADER ══ -->
     <div class="pdh">
 
@@ -396,7 +400,7 @@ onUnmounted(() => {
     </div>
 
     <!-- ══ BODY ══ -->
-    <div class="pd-body" :class="{ 'pd-body--collapsed': !showSide }">
+    <div class="pd-body">
 
       <!-- ── LEFT MAIN ── -->
       <div class="pd-main">
@@ -568,6 +572,8 @@ onUnmounted(() => {
         </template>
 
       </div>
+    </div><!-- /pd-body -->
+    </div><!-- /pd-left -->
 
       <!-- ── RIGHT SIDE PANEL ── -->
       <div class="pd-side" v-show="showSide">
@@ -816,7 +822,7 @@ onUnmounted(() => {
           <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
         </svg>
       </button>
-    </div>
+    </div><!-- /pd-layout -->
   </div>
 </NuxtLayout>
 </template>
@@ -888,13 +894,15 @@ onUnmounted(() => {
 .pdh-tab.active .pdh-tab-badge { background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); }
 
 /* ── BODY LAYOUT ── */
-.pd-body { flex:1; display:grid; grid-template-columns:1fr 260px; background:#F9FAFB; min-height:0; overflow:hidden; position:relative; }
-.pd-body--collapsed { grid-template-columns:1fr; }
-.pd-main { padding:24px 28px; overflow-y:auto; background:#fff; border-right:1px solid #E5E7EB; }
+.pd-layout { flex:1; display:grid; grid-template-columns:1fr 260px; min-height:0; overflow:hidden; position:relative; background:#fff; }
+.pd-layout--collapsed { grid-template-columns:1fr; }
+.pd-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; border-right:1px solid #E5E7EB; }
+.pd-body { flex:1; overflow:hidden; display:flex; flex-direction:column; min-height:0; }
+.pd-main { padding:24px 28px; overflow-y:auto; flex:1; }
 .pd-side {
-  padding: 16px 12px;
+  padding: 18px 12px 16px;
   overflow-y: auto;
-  background: #F9FAFB;
+  background: #fff;
 }
 .pd-side-top {
   display: flex;
