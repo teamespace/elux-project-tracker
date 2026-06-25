@@ -59,19 +59,6 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
   <div class="flex flex-col h-full">
     <!-- Toolbar -->
     <div class="page-toolbar">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div class="proj-view-switcher">
-          <button class="proj-view-btn" :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            Card
-          </button>
-          <button class="proj-view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            List
-          </button>
-        </div>
-      </div>
-
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
 
         <!-- Status -->
@@ -144,6 +131,19 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
             </div>
             <div class="df-footer"><button class="df-clear" @click.stop="selectedAssignees = ['Rasya','Maya','Dito','Rara','Lintang']; openDd = ''">Clear</button></div>
           </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="proj-view-switcher">
+          <button class="proj-view-btn" :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Card
+          </button>
+          <button class="proj-view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            List
+          </button>
         </div>
       </div>
     </div>

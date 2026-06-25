@@ -237,23 +237,7 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
   <div class="flex w-full flex-col">
     <!-- Toolbar -->
     <div class="flex flex-col gap-3 border-b border-gray-100 bg-white pb-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
-      <!-- Left: view tabs -->
-      <div class="flex items-center gap-2">
-        <div class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-50 p-1">
-          <button
-            v-for="tab in viewTabs"
-            :key="tab.id"
-            class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:text-gray-900"
-            :class="currentView === tab.id ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200' : 'hover:bg-gray-100'"
-            @click="currentView = tab.id"
-          >
-            <UIcon :name="tab.icon" class="size-4" />
-            <span>{{ tab.label }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Right: filters, sort + new -->
+      <!-- Left: filters -->
       <div class="flex items-center gap-1.5">
         <!-- Status dropdown -->
         <div ref="statusDropdownRef" class="relative">
@@ -273,7 +257,7 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
           </button>
           <div
             v-if="openDropdown === 'status'"
-            class="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+            class="absolute left-0 top-full z-20 mt-1 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
           >
             <label
               v-for="option in statusOptions"
@@ -309,7 +293,7 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
           </button>
           <div
             v-if="openDropdown === 'priority'"
-            class="absolute right-0 top-full z-20 mt-1 w-36 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+            class="absolute left-0 top-full z-20 mt-1 w-36 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
           >
             <label
               v-for="option in priorityOptions"
@@ -345,7 +329,7 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
           </button>
           <div
             v-if="openDropdown === 'filters'"
-            class="absolute right-0 top-full z-20 mt-1 w-56 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+            class="absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
           >
             <div class="mb-3">
               <p class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
@@ -405,8 +389,22 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
             </div>
           </div>
         </div>
+      </div>
 
-
+      <!-- Right: view tabs -->
+      <div class="flex items-center gap-2">
+        <div class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-50 p-1">
+          <button
+            v-for="tab in viewTabs"
+            :key="tab.id"
+            class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-600 transition-colors hover:text-gray-900"
+            :class="currentView === tab.id ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200' : 'hover:bg-gray-100'"
+            @click="currentView = tab.id"
+          >
+            <UIcon :name="tab.icon" class="size-4" />
+            <span>{{ tab.label }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
