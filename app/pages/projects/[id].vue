@@ -573,7 +573,7 @@ onUnmounted(() => {
         <!-- Properties Card -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <div class="pd-panel-hdr-left">
+            <div style="display:flex;align-items:center;gap:8px">
               <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -590,10 +590,8 @@ onUnmounted(() => {
           <div class="pd-prop-row" @click.stop="toggleEdit('status')">
             <div class="pd-prop-lbl">Status</div>
             <div class="pd-prop-val">
-              <span class="pdh-chip" :class="editState.statusClass">
-                <span class="pdh-dot" :class="editState.statusClass + '-dot'"/>
-                {{ editState.status }}
-              </span>
+              <span class="pdh-dot" :class="editState.statusClass + '-dot'" style="margin-right:5px"/>
+              {{ editState.status }}
             </div>
           </div>
           <div v-if="editingField === 'status'" class="pd-dropdown">
@@ -602,10 +600,8 @@ onUnmounted(() => {
               class="pd-dd-item"
               @click.stop="setStatus(opt)"
             >
-              <span class="pdh-chip" :class="opt.cls">
-                <span class="pdh-dot" :class="opt.cls + '-dot'"/>
-                {{ opt.label }}
-              </span>
+              <span class="pdh-dot" :class="opt.cls + '-dot'" style="margin-right:5px"/>
+              {{ opt.label }}
             </div>
           </div>
 
@@ -652,7 +648,7 @@ onUnmounted(() => {
           <!-- START DATE -->
           <div class="pd-prop-row" @click.stop="toggleEdit('startDate')">
             <div class="pd-prop-lbl">Start</div>
-            <div class="pd-prop-val pd-prop-val--text">
+            <div class="pd-prop-val">
               {{ editState.startDate }}
             </div>
           </div>
@@ -672,7 +668,7 @@ onUnmounted(() => {
           <!-- DUE DATE -->
           <div class="pd-prop-row" @click.stop="toggleEdit('endDate')">
             <div class="pd-prop-lbl">Due</div>
-            <div class="pd-prop-val pd-prop-val--text" :class="{ 'pd-prop-val--red': proj.endDateRed }">
+            <div class="pd-prop-val" :class="{ 'pd-prop-val--red': proj.endDateRed }">
               {{ editState.endDate }}
             </div>
           </div>
@@ -692,7 +688,7 @@ onUnmounted(() => {
           <!-- CATEGORY -->
           <div class="pd-prop-row" @click.stop="toggleEdit('category')">
             <div class="pd-prop-lbl">Category</div>
-            <div class="pd-prop-val pd-prop-val--text">{{ editState.category }}</div>
+            <div class="pd-prop-val">{{ editState.category }}</div>
           </div>
           <div v-if="editingField === 'category'" class="pd-dropdown pd-dropdown--input">
             <input
@@ -719,7 +715,7 @@ onUnmounted(() => {
         <!-- Progress -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <div class="pd-panel-hdr-left">
+            <div style="display:flex;align-items:center;gap:8px">
               <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -750,7 +746,7 @@ onUnmounted(() => {
         <!-- Assignees -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <div class="pd-panel-hdr-left">
+            <div style="display:flex;align-items:center;gap:8px">
               <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -776,7 +772,7 @@ onUnmounted(() => {
         <!-- Quick Links -->
         <div v-if="proj.quickLinks.length" class="pd-panel-sec">
           <div class="pd-panel-hdr">
-            <div class="pd-panel-hdr-left">
+            <div style="display:flex;align-items:center;gap:8px">
               <svg class="pd-panel-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -875,9 +871,9 @@ onUnmounted(() => {
 .pd-body { flex:1; display:grid; grid-template-columns:1fr 260px; background:#F9FAFB; min-height:0; overflow:hidden; }
 .pd-main { padding:24px 28px; overflow-y:auto; background:#fff; border-right:1px solid #E5E7EB; }
 .pd-side {
-  padding: 16px;
+  padding: 16px 0;
   overflow-y: auto;
-  background: #F9FAFB;
+  background: #fff;
 }
 
 /* section */
@@ -968,35 +964,30 @@ onUnmounted(() => {
 
 /* ── SIDE PANEL ── */
 .pd-panel-sec {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
   padding: 14px 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border-top: 1px solid #E5E7EB;
 }
+.pd-panel-sec:first-child { border-top: none; }
 .pd-panel-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.pd-panel-hdr-left { display:flex; align-items:center; gap:8px; }
 .pd-panel-chevron { color:#6B7280; flex-shrink:0; }
-.pd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#6B7280; }
+.pd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; color:#9CA3AF; }
 .pd-panel-btn { width:20px; height:20px; border-radius:4px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#6B7280; }
 .pd-panel-btn:hover { background:#F3F4F6; color:#374151; }
 
-.pd-prop-row { display:flex; align-items:center; min-height:30px; border-radius:6px; padding:2px 4px; margin-bottom:1px; cursor:pointer; }
+.pd-prop-row { display:flex; align-items:center; justify-content:space-between; min-height:30px; border-radius:6px; padding:2px 4px; margin-bottom:1px; cursor:pointer; }
 .pd-prop-row:hover { background:#F9FAFB; }
 .pd-prop-row--labels { align-items:flex-start; padding-top:4px; }
-.pd-prop-lbl { width:72px; flex-shrink:0; font-size:11.5px; font-weight:500; color:#374151; }
+.pd-prop-lbl { width:72px; flex-shrink:0; font-size:11.5px; font-weight:500; color:#9CA3AF; }
 .pd-prop-row--labels .pd-prop-lbl { padding-top:4px; }
-.pd-prop-val { flex:1; font-size:12.5px; color:#111827; padding:2px 6px; border-radius:4px; display:flex; justify-content:flex-end; }
-.pd-prop-val--text { justify-content:flex-end; }
+.pd-prop-val { font-size:12.5px; color:#111827; display:flex; align-items:center; }
 .pd-prop-val--red { color:#EF4444; }
-.pd-prop-val--priority { display:flex; align-items:center; justify-content:flex-end; gap:5px; }
+.pd-prop-val--priority { gap:5px; }
 .pd-priority-icon { flex-shrink:0; }
 .pd-priority-text { font-size:12.5px; font-weight:500; }
-.pd-prop-val--owner { display:flex; align-items:center; justify-content:flex-end; gap:7px; }
+.pd-prop-val--owner { gap:7px; }
 .pd-owner-avatar { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
 .pd-owner-name { font-size:12.5px; color:#111827; }
-.pd-prop-val--labels { display:flex; justify-content:flex-end; gap:4px; flex-wrap:wrap; }
+.pd-prop-val--labels { gap:4px; flex-wrap:wrap; }
 .pd-label { font-size:10.5px; background:#F3E8FF; color:#7C3AED; padding:2px 8px; border-radius:10px; font-weight:500; }
 
 /* progress numbers */
@@ -1017,9 +1008,9 @@ onUnmounted(() => {
 
 /* quick links */
 .pd-ql-list { display:flex; flex-direction:column; gap:8px; }
-.pd-ql-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; text-decoration:none; color:#111827; border:1px solid #E5E7EB; background:#fff; }
-.pd-ql-row:hover { background:#F9FAFB; border-color:#D1D5DB; }
-.pd-ql-icon { width:24px; height:24px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pd-ql-row { display:flex; align-items:center; gap:10px; padding:6px 4px; border-radius:6px; text-decoration:none; color:#111827; }
+.pd-ql-row:hover { background:#F9FAFB; }
+.pd-ql-icon { width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#F9FAFB; }
 .pd-ql-label { flex:1; font-size:12.5px; color:#111827; }
 .pd-ql-ext { color:#9CA3AF; flex-shrink:0; }
 .pd-ql-row:hover .pd-ql-ext { color:#6B7280; }
