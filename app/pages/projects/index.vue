@@ -9,8 +9,6 @@ const selectedAssignees  = ref<string[]>(['Rasya', 'Maya', 'Dito', 'Rara', 'Lint
 
 function toggleDd(e: Event, id: string) { e.stopPropagation(); openDd.value = openDd.value === id ? '' : id }
 function closeDd() { openDd.value = '' }
-onMounted(() => document.addEventListener('click', closeDd))
-onUnmounted(() => document.removeEventListener('click', closeDd))
 
 function toggle(arr: string[], v: string) {
   const i = arr.indexOf(v); if (i === -1) arr.push(v); else arr.splice(i, 1)
@@ -29,7 +27,7 @@ interface Proj {
   attach: number; comments: number
 }
 
-const allProjects: Proj[] = [
+const allProjects = ref<Proj[]>([
   { id: 'p1', key: 'ALPHA', name: 'Alpha Project', category: 'UX Redesign', description: 'Redesigning core product UX to improve activation…', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', doneT: 9, totalT: 14, progress: 62, barFill: 'pfill-amber', dueLabel: 'Aug 30, 2025', overdue: true, assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Maya',bg:'ffd5dc',name:'Maya'},{seed:'Dito',bg:'c0aede',name:'Dito'}], attach: 3, comments: 7 },
   { id: 'p2', key: 'BETA', name: 'Beta Launch', category: 'Q3 Milestone', description: 'Public launch milestone for Q3, marketing site…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 7, totalT: 9, progress: 78, barFill: 'pfill-green', dueLabel: 'Jul 15, 2025', assignees: [{seed:'Leo',bg:'d1f0c2',name:'Leo'},{seed:'Ayu',bg:'fde68a',name:'Ayu'}], attach: 5, comments: 12 },
   { id: 'p3', key: 'MOB', name: 'Mobile App MVP', category: 'Product', description: 'iOS + Android MVP, core flows and onboarding…', status: 'on-track', statusLabel: 'On Track', priority: 'high', doneT: 9, totalT: 20, progress: 45, barFill: 'pfill-blue', dueLabel: 'Oct 1, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Rara',bg:'f9a8d4',name:'Rara'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'}], attach: 8, comments: 4 },
@@ -38,14 +36,48 @@ const allProjects: Proj[] = [
   { id: 'p6', key: 'API', name: 'API Gateway v2', category: 'Infrastructure', description: 'Rate limiting, auth middleware, and routing redesign…', status: 'delayed', statusLabel: 'Delayed', priority: 'high', doneT: 2, totalT: 12, progress: 15, barFill: 'pfill-red', dueLabel: 'Jun 30, 2025', overdue: true, assignees: [{seed:'Dito',bg:'c0aede',name:'Dito'},{seed:'Maya',bg:'ffd5dc',name:'Maya'}], attach: 0, comments: 14 },
   { id: 'p7', key: 'DS2', name: 'Design System v2', category: 'Design', description: 'Component library, tokens, and documentation rollout…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 6, totalT: 11, progress: 55, barFill: 'pfill-blue', dueLabel: 'Sep 15, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'},{seed:'Rara',bg:'f9a8d4',name:'Rara'}], attach: 6, comments: 8 },
   { id: 'p8', key: 'INT', name: 'Internal Tools', category: 'Design System', description: 'Tracker revamp and design system rollout for internal team…', status: 'not-started', statusLabel: 'Not Started', priority: 'low', doneT: 0, totalT: 0, progress: 0, barFill: 'pfill-gray', dueLabel: 'Sep 10, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'}], attach: 0, comments: 0 },
-]
+])
 
 const filteredProjects = computed(() =>
-  allProjects.filter(p =>
+  allProjects.value.filter(p =>
     selectedStatuses.value.includes(p.status) &&
     selectedPriorities.value.includes(p.priority)
   )
 )
+
+const projectSlideOver = useProjectSlideOver()
+const actionOpen = ref<string | null>(null)
+
+function openActions(e: Event, id: string) {
+  e.stopPropagation()
+  e.preventDefault()
+  actionOpen.value = actionOpen.value === id ? null : id
+}
+function closeActions() { actionOpen.value = null }
+
+function viewProject(id: string) {
+  closeActions()
+  navigateTo(`/projects/${id}`)
+}
+
+function editProject(id: string) {
+  closeActions()
+  projectSlideOver.openView(id)
+}
+
+function deleteProject(id: string) {
+  closeActions()
+  allProjects.value = allProjects.value.filter(p => p.id !== id)
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeDd)
+  document.addEventListener('click', closeActions)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', closeDd)
+  document.removeEventListener('click', closeActions)
+})
 
 const avatarUrl = (seed: string, bg: string) =>
   `https://api.dicebear.com/9.x/open-peeps/svg?seed=${seed}&backgroundColor=${bg}&backgroundType=solid`
@@ -156,9 +188,29 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
             <svg class="proj-flag" viewBox="0 0 24 24" fill="currentColor"><path d="M4 21V4h1l7 3 7-3v11l-7 3-7-3v6H4z"/></svg>
             {{ p.priority.charAt(0).toUpperCase() + p.priority.slice(1) }}
           </span>
-          <button class="proj-card-more" @click.prevent>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
-          </button>
+          <div class="relative">
+            <button class="proj-card-more" @click.prevent="openActions($event, `card-${p.id}`)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+            </button>
+            <div
+              v-if="actionOpen === `card-${p.id}`"
+              class="proj-action-dd"
+              @click.stop
+            >
+              <button class="proj-action-item" @click.stop="viewProject(p.id)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View
+              </button>
+              <button class="proj-action-item" @click.stop="editProject(p.id)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </button>
+              <button class="proj-action-item proj-action-item--danger" @click.stop="deleteProject(p.id)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
         <div class="proj-card-title">{{ p.name }}</div>
         <div class="proj-card-cat">{{ p.category }}</div>
@@ -232,10 +284,82 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
               </div>
             </td>
             <td><span class="spill" :class="`spill-${p.priority}`">{{ p.priority.charAt(0).toUpperCase() + p.priority.slice(1) }}</span></td>
-            <td><button class="tbl-more"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg></button></td>
+            <td>
+              <div class="relative">
+                <button class="tbl-more" @click.stop="openActions($event, `tbl-${p.id}`)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+                </button>
+                <div
+                  v-if="actionOpen === `tbl-${p.id}`"
+                  class="proj-action-dd proj-action-dd--right"
+                  @click.stop
+                >
+                  <button class="proj-action-item" @click.stop="viewProject(p.id)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    View
+                  </button>
+                  <button class="proj-action-item" @click.stop="editProject(p.id)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit
+                  </button>
+                  <button class="proj-action-item proj-action-item--danger" @click.stop="deleteProject(p.id)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </template>
+
+<style scoped>
+.proj-action-dd {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.proj-action-dd--right {
+  left: auto;
+  right: 0;
+}
+.proj-action-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.proj-action-item:hover {
+  background: #F9FAFB;
+  color: #111827;
+}
+.proj-action-item--danger {
+  color: #DC2626;
+}
+.proj-action-item--danger:hover {
+  background: #FEF2F2;
+  color: #B91C1C;
+}
+</style>
