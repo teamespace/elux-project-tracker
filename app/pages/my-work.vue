@@ -64,7 +64,12 @@ const selectedPriorityLabel = computed(() =>
 interface Task {
   id: string; title: string; project: string; priority: 'high' | 'medium' | 'low'; priorityLabel: string
   due: string; dueType: DueFilter; labels: { text: string; color?: string }[]; done?: boolean
+  description?: string
+  progress?: number
+  assignee?: { name: string; initials: string; avatar?: string }
 }
+
+const currentUser = { name: 'Rasya Ardiansyah', initials: 'RA' }
 
 const groups: { id: GroupId; label: string; dotClass: string; tasks: Task[] }[] = [
   { id: 'overdue', label: 'Overdue', dotClass: 'overdue', tasks: [
@@ -100,8 +105,77 @@ const groups: { id: GroupId; label: string; dotClass: string; tasks: Task[] }[] 
   ]},
 ]
 
-const filteredGroups = computed(() =>
+const statusFromGroup = (groupId: GroupId): { id: string; label: string } => {
+  switch (groupId) {
+    case 'overdue': return { id: 'in-progress', label: 'In Progress' }
+    case 'inprogress': return { id: 'in-progress', label: 'In Progress' }
+    case 'todo': return { id: 'todo', label: 'To Do' }
+    case 'inreview': return { id: 'in-review', label: 'In Review' }
+    case 'completed': return { id: 'done', label: 'Done' }
+  }
+}
+
+const statusClass = (groupId: GroupId) => {
+  switch (groupId) {
+    case 'overdue':
+    case 'inprogress': return 'text-blue-700 bg-blue-50 border-blue-200'
+    case 'todo': return 'text-gray-700 bg-gray-100 border-gray-200'
+    case 'inreview': return 'text-amber-700 bg-amber-50 border-amber-200'
+    case 'completed': return 'text-green-700 bg-green-50 border-green-200'
+  }
+}
+
+const statusDotClass = (groupId: GroupId) => {
+  switch (groupId) {
+    case 'overdue':
+    case 'inprogress': return 'bg-blue-500'
+    case 'todo': return 'bg-gray-400'
+    case 'inreview': return 'bg-amber-500'
+    case 'completed': return 'bg-green-500'
+  }
+}
+
+const priorityClass = (priority: Task['priority']) => {
+  switch (priority) {
+    case 'high': return 'text-red-700 bg-red-50 border-red-200'
+    case 'medium': return 'text-amber-700 bg-amber-50 border-amber-200'
+    case 'low': return 'text-green-700 bg-green-50 border-green-200'
+  }
+}
+
+const progressFor = (groupId: GroupId) => {
+  switch (groupId) {
+    case 'completed': return 100
+    case 'inreview': return 75
+    case 'inprogress': return 50
+    case 'overdue': return 25
+    case 'todo': return 0
+  }
+}
+
+const progressColor = (progress: number) => {
+  if (progress === 0) return 'bg-gray-300'
+  if (progress <= 33) return 'bg-amber-500'
+  if (progress <= 66) return 'bg-blue-500'
+  if (progress < 100) return 'bg-green-500'
+  return 'bg-green-600'
+}
+
+const enrichedGroups = computed(() =>
   groups.map(g => ({
+    ...g,
+    statusInfo: statusFromGroup(g.id),
+    tasks: g.tasks.map(t => ({
+      ...t,
+      description: t.labels.map(l => l.text).join(' · ') || undefined,
+      progress: t.progress ?? progressFor(g.id),
+      assignee: t.assignee ?? currentUser,
+    })),
+  }))
+)
+
+const filteredGroups = computed(() =>
+  enrichedGroups.value.map(g => ({
     ...g,
     tasks: g.tasks.filter(t => {
       if (activeStatCard.value !== 'all' && g.id !== activeStatCard.value) return false
@@ -114,7 +188,7 @@ const filteredGroups = computed(() =>
 )
 
 const allFilteredTasks = computed(() =>
-  filteredGroups.value.flatMap(g => g.tasks.map(t => ({ ...t, groupId: g.id, groupLabel: g.label })))
+  filteredGroups.value.flatMap(g => g.tasks.map(t => ({ ...t, groupId: g.id, groupLabel: g.label, statusInfo: g.statusInfo })))
 )
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })
@@ -294,76 +368,206 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
       >
         <div class="task-group-header" @click="toggleGroup(group.id)">
           <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .15s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
-          <span class="mw-group-dot" :class="group.dotClass" />
-          <span class="mw-group-label">{{ group.label }}</span>
-          <span class="mw-group-count">· {{ group.tasks.length }}</span>
+          <span class="size-2 rounded-full" :class="statusDotClass(group.id)" />
+          <h3 class="text-[14px] font-semibold text-gray-900">
+            {{ group.label }}
+          </h3>
+          <span class="text-[12px] text-gray-500">
+            ({{ group.tasks.length }})
+          </span>
         </div>
-        <div
-          v-for="task in group.tasks" :key="task.id"
-          class="task-row"
-          :data-project="task.project"
-          :data-priority="task.priority"
-          :data-due="task.dueType"
-        >
-          <div class="mw-row-main">
-            <input type="checkbox" :checked="task.done" style="accent-color:oklch(60.6% 0.25 292.717);flex-shrink:0;">
-            <span class="task-status-pill" :class="group.id === 'completed' ? 'done' : group.id">
-              {{ group.id === 'inprogress' ? 'In Progress' : group.id === 'inreview' ? 'In Review' : group.label }}
+
+        <div class="flex flex-col gap-2">
+          <div
+            v-for="task in group.tasks" :key="task.id"
+            class="task-row flex cursor-pointer items-center gap-4 rounded-md border border-gray-200 bg-white px-3 py-2.5 transition-colors hover:border-gray-300 hover:bg-gray-50"
+            :data-project="task.project"
+            :data-priority="task.priority"
+            :data-due="task.dueType"
+          >
+            <span
+              :class="[
+                'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+                statusClass(group.id),
+              ]"
+            >
+              <span class="size-1.5 rounded-full bg-current" />
+              {{ group.statusInfo.label }}
             </span>
-            <span class="task-name" :class="{ done: task.done }">{{ task.title }}</span>
-          </div>
-          <div class="mw-row-right">
-            <span v-for="label in task.labels" :key="label.text" class="task-label-chip" :class="label.color">{{ label.text }}</span>
-            <span class="task-priority" :class="task.priority">{{ task.priorityLabel }}</span>
-            <span class="task-due" :class="{ overdue: task.dueType === 'overdue', today: task.dueType === 'today' }">{{ task.due }}</span>
-            <button class="task-more-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
-            </button>
+
+            <span
+              :class="[
+                'inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+                priorityClass(task.priority),
+              ]"
+            >
+              {{ task.priorityLabel }}
+            </span>
+
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-[13px] font-semibold text-gray-900" :class="{ 'line-through text-gray-400': task.done }">
+                {{ task.title }}
+              </p>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2">
+              <UAvatar
+                :src="task.assignee?.avatar"
+                :text="task.assignee?.initials"
+                size="xs"
+                :title="task.assignee?.name"
+              />
+            </div>
+
+            <span
+              class="hidden shrink-0 truncate rounded-sm border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[11px] font-medium text-gray-600 sm:block"
+            >
+              {{ task.project }}
+            </span>
+
+            <span
+              class="shrink-0 text-[12px]"
+              :class="{
+                'font-medium text-red-600': task.dueType === 'overdue',
+                'font-medium text-purple-600': task.dueType === 'today',
+                'text-gray-500': task.dueType !== 'overdue' && task.dueType !== 'today',
+              }"
+            >
+              {{ task.due }}
+            </span>
           </div>
         </div>
+      </div>
+
+      <div v-if="filteredGroups.length === 0" class="rounded-md border border-dashed border-gray-200 bg-gray-50 px-3 py-8 text-center text-[13px] text-gray-500">
+        No tasks match the selected filters.
       </div>
     </div>
 
     <!-- TABLE VIEW -->
     <div v-else class="mw-tbl-view" style="display:flex;flex:1;overflow-y:auto;">
-      <table class="mw-tbl" style="width:100%;">
-        <thead>
-          <tr>
-            <th style="width:36px;"></th>
-            <th>Task</th>
-            <th style="width:140px">Project</th>
-            <th style="width:110px">Status</th>
-            <th style="width:90px">Priority</th>
-            <th style="width:100px">Due</th>
-            <th style="width:120px">Labels</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="task in allFilteredTasks" :key="task.id"
-            :data-project="task.project"
-            :data-priority="task.priority"
-            :data-due="task.dueType"
-          >
-            <td><input type="checkbox" :checked="task.done" style="accent-color:oklch(60.6% 0.25 292.717)"></td>
-            <td class="td-task" :class="{ done: task.done }">{{ task.title }}</td>
-            <td class="td-proj">{{ task.project }}</td>
-            <td>
-              <span class="task-status-pill" :class="task.groupId === 'completed' ? 'done' : task.groupId">
-                {{ task.groupId === 'inprogress' ? 'In Progress' : task.groupId === 'inreview' ? 'In Review' : task.groupLabel }}
-              </span>
-            </td>
-            <td><span class="task-priority" :class="task.priority">{{ task.priorityLabel }}</span></td>
-            <td class="td-due" :class="{ overdue: task.dueType === 'overdue', today: task.dueType === 'today' }">{{ task.due }}</td>
-            <td>
-              <span v-for="label in task.labels" :key="label.text" class="task-label-chip" :class="label.color">{{ label.text }}</span>
-            </td>
-          </tr>
-          <tr v-if="allFilteredTasks.length === 0">
-            <td colspan="7" style="padding:40px;text-align:center;color:#9CA3AF;font-size:14px;">No tasks match the selected filters.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-hidden rounded-lg border border-gray-200 bg-white" style="flex:1;">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[900px] border-collapse">
+            <thead>
+              <tr class="border-b border-gray-200 bg-gray-50 text-left">
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Task
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Status
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Priority
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Assignee
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Project
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Due Date
+                </th>
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
+                  Progress
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="task in allFilteredTasks" :key="task.id"
+                class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50 last:border-b-0"
+                :data-project="task.project"
+                :data-priority="task.priority"
+                :data-due="task.dueType"
+              >
+                <td class="px-4 py-3">
+                  <div class="min-w-0">
+                    <p class="truncate text-[13px] font-semibold text-gray-900" :class="{ 'line-through text-gray-400': task.done }">
+                      {{ task.title }}
+                    </p>
+                    <p v-if="task.description" class="mt-0.5 line-clamp-1 text-[12px] text-gray-500">
+                      {{ task.description }}
+                    </p>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    :class="[
+                      'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+                      statusClass(task.groupId),
+                    ]"
+                  >
+                    <span class="size-1.5 rounded-full bg-current" />
+                    {{ task.statusInfo.label }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    :class="[
+                      'inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+                      priorityClass(task.priority),
+                    ]"
+                  >
+                    {{ task.priorityLabel }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <UAvatar
+                      :src="task.assignee?.avatar"
+                      :text="task.assignee?.initials"
+                      size="xs"
+                    />
+                    <span class="truncate text-[13px] text-gray-700">
+                      {{ task.assignee?.name }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="truncate text-[13px] text-gray-700">
+                    {{ task.project }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="text-[13px]"
+                    :class="{
+                      'font-medium text-red-600': task.dueType === 'overdue',
+                      'font-medium text-purple-600': task.dueType === 'today',
+                      'text-gray-700': task.dueType !== 'overdue' && task.dueType !== 'today',
+                    }"
+                  >
+                    {{ task.due }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="w-28">
+                    <div class="mb-1 flex items-center justify-between">
+                      <span class="text-[12px] font-semibold text-gray-700">
+                        {{ task.progress }}%
+                      </span>
+                    </div>
+                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                      <div
+                        class="h-full rounded-full transition-all duration-300"
+                        :class="progressColor(task.progress ?? 0)"
+                        :style="{ width: (task.progress ?? 0) + '%' }"
+                      />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="allFilteredTasks.length === 0">
+                <td colspan="7" class="px-4 py-10 text-center text-[14px] text-gray-400">
+                  No tasks match the selected filters.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
