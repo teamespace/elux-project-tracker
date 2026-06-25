@@ -136,7 +136,12 @@ onBeforeUnmount(() => {
 
         <!-- Body -->
         <div class="flex-1 overflow-hidden">
+          <ProjectCreateContent
+            v-if="state.mode === 'create'"
+            @close="close"
+          />
           <ProjectDetailContent
+            v-else
             :project-id="state.projectId"
             mode="slide-over"
             @close="close"
