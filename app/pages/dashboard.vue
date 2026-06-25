@@ -112,7 +112,7 @@ const stats: StatCard[] = [
   },
 ]
 
-const projects: Project[] = [
+const projects = ref<Project[]>([
   {
     id: 'proj-1', name: 'Alpha Project', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', priorityLabel: 'High',
     description: 'Redesigning core product UX', progress: 38, openTasks: 14, atRiskTasks: 2,
@@ -158,7 +158,11 @@ const projects: Project[] = [
       { initials: 'L', name: 'Lintang', avatar: getAvatar('Lintang') },
     ],
   },
-]
+])
+
+function deleteProject(id: string) {
+  projects.value = projects.value.filter(p => p.id !== id)
+}
 
 const criticalIssues: CriticalIssue[] = [
   { id: 'ci-1', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'Auth redesign implementation', project: 'Alpha Project', assignee: 'Dito', status: 'overdue', statusLabel: 'Overdue' },
@@ -183,7 +187,7 @@ const activity: ActivityItem[] = [
     <DashboardCriticalIssues :issues="criticalIssues" />
 
     <div class="grid grid-cols-1 gap-4 items-stretch lg:grid-cols-[1fr_280px]">
-      <DashboardProjectCards :projects="projects" />
+      <DashboardProjectCards :projects="projects" @delete="deleteProject" />
       <div class="h-full min-h-0 overflow-hidden">
         <DashboardRecentActivity :activity="activity" />
       </div>
