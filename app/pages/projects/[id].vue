@@ -4,6 +4,7 @@ definePageMeta({ layout: 'default', title: 'Project' })
 const route = useRoute()
 const id = route.params.id as string
 const activeTab = ref<'overview' | 'tasks' | 'activity' | 'comments' | 'attachments'>('overview')
+const editingField = ref<string | null>(null)
 
 interface PAssignee { seed: string; bg: string; name: string }
 interface PTask { id: number; title: string; done: boolean; date: string; late?: boolean; assignee: string; aInit: string; aBg: string; aColor: string }
@@ -236,6 +237,80 @@ function progFillColor(sc: string) {
   if (sc === 'cs-medium') return 'oklch(60.6% 0.25 292.717)'
   return '#D1D5DB'
 }
+
+const editState = reactive({
+  status: proj.value!.statusLabel,
+  statusClass: proj.value!.statusClass,
+  priority: proj.value!.priority,
+  priorityColor: proj.value!.priorityColor,
+  owner: proj.value!.owner,
+  startDate: proj.value!.startDate,
+  endDate: proj.value!.endDate,
+  category: proj.value!.category,
+  labels: [...proj.value!.labels],
+})
+
+function toggleEdit(field: string) {
+  editingField.value = editingField.value === field ? null : field
+}
+
+function closeEdit() {
+  editingField.value = null
+}
+
+const statusOptions = [
+  { label: 'On Track',    cls: 'cs-track',   color: '#059669' },
+  { label: 'At Risk',     cls: 'cs-risk',    color: '#DC2626' },
+  { label: 'Delayed',     cls: 'cs-delayed', color: '#991B1B' },
+  { label: 'Not Started', cls: 'cs-new',     color: '#6B7280' },
+]
+
+const priorityOptions = [
+  { label: 'High',   color: '#D97706' },
+  { label: 'Medium', color: 'oklch(60.6% 0.25 292.717)' },
+  { label: 'Low',    color: '#16A34A' },
+]
+
+const userOptions = [
+  { name: 'Rasya', seed: 'Rasya', bg: 'b6e3f4' },
+  { name: 'Maya',  seed: 'Maya',  bg: 'ffd5dc' },
+  { name: 'Dito',  seed: 'Dito',  bg: 'c0aede' },
+  { name: 'Rara',  seed: 'Rara',  bg: 'f9a8d4' },
+]
+
+function setStatus(opt: typeof statusOptions[0]) {
+  editState.status = opt.label
+  editState.statusClass = opt.cls
+  closeEdit()
+}
+
+function setPriority(opt: typeof priorityOptions[0]) {
+  editState.priority = opt.label
+  editState.priorityColor = opt.color
+  closeEdit()
+}
+
+function setOwner(u: typeof userOptions[0]) {
+  editState.owner = u.name
+  closeEdit()
+}
+
+function ownerAvatar() {
+  const u = userOptions.find(x => x.name === editState.owner)
+  return u ? avatarUrl(u.seed, u.bg) : avatarUrl('Rasya', 'b6e3f4')
+}
+
+function handleOutsideClick() {
+  editingField.value = null
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick)
+})
 </script>
 
 <template>
@@ -499,64 +574,143 @@ function progFillColor(sc: string) {
       <!-- ── RIGHT SIDE PANEL ── -->
       <div class="pd-side">
 
-        <!-- Properties -->
+        <!-- Properties Card -->
         <div class="pd-panel-sec">
           <div class="pd-panel-hdr">
             <span class="pd-panel-title">Properties</span>
-            <div style="display:flex;align-items:center;gap:4px">
-              <button class="pd-panel-btn">
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </button>
-            </div>
+            <button class="pd-panel-btn">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
           </div>
 
-          <div class="pd-prop-row">
+          <!-- STATUS -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('status')">
             <div class="pd-prop-lbl">Status</div>
             <div class="pd-prop-val">
-              <span class="pdh-chip" :class="proj.statusClass">
-                <span class="pdh-dot" :class="proj.statusClass + '-dot'"/>
-                {{ proj.statusLabel }}
+              <span class="pdh-chip" :class="editState.statusClass">
+                <span class="pdh-dot" :class="editState.statusClass + '-dot'"/>
+                {{ editState.status }}
+              </span>
+            </div>
+          </div>
+          <div v-if="editingField === 'status'" class="pd-dropdown">
+            <div
+              v-for="opt in statusOptions" :key="opt.label"
+              class="pd-dd-item"
+              @click.stop="setStatus(opt)"
+            >
+              <span class="pdh-chip" :class="opt.cls">
+                <span class="pdh-dot" :class="opt.cls + '-dot'"/>
+                {{ opt.label }}
               </span>
             </div>
           </div>
 
-          <div class="pd-prop-row">
+          <!-- PRIORITY -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('priority')">
             <div class="pd-prop-lbl">Priority</div>
             <div class="pd-prop-val" style="display:flex;align-items:center;gap:5px">
-              <svg width="12" height="12" viewBox="0 0 16 16" :fill="proj.priorityColor"><path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/></svg>
-              <span style="font-size:12.5px;color:#111827">{{ proj.priority }}</span>
+              <svg width="12" height="12" viewBox="0 0 16 16" :fill="editState.priorityColor">
+                <path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/>
+              </svg>
+              <span style="font-size:12.5px;color:#111827">{{ editState.priority }}</span>
+            </div>
+          </div>
+          <div v-if="editingField === 'priority'" class="pd-dropdown">
+            <div
+              v-for="opt in priorityOptions" :key="opt.label"
+              class="pd-dd-item"
+              @click.stop="setPriority(opt)"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" :fill="opt.color"><path d="M2 14V3l6 3 6-3v11l-6-3-6 3z"/></svg>
+              <span style="font-size:12.5px">{{ opt.label }}</span>
             </div>
           </div>
 
-          <div class="pd-prop-row">
+          <!-- OWNER -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('owner')">
             <div class="pd-prop-lbl">Owner</div>
             <div class="pd-prop-val" style="display:flex;align-items:center;gap:7px">
-              <img :src="avatarUrl(proj.oSeed, proj.oBg)" :alt="proj.owner" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
-              <span style="font-size:12.5px;color:#111827">{{ proj.owner }}</span>
+              <img :src="ownerAvatar()" :alt="editState.owner" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
+              <span style="font-size:12.5px;color:#111827">{{ editState.owner }}</span>
+            </div>
+          </div>
+          <div v-if="editingField === 'owner'" class="pd-dropdown">
+            <div
+              v-for="u in userOptions" :key="u.name"
+              class="pd-dd-item"
+              @click.stop="setOwner(u)"
+            >
+              <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" style="width:20px;height:20px;border-radius:50%;object-fit:cover">
+              <span style="font-size:12.5px">{{ u.name }}</span>
             </div>
           </div>
 
-          <div class="pd-prop-row">
+          <!-- START DATE -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('startDate')">
             <div class="pd-prop-lbl">Start</div>
-            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">{{ proj.startDate }}</div>
-          </div>
-
-          <div class="pd-prop-row">
-            <div class="pd-prop-lbl">Due</div>
-            <div class="pd-prop-val" :style="{ fontSize: '12.5px', color: proj.endDateRed ? '#EF4444' : '#111827', fontWeight: proj.endDateRed ? '500' : '400' }">
-              {{ proj.endDate }}
+            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">
+              {{ editState.startDate }}
             </div>
           </div>
-
-          <div class="pd-prop-row">
-            <div class="pd-prop-lbl">Category</div>
-            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">{{ proj.category }}</div>
+          <div v-if="editingField === 'startDate'" class="pd-dropdown pd-dropdown--input">
+            <input
+              v-model="editState.startDate"
+              type="text"
+              placeholder="e.g. Jan 6, 2026"
+              class="pd-dd-input"
+              @keydown.enter="closeEdit"
+              @keydown.escape="closeEdit"
+              @click.stop
+            >
+            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
           </div>
 
-          <div v-if="proj.labels.length" class="pd-prop-row" style="align-items:flex-start;padding-top:4px">
+          <!-- DUE DATE -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('endDate')">
+            <div class="pd-prop-lbl">Due</div>
+            <div class="pd-prop-val" style="font-size:12.5px" :style="{ color: proj.endDateRed ? '#EF4444' : '#111827' }">
+              {{ editState.endDate }}
+            </div>
+          </div>
+          <div v-if="editingField === 'endDate'" class="pd-dropdown pd-dropdown--input">
+            <input
+              v-model="editState.endDate"
+              type="text"
+              placeholder="e.g. Aug 30, 2025"
+              class="pd-dd-input"
+              @keydown.enter="closeEdit"
+              @keydown.escape="closeEdit"
+              @click.stop
+            >
+            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
+          </div>
+
+          <!-- CATEGORY -->
+          <div class="pd-prop-row" @click.stop="toggleEdit('category')">
+            <div class="pd-prop-lbl">Category</div>
+            <div class="pd-prop-val" style="font-size:12.5px;color:#111827">{{ editState.category }}</div>
+          </div>
+          <div v-if="editingField === 'category'" class="pd-dropdown pd-dropdown--input">
+            <input
+              v-model="editState.category"
+              type="text"
+              placeholder="e.g. Core product"
+              class="pd-dd-input"
+              @keydown.enter="closeEdit"
+              @keydown.escape="closeEdit"
+              @click.stop
+            >
+            <button class="pd-dd-save" @click.stop="closeEdit">Save</button>
+          </div>
+
+          <!-- LABELS -->
+          <div v-if="editState.labels.length" class="pd-prop-row" style="align-items:flex-start;padding-top:4px">
             <div class="pd-prop-lbl" style="padding-top:4px">Labels</div>
             <div class="pd-prop-val" style="display:flex;gap:4px;flex-wrap:wrap">
-              <span v-for="lb in proj.labels" :key="lb" class="pd-label">{{ lb }}</span>
+              <span v-for="lb in editState.labels" :key="lb" class="pd-label">{{ lb }}</span>
             </div>
           </div>
         </div>
@@ -702,7 +856,11 @@ function progFillColor(sc: string) {
 /* ── BODY LAYOUT ── */
 .pd-body { flex:1; display:grid; grid-template-columns:1fr 260px; background:#F9FAFB; min-height:0; overflow:hidden; }
 .pd-main { padding:24px 28px; overflow-y:auto; background:#fff; border-right:1px solid #E5E7EB; }
-.pd-side { padding:16px; overflow-y:auto; background:#fff; }
+.pd-side {
+  padding: 16px;
+  overflow-y: auto;
+  background: #F9FAFB;
+}
 
 /* section */
 .pd-section { margin-bottom:28px; }
@@ -791,7 +949,14 @@ function progFillColor(sc: string) {
 .pd-empty { font-size:13px; color:#9CA3AF; padding:12px 0; }
 
 /* ── SIDE PANEL ── */
-.pd-panel-sec { margin-bottom:20px; }
+.pd-panel-sec {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
 .pd-panel-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .pd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#9CA3AF; }
 .pd-panel-btn { width:20px; height:20px; border-radius:4px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#9CA3AF; }
@@ -825,4 +990,72 @@ function progFillColor(sc: string) {
 .pd-ql-label { flex:1; font-size:12.5px; color:#111827; }
 .pd-ql-ext { color:#9CA3AF; flex-shrink:0; }
 .pd-ql-row:hover .pd-ql-ext { color:oklch(60.6% 0.25 292.717); }
+
+/* dropdown panel */
+.pd-dropdown {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  padding: 4px;
+  margin: 0 4px 8px;
+  z-index: 10;
+  position: relative;
+}
+
+.pd-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: #111827;
+}
+
+.pd-dd-item:hover {
+  background: #F9FAFB;
+}
+
+/* text input variant */
+.pd-dropdown--input {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px;
+}
+
+.pd-dd-input {
+  flex: 1;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12.5px;
+  color: #111827;
+  outline: none;
+  font-family: inherit;
+}
+
+.pd-dd-input:focus {
+  border-color: oklch(60.6% 0.25 292.717);
+  box-shadow: 0 0 0 2px oklch(96% 0.04 292.717);
+}
+
+.pd-dd-save {
+  padding: 5px 10px;
+  background: oklch(60.6% 0.25 292.717);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.pd-dd-save:hover {
+  background: oklch(52% 0.27 292.717);
+}
 </style>
