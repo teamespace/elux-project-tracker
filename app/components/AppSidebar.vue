@@ -21,7 +21,7 @@ const workspaceNavItems: NavItem[] = [
 ]
 
 const personalNavItems: NavItem[] = [
-  { label: 'My Work', icon: 'ph:check-square', to: '/my-work' },
+  { label: 'My Task', icon: 'ph:check-square', to: '/my-task' },
   { label: 'Team', icon: 'ph:users', to: '/team' },
   { label: 'Docs', icon: 'ph:files', to: '/docs' },
 ]

@@ -1,8 +1,15 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'My Work', middleware: 'auth' })
-
-type DueFilter = 'all' | 'today' | 'week' | 'overdue' | 'none'
-type GroupId = 'overdue' | 'inprogress' | 'todo' | 'inreview' | 'completed'
+definePageMeta({ layout: 'default', title: 'My Task', middleware: 'auth' })
+import {
+  type DueFilter,
+  type GroupId,
+  currentUser,
+  groups,
+  statusClass,
+  statusDotClass,
+  priorityClass,
+  progressColor,
+} from '~/shared/my-tasks'
 
 const activeStatCard = ref<GroupId | 'all'>('all')
 const dueFilter = ref<DueFilter>('all')
@@ -61,114 +68,14 @@ const selectedPriorityLabel = computed(() =>
   priorityOptions.find(o => o.value === priorityFilter.value)?.label ?? 'All Priorities'
 )
 
-interface Task {
-  id: string; title: string; project: string; priority: 'high' | 'medium' | 'low'; priorityLabel: string
-  due: string; dueType: DueFilter; labels: { text: string; color?: string }[]; done?: boolean
-  description?: string
-  progress?: number
-  assignee?: { name: string; initials: string; avatar?: string }
-}
-
-const currentUser = { name: 'Rasya Ardiansyah', initials: 'RA' }
-
-const groups: { id: GroupId; label: string; dotClass: string; tasks: Task[] }[] = [
-  { id: 'overdue', label: 'Overdue', dotClass: 'overdue', tasks: [
-    { id: 't1', title: 'Auth redesign implementation', project: 'Alpha Project', priority: 'high', priorityLabel: 'HIGH', due: 'Jun 10', dueType: 'overdue', labels: [{ text: 'UX' }, { text: 'Design', color: 'amber' }] },
-    { id: 't2', title: 'Mobile checkout flow', project: 'Mobile App MVP', priority: 'high', priorityLabel: 'HIGH', due: 'Jun 14', dueType: 'overdue', labels: [{ text: 'Mobile', color: 'green' }] },
-    { id: 't3', title: 'Token naming inconsistency fix', project: 'Design System v2', priority: 'medium', priorityLabel: 'MED', due: 'Jun 18', dueType: 'overdue', labels: [{ text: 'Tokens', color: 'gray' }] },
-  ]},
-  { id: 'inprogress', label: 'In Progress', dotClass: 'inprogress', tasks: [
-    { id: 't4', title: 'Produce high-fidelity mockups', project: 'Alpha Project', priority: 'high', priorityLabel: 'HIGH', due: 'Today', dueType: 'today', labels: [{ text: 'UX' }, { text: 'Figma' }] },
-    { id: 't5', title: 'API rate limit specification', project: 'Beta Launch', priority: 'high', priorityLabel: 'HIGH', due: 'Today', dueType: 'today', labels: [{ text: 'Backend', color: 'gray' }] },
-    { id: 't6', title: 'Component library export', project: 'Design System v2', priority: 'medium', priorityLabel: 'MED', due: 'Jun 23', dueType: 'week', labels: [{ text: 'Components', color: 'green' }] },
-    { id: 't7', title: 'Implement payment gateway', project: 'Mobile App MVP', priority: 'medium', priorityLabel: 'MED', due: 'Jun 24', dueType: 'week', labels: [{ text: 'Mobile', color: 'green' }, { text: 'Dev', color: 'gray' }] },
-    { id: 't8', title: 'Write release notes draft', project: 'Beta Launch', priority: 'low', priorityLabel: 'LOW', due: '—', dueType: 'none', labels: [{ text: 'Docs', color: 'gray' }] },
-  ]},
-  { id: 'todo', label: 'To Do', dotClass: 'todo', tasks: [
-    { id: 't9', title: 'Handoff to engineering', project: 'Alpha Project', priority: 'medium', priorityLabel: 'MED', due: 'Jul 15', dueType: 'none', labels: [{ text: 'Handoff', color: 'gray' }] },
-    { id: 't10', title: 'Onboarding copy finalization', project: 'Beta Launch', priority: 'low', priorityLabel: 'LOW', due: 'Jul 1', dueType: 'none', labels: [{ text: 'Copy', color: 'gray' }] },
-    { id: 't11', title: 'App store submission checklist', project: 'Mobile App MVP', priority: 'low', priorityLabel: 'LOW', due: 'Jun 30', dueType: 'week', labels: [{ text: 'Mobile', color: 'green' }] },
-  ]},
-  { id: 'inreview', label: 'In Review', dotClass: 'inreview', tasks: [
-    { id: 't12', title: 'Draft information architecture', project: 'Alpha Project', priority: 'high', priorityLabel: 'HIGH', due: 'Jun 22', dueType: 'week', labels: [{ text: 'UX' }] },
-    { id: 't13', title: 'Design system documentation', project: 'Design System v2', priority: 'medium', priorityLabel: 'MED', due: 'Jun 25', dueType: 'none', labels: [{ text: 'Docs', color: 'gray' }] },
-  ]},
-  { id: 'completed', label: 'Completed', dotClass: 'completed', tasks: [
-    { id: 't14', title: 'Finalize user research synthesis', project: 'Alpha Project', priority: 'high', priorityLabel: 'HIGH', due: 'Jun 10', dueType: 'none', labels: [{ text: 'Research' }], done: true },
-    { id: 't15', title: 'Audit existing components', project: 'Design System v2', priority: 'medium', priorityLabel: 'MED', due: 'Jun 12', dueType: 'none', labels: [{ text: 'Components', color: 'green' }], done: true },
-    { id: 't16', title: 'Set up CI/CD pipeline', project: 'Beta Launch', priority: 'low', priorityLabel: 'LOW', due: 'Jun 15', dueType: 'none', labels: [{ text: 'Dev', color: 'gray' }], done: true },
-    { id: 't17', title: 'Finalize screen flows', project: 'Mobile App MVP', priority: 'high', priorityLabel: 'HIGH', due: 'May 15', dueType: 'none', labels: [{ text: 'Mobile', color: 'green' }], done: true },
-    { id: 't18', title: 'User interview synthesis', project: 'Alpha Project', priority: 'medium', priorityLabel: 'MED', due: 'May 20', dueType: 'none', labels: [{ text: 'Research' }], done: true },
-    { id: 't19', title: 'Typography scale definition', project: 'Design System v2', priority: 'low', priorityLabel: 'LOW', due: 'May 28', dueType: 'none', labels: [{ text: 'Tokens', color: 'gray' }], done: true },
-    { id: 't20', title: 'Competitor feature analysis', project: 'Beta Launch', priority: 'medium', priorityLabel: 'MED', due: 'Jun 5', dueType: 'none', labels: [{ text: 'Research' }], done: true },
-    { id: 't21', title: 'Stakeholder alignment deck', project: 'Alpha Project', priority: 'high', priorityLabel: 'HIGH', due: 'Jun 8', dueType: 'none', labels: [{ text: 'Strategy', color: 'amber' }], done: true },
-  ]},
-]
-
-const statusFromGroup = (groupId: GroupId): { id: string; label: string } => {
-  switch (groupId) {
-    case 'overdue': return { id: 'in-progress', label: 'In Progress' }
-    case 'inprogress': return { id: 'in-progress', label: 'In Progress' }
-    case 'todo': return { id: 'todo', label: 'To Do' }
-    case 'inreview': return { id: 'in-review', label: 'In Review' }
-    case 'completed': return { id: 'done', label: 'Done' }
-  }
-}
-
-const statusClass = (groupId: GroupId) => {
-  switch (groupId) {
-    case 'overdue':
-    case 'inprogress': return 'text-blue-700 bg-blue-50 border-blue-200'
-    case 'todo': return 'text-gray-700 bg-gray-100 border-gray-200'
-    case 'inreview': return 'text-amber-700 bg-amber-50 border-amber-200'
-    case 'completed': return 'text-green-700 bg-green-50 border-green-200'
-  }
-}
-
-const statusDotClass = (groupId: GroupId) => {
-  switch (groupId) {
-    case 'overdue':
-    case 'inprogress': return 'bg-blue-500'
-    case 'todo': return 'bg-gray-400'
-    case 'inreview': return 'bg-amber-500'
-    case 'completed': return 'bg-green-500'
-  }
-}
-
-const priorityClass = (priority: Task['priority']) => {
-  switch (priority) {
-    case 'high': return 'text-red-700 bg-red-50 border-red-200'
-    case 'medium': return 'text-amber-700 bg-amber-50 border-amber-200'
-    case 'low': return 'text-green-700 bg-green-50 border-green-200'
-  }
-}
-
-const progressFor = (groupId: GroupId) => {
-  switch (groupId) {
-    case 'completed': return 100
-    case 'inreview': return 75
-    case 'inprogress': return 50
-    case 'overdue': return 25
-    case 'todo': return 0
-  }
-}
-
-const progressColor = (progress: number) => {
-  if (progress === 0) return 'bg-gray-300'
-  if (progress <= 33) return 'bg-amber-500'
-  if (progress <= 66) return 'bg-blue-500'
-  if (progress < 100) return 'bg-green-500'
-  return 'bg-green-600'
-}
-
 const enrichedGroups = computed(() =>
   groups.map(g => ({
     ...g,
-    statusInfo: statusFromGroup(g.id),
+    statusInfo: { id: g.id === 'completed' ? 'done' : g.id === 'inprogress' || g.id === 'overdue' ? 'in-progress' : g.id === 'inreview' ? 'in-review' : 'todo', label: g.id === 'completed' ? 'Done' : g.id === 'inprogress' || g.id === 'overdue' ? 'In Progress' : g.id === 'inreview' ? 'In Review' : 'To Do' },
     tasks: g.tasks.map(t => ({
       ...t,
       description: t.labels.map(l => l.text).join(' · ') || undefined,
-      progress: t.progress ?? progressFor(g.id),
+      progress: t.progress ?? (g.id === 'completed' ? 100 : g.id === 'inreview' ? 75 : g.id === 'inprogress' ? 50 : g.id === 'overdue' ? 25 : 0),
       assignee: t.assignee ?? currentUser,
     })),
   }))
@@ -191,6 +98,10 @@ const allFilteredTasks = computed(() =>
   filteredGroups.value.flatMap(g => g.tasks.map(t => ({ ...t, groupId: g.id, groupLabel: g.label, statusInfo: g.statusInfo })))
 )
 
+function navigateToTask(taskId: string) {
+  navigateTo(`/tasks/${taskId}`)
+}
+
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })
 </script>
 
@@ -199,7 +110,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
     <!-- Header -->
     <div class="mw-header">
       <div>
-        <div class="mw-title">My Work</div>
+        <div class="mw-title">My Task</div>
         <div class="mw-subtitle">{{ today }} · Rasya Ardiansyah</div>
       </div>
     </div>
@@ -353,7 +264,8 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
       </div>
 
       <!-- List / Table toggle -->
-      <div class="proj-view-switcher">
+      <div class="proj-view-switcher flex items-center gap-3">
+        <span class="text-[12px] text-gray-500">{{ allFilteredTasks.length }} tasks</span>
         <button class="proj-view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">List</button>
         <button class="proj-view-btn" :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'">Table</button>
       </div>
@@ -384,6 +296,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
             :data-project="task.project"
             :data-priority="task.priority"
             :data-due="task.dueType"
+            @click="navigateToTask(task.id)"
           >
             <span
               :class="[
@@ -481,6 +394,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                 :data-project="task.project"
                 :data-priority="task.priority"
                 :data-due="task.dueType"
+                @click="navigateToTask(task.id)"
               >
                 <td class="px-4 py-3">
                   <div class="min-w-0">
