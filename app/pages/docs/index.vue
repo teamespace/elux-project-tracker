@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'default',
   title: 'Docs Hub',
+  middleware: 'auth',
 })
 
 interface Uploader {

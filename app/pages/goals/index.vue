@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Goals' })
+definePageMeta({ layout: 'default', title: 'Goals', middleware: 'auth' })
 
 const openDd = ref('')
 const selectedStatuses = ref<string[]>(['on-track', 'at-risk', 'completed', 'not-started'])

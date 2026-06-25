@@ -5,6 +5,7 @@ import { getAvatar } from '~/shared/avatar'
 definePageMeta({
   layout: 'default',
   title: 'Dashboard',
+  middleware: 'auth',
 })
 
 interface StatCard {

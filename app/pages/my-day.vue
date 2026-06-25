@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'default',
   title: 'My Day',
+  middleware: 'auth',
 })
 
 useHead({

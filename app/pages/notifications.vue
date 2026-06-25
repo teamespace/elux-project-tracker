@@ -5,6 +5,7 @@ import { getAvatar } from '~/shared/avatar'
 definePageMeta({
   layout: 'default',
   title: 'Notifications',
+  middleware: 'auth',
 })
 
 type Filter = 'all' | 'unread' | 'mentions'

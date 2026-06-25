@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'default',
   title: 'Doc',
+  middleware: 'auth',
 })
 
 const route = useRoute()

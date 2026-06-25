@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Settings' })
+definePageMeta({ layout: 'default', title: 'Settings', middleware: 'auth' })
 
 type Tab = 'general' | 'members' | 'notifications' | 'profile' | 'danger'
 const activeTab = ref<Tab>('general')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'My Work' })
+definePageMeta({ layout: 'default', title: 'My Work', middleware: 'auth' })
 
 type DueFilter = 'all' | 'today' | 'week' | 'overdue' | 'none'
 type GroupId = 'overdue' | 'inprogress' | 'todo' | 'inreview' | 'completed'

@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'default',
   title: 'Help Center',
+  middleware: 'auth',
 })
 
 const searchQuery = ref('')

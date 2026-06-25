@@ -10,6 +10,7 @@ interface FilterState {
 definePageMeta({
   layout: 'default',
   title: 'Critical Issues',
+  middleware: 'auth',
 })
 
 const search = ref('')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Projects' })
+definePageMeta({ layout: 'default', title: 'Projects', middleware: 'auth' })
 
 const openDd  = ref('')
 const viewMode = ref<'card' | 'list'>('card')

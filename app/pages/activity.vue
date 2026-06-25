@@ -10,6 +10,7 @@ interface FilterState {
 definePageMeta({
   layout: 'default',
   title: 'Recent Activity',
+  middleware: 'auth',
 })
 
 const search = ref('')

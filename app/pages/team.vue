@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Team Workload' })
+definePageMeta({ layout: 'default', title: 'Team Workload', middleware: 'auth' })
 
 interface Member {
   name: string; role: string; avatar: string

@@ -8,8 +8,6 @@ const password = ref('')
 const loading = ref(false)
 const error = ref('')
 
-const router = useRouter()
-
 async function handleSubmit() {
   if (!email.value || !password.value) {
     error.value = 'Please fill in all fields.'
@@ -19,15 +17,14 @@ async function handleSubmit() {
   loading.value = true
   error.value = ''
 
-  // Simulate async login
-  await new Promise(resolve => setTimeout(resolve, 1200))
-
-  // Mock credential check
-  if (email.value === 'demo@example.com' && password.value === 'password') {
-    // Success — navigate to dashboard
-    await router.push('/dashboard')
-  } else {
-    error.value = 'Invalid email or password. Try demo@example.com / password'
+  try {
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: { email: email.value, password: password.value },
+    })
+    await navigateTo('/dashboard')
+  } catch (err: any) {
+    error.value = err?.data?.message ?? err?.statusMessage ?? 'Invalid email or password.'
   }
 
   loading.value = false
@@ -42,7 +39,7 @@ async function handleSubmit() {
         v-model="email"
         type="email"
         class="h-8 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg-base)] px-2.5 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-border-focus)] focus:outline-none focus:ring-[3px] focus:ring-[var(--color-accent-subtle)]"
-        placeholder="demo@example.com"
+        placeholder="rasya@queebo.chat"
       >
     </div>
     <div>
@@ -58,6 +55,10 @@ async function handleSubmit() {
     <!-- Error -->
     <div v-if="error" class="rounded-md bg-[var(--color-status-delayed-bg)] px-3 py-2 text-[13px] text-[var(--color-status-delayed)]">
       {{ error }}
+    </div>
+
+    <div class="rounded-md bg-blue-50 px-3 py-2 text-[13px] text-blue-700">
+      <strong>Demo:</strong> rasya@queebo.chat / rasya123
     </div>
 
     <button

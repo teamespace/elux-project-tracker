@@ -1,6 +1,6 @@
 // styled: agent-2
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Project' })
+definePageMeta({ layout: 'default', title: 'Project', middleware: 'auth' })
 
 const route = useRoute()
 const id = route.params.id as string

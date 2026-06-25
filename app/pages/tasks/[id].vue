@@ -5,6 +5,7 @@ import { tasks } from '~/shared/board'
 definePageMeta({
   layout: false,
   title: 'Task',
+  middleware: 'auth',
 })
 
 const route = useRoute()
