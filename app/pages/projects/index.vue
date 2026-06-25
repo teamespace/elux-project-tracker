@@ -164,7 +164,7 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
         <div class="proj-card-cat">{{ p.category }}</div>
         <div class="proj-prog-section">
           <div class="proj-prog-row">
-            <div class="proj-prog-label" v-html="progIcon(p)" />
+            <div class="proj-prog-label"><span v-html="progIcon(p)" /> Progress</div>
             <span class="proj-task-count" :style="p.status === 'not-started' ? 'color:#9CA3AF' : ''">{{ p.doneT }} / {{ p.totalT }}</span>
           </div>
           <div class="proj-prog-bar"><div class="proj-prog-fill" :class="p.barFill" :style="{ width: `${p.progress}%` }" /></div>

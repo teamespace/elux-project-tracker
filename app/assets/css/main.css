@@ -832,8 +832,8 @@ body {
 .pfill-red   { background: #EF4444; }
 .pfill-blue  { background: oklch(60.6% 0.25 292.717); }
 .pfill-gray  { background: #9CA3AF; }
-.proj-due { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #9CA3AF; margin-bottom: 14px; }
-.proj-due.overdue { color: #EF4444; font-weight: 500; }
+.proj-due { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6B7280; margin-bottom: 14px; padding: 7px 10px; border-radius: 8px; background: #F3F4F6; font-weight: 500; }
+.proj-due.overdue { color: #EF4444; background: #FEF2F2; font-weight: 500; }
 .proj-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid #F3F4F6; margin-top: auto; }
 .proj-card-meta { display: flex; align-items: center; gap: 10px; }
 .proj-meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #9CA3AF; }
