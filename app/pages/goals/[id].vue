@@ -91,6 +91,7 @@ const db: GGoal[] = [
 
 const goal = computed(() => db.find(g => g.id === id) ?? db[0])
 const kpiDonePct = (kpi: GKpi) => Math.round((kpi.current / kpi.target) * 100)
+const showSide = ref(true)
 
 function barColorObj(pct: number): Record<string, string> {
   if (pct >= 80) return { background: '#22C55E' }
@@ -274,44 +275,69 @@ function barColorObj(pct: number): Record<string, string> {
         </div>
       </div>
 
-      <!-- RIGHT: PROPERTIES -->
-      <div class="gd-side">
-        <div class="gd-prop-sec-lbl">Properties</div>
-
-        <div class="gd-prop-row">
-          <div class="gd-prop-lbl"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Status</div>
-          <div class="gd-prop-val"><span class="gdh-status-chip" :class="goal.statusClass"><span class="gdh-dot"/>{{ goal.statusLabel }}</span></div>
+      <!-- RIGHT PANEL -->
+      <div class="gd-side" v-show="showSide">
+        <div class="gd-side-top">
+          <button class="gd-side-toggle" @click="showSide = false" title="Hide panel">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+          </button>
         </div>
-        <div class="gd-prop-row">
-          <div class="gd-prop-lbl"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5.5" r="2.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M1 13c0-2.761 2.239-4 5-4s5 1.239 5 4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>Owner</div>
-          <div class="gd-prop-val" style="display:flex;align-items:center;gap:6px">
-            <div class="gd-tav" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
-            {{ goal.owner }}
+        <div class="gd-side-card">
+
+          <!-- Properties -->
+          <div class="gd-panel-sec">
+            <div class="gd-panel-hdr">
+              <span class="gd-panel-title">Properties</span>
+            </div>
+            <div class="gd-prop-row">
+              <div class="gd-prop-lbl">Status</div>
+              <div class="gd-prop-val"><span class="gdh-status-chip" :class="goal.statusClass"><span class="gdh-dot"/>{{ goal.statusLabel }}</span></div>
+            </div>
+            <div class="gd-prop-row">
+              <div class="gd-prop-lbl">Owner</div>
+              <div class="gd-prop-val" style="display:flex;align-items:center;gap:6px">
+                <div class="gd-tav" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
+                {{ goal.owner }}
+              </div>
+            </div>
+            <div class="gd-prop-row">
+              <div class="gd-prop-lbl">Due Date</div>
+              <div class="gd-prop-val">{{ goal.dueDate }}</div>
+            </div>
+            <div class="gd-prop-row">
+              <div class="gd-prop-lbl">Created</div>
+              <div class="gd-prop-val muted">{{ goal.createdDate }}</div>
+            </div>
+            <div class="gd-prop-row">
+              <div class="gd-prop-lbl">Category</div>
+              <div class="gd-prop-val">{{ goal.category }}</div>
+            </div>
           </div>
-        </div>
-        <div class="gd-prop-row">
-          <div class="gd-prop-lbl"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>Due Date</div>
-          <div class="gd-prop-val">{{ goal.dueDate }}</div>
-        </div>
-        <div class="gd-prop-row">
-          <div class="gd-prop-lbl"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>Created</div>
-          <div class="gd-prop-val muted">{{ goal.createdDate }}</div>
-        </div>
-        <div class="gd-prop-row">
-          <div class="gd-prop-lbl"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h6" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>Category</div>
-          <div class="gd-prop-val">{{ goal.category }}</div>
-        </div>
 
-        <div class="gd-divider"/>
-
-        <div class="gd-prop-sec-lbl">Progress</div>
-        <div class="gd-prop-row" style="cursor:default">
-          <div class="gd-progress-block">
-            <div class="gd-prog-bar"><div class="gd-prog-bar-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
-            <div class="gd-prog-lbl">{{ goal.current }} / {{ goal.target }} {{ goal.unit }} · {{ goal.progress }}%</div>
+          <!-- Progress -->
+          <div class="gd-panel-sec">
+            <div class="gd-panel-hdr">
+              <span class="gd-panel-title">Progress</span>
+            </div>
+            <div class="gd-progress-block">
+              <div class="gd-prog-bar"><div class="gd-prog-bar-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
+              <div class="gd-prog-lbl">{{ goal.current }} / {{ goal.target }} {{ goal.unit }} · {{ goal.progress }}%</div>
+            </div>
           </div>
-        </div>
+
+        </div><!-- /gd-side-card -->
       </div>
+
+      <!-- reopen -->
+      <button v-if="!showSide" class="gd-side-reopen" @click="showSide = true" title="Show panel">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -363,9 +389,20 @@ function barColorObj(pct: number): Record<string, string> {
 .gdh-tab:not(.active) .gdh-tab-badge { background:#F3F4F6; color:#9CA3AF; }
 
 /* ── BODY ── */
-.gd-body { flex:1; display:grid; grid-template-columns:1fr 280px; background:#F9FAFB; }
-.gd-main { padding:24px 32px; border-right:1px solid #E5E7EB; background:#fff; }
-.gd-side { padding:20px; background:#fff; }
+.gd-body { flex:1; display:grid; grid-template-columns:1fr 300px; background:#fff; min-height:0; overflow:hidden; position:relative; }
+.gd-body--collapsed { grid-template-columns:1fr; }
+.gd-main { padding:24px 32px; overflow-y:auto; background:#fff; }
+.gd-side { padding:18px 12px 16px; overflow-y:auto; background:#fff; }
+.gd-side-top { display:flex; justify-content:flex-end; margin-bottom:8px; }
+.gd-side-toggle { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; border:1px solid #E5E7EB; background:#fff; color:#6B7280; cursor:pointer; }
+.gd-side-toggle:hover { background:#F3F4F6; color:#111827; }
+.gd-side-card { background:#fff; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; }
+.gd-side-reopen { position:absolute; top:16px; right:16px; display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; border:1px solid #E5E7EB; background:#fff; color:#6B7280; cursor:pointer; }
+.gd-side-reopen:hover { background:#F3F4F6; color:#111827; }
+.gd-panel-sec { padding:14px 16px; border-top:1px solid #E5E7EB; }
+.gd-panel-sec:first-child { border-top:none; }
+.gd-panel-hdr { margin-bottom:8px; }
+.gd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#9CA3AF; }
 
 /* sections */
 .gd-section { margin-bottom:28px; }
@@ -428,16 +465,13 @@ function barColorObj(pct: number): Record<string, string> {
 .gd-send:hover { background:oklch(52% 0.27 292.717); }
 
 /* ── PROPERTIES ── */
-.gd-prop-sec-lbl { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#9CA3AF; margin-bottom:8px; }
-.gd-prop-row { display:flex; align-items:center; min-height:32px; border-radius:6px; padding:0 4px; margin-bottom:2px; cursor:pointer; }
+.gd-prop-row { display:flex; align-items:center; justify-content:space-between; min-height:30px; border-radius:6px; padding:2px 4px; margin-bottom:1px; cursor:pointer; }
 .gd-prop-row:hover { background:#F9FAFB; }
-.gd-prop-lbl { width:90px; flex-shrink:0; display:flex; align-items:center; gap:6px; font-size:12px; color:#9CA3AF; padding:4px; }
-.gd-prop-val { flex:1; font-size:12.5px; color:#111827; padding:4px 8px; border-radius:5px; }
-.gd-prop-row:hover .gd-prop-val { background:#F3F4F6; }
+.gd-prop-lbl { width:76px; flex-shrink:0; font-size:11.5px; font-weight:500; color:#9CA3AF; }
+.gd-prop-val { font-size:12.5px; color:#111827; display:flex; align-items:center; }
 .gd-prop-val.muted { color:#9CA3AF; }
-.gd-divider { height:1px; background:#F3F4F6; margin:10px 4px; }
-.gd-progress-block { flex:1; padding:4px 8px; }
-.gd-prog-bar { height:4px; background:#F3F4F6; border-radius:2px; overflow:hidden; margin-bottom:3px; }
+.gd-progress-block { width:100%; padding:2px 4px 4px; }
+.gd-prog-bar { height:4px; background:#F3F4F6; border-radius:2px; overflow:hidden; margin-bottom:4px; }
 .gd-prog-bar-fill { height:100%; border-radius:2px; }
 .gd-prog-lbl { font-size:11px; color:#9CA3AF; }
 </style>
