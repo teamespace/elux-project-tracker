@@ -238,6 +238,8 @@ function progFillColor(sc: string) {
   return '#D1D5DB'
 }
 
+const showSide = ref(true)
+
 const editState = reactive({
   status: proj.value!.statusLabel,
   statusClass: proj.value!.statusClass,
@@ -394,7 +396,7 @@ onUnmounted(() => {
     </div>
 
     <!-- ══ BODY ══ -->
-    <div class="pd-body">
+    <div class="pd-body" :class="{ 'pd-body--collapsed': !showSide }">
 
       <!-- ── LEFT MAIN ── -->
       <div class="pd-main">
@@ -568,7 +570,16 @@ onUnmounted(() => {
       </div>
 
       <!-- ── RIGHT SIDE PANEL ── -->
-      <div class="pd-side">
+      <div class="pd-side" v-show="showSide">
+        <div class="pd-side-top">
+          <button class="pd-side-toggle" @click="showSide = false" title="Hide panel">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+          </button>
+        </div>
+        <div class="pd-side-card">
 
         <!-- Properties Card -->
         <div class="pd-panel-sec">
@@ -795,7 +806,16 @@ onUnmounted(() => {
           </div>
         </div>
 
+        </div><!-- /pd-side-card -->
       </div>
+
+      <!-- reopen button when panel is hidden -->
+      <button v-if="!showSide" class="pd-side-reopen" @click="showSide = true" title="Show panel">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+      </button>
     </div>
   </div>
 </NuxtLayout>
@@ -868,13 +888,54 @@ onUnmounted(() => {
 .pdh-tab.active .pdh-tab-badge { background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); }
 
 /* ── BODY LAYOUT ── */
-.pd-body { flex:1; display:grid; grid-template-columns:1fr 260px; background:#F9FAFB; min-height:0; overflow:hidden; }
+.pd-body { flex:1; display:grid; grid-template-columns:1fr 260px; background:#F9FAFB; min-height:0; overflow:hidden; position:relative; }
+.pd-body--collapsed { grid-template-columns:1fr; }
 .pd-main { padding:24px 28px; overflow-y:auto; background:#fff; border-right:1px solid #E5E7EB; }
 .pd-side {
-  padding: 16px 0;
+  padding: 16px 12px;
   overflow-y: auto;
-  background: #fff;
+  background: #F9FAFB;
 }
+.pd-side-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+.pd-side-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  color: #6B7280;
+  cursor: pointer;
+}
+.pd-side-toggle:hover { background: #F3F4F6; color: #111827; }
+.pd-side-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pd-side-reopen {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  color: #6B7280;
+  cursor: pointer;
+}
+.pd-side-reopen:hover { background: #F3F4F6; color: #111827; }
 
 /* section */
 .pd-section { margin-bottom:28px; }
