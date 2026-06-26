@@ -24,7 +24,8 @@ async function handleSubmit() {
       method: 'POST',
       body: { email: email.value, password: password.value },
     })
-    await navigateTo('/dashboard')
+    // Use full page reload so SSR picks up the new session cookie
+    window.location.href = '/dashboard'
   } catch (err: any) {
     error.value = err?.data?.message ?? err?.statusMessage ?? 'Invalid email or password.'
   }
@@ -36,7 +37,7 @@ async function handleGoogle() {
   googleLoading.value = true
   try {
     await new Promise(r => setTimeout(r, 700))
-    await navigateTo('/dashboard')
+    window.location.href = '/dashboard'
   } finally {
     googleLoading.value = false
   }
