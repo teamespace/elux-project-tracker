@@ -16,7 +16,7 @@ export interface CriticalIssue {
 
 export const criticalIssues: CriticalIssue[] = [
   {
-    id: 'ci-1',
+    id: 't1',
     priority: 'High',
     priorityLabel: 'HIGH',
     title: 'Auth redesign implementation',
@@ -27,7 +27,7 @@ export const criticalIssues: CriticalIssue[] = [
     statusLabel: 'Overdue',
   },
   {
-    id: 'ci-2',
+    id: 't5',
     priority: 'High',
     priorityLabel: 'HIGH',
     title: 'API rate limit specification',
@@ -38,7 +38,7 @@ export const criticalIssues: CriticalIssue[] = [
     statusLabel: 'At Risk',
   },
   {
-    id: 'ci-3',
+    id: 't2',
     priority: 'High',
     priorityLabel: 'HIGH',
     title: 'Mobile checkout flow blocked',
@@ -49,7 +49,7 @@ export const criticalIssues: CriticalIssue[] = [
     statusLabel: 'Overdue',
   },
   {
-    id: 'ci-4',
+    id: 't3',
     priority: 'Medium',
     priorityLabel: 'MED',
     title: 'Token naming inconsistency',
@@ -60,7 +60,7 @@ export const criticalIssues: CriticalIssue[] = [
     statusLabel: 'At Risk',
   },
   {
-    id: 'ci-5',
+    id: 't10',
     priority: 'Medium',
     priorityLabel: 'MED',
     title: 'Onboarding copy finalization',

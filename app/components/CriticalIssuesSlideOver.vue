@@ -306,7 +306,10 @@ onBeforeUnmount(() => {
                   </span>
                 </td>
                 <td class="px-4 py-3 align-middle">
-                  <button class="rounded-md border border-gray-200 bg-white px-2 py-0.5 text-[12px] font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900">
+                  <button
+                    class="rounded-md border border-gray-200 bg-white px-2 py-0.5 text-[12px] font-medium text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-900"
+                    @click="close(); navigateTo('/tasks/' + issue.id)"
+                  >
                     View
                   </button>
                 </td>
