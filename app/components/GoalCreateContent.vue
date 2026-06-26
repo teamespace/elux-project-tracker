@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addGoal, goals, statusOptions, type Goal, type Kpi, type Label, type LinkedProject, type Owner, type Status } from '~/shared/goals'
+import { statusOptions, type Goal, type Kpi, type Label, type LinkedProject, type Owner, type Status } from '~/shared/goals'
 import { people, findPerson, avatarColor } from '~/shared/projects'
 
 const props = withDefaults(defineProps<{
@@ -14,6 +14,7 @@ const emit = defineEmits<{ close: [] }>()
 
 const isEdit = computed(() => props.mode === 'edit')
 const defaultOwner = people[0]?.name ?? ''
+const { user } = useUserSession()
 
 const form = reactive({
   title: '',
@@ -157,47 +158,46 @@ function addKpi() {
 function submit() {
   const title = form.title.trim()
   if (!title) return
-  const owner = findPerson(form.owner) ?? people[0] ?? { initials: 'R', name: 'Rasya' }
-  const progress = Math.min(100, Math.max(0, Number(form.progress) || 0))
-  const statusLabel = statusOpt.value?.label ?? 'Not started'
+  const statusLabel = statusOpt.value?.label ?? 'NOT STARTED'
 
   if (isEdit.value && props.initialData?.id) {
-    const existing = goals.value.find(g => g.id === props.initialData!.id)
-    if (existing) {
-      existing.title = title
-      existing.description = form.description
-      existing.owner = owner
-      existing.quarter = form.quarter
-      existing.dueDate = formatGoalDate(form.dueDate)
-      existing.status = form.status
-      existing.statusLabel = statusLabel
-      existing.progress = progress
-      existing.labels = buildLabels(form.labels, props.initialData?.labels)
-      existing.kpis = mergeKpis(props.initialData?.kpis ?? [], kpis, owner)
-      existing.linkedProjects = mergeLinkedProjects(props.initialData?.linkedProjects ?? [], linkedProjects)
-    }
+    $fetch(`/api/goals/${props.initialData.id}`, {
+      method: 'PUT',
+      body: {
+        title,
+        description: form.description,
+        status: form.status,
+        statusLabel,
+        ownerId: user.value?.id ?? null,
+        quarter: form.quarter,
+        dueDate: form.dueDate,
+      },
+    }).then(() => {
+      refreshNuxtData('goals')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to update goal:', err)
+    })
   } else {
-    addGoal({
-      id: `goal-${Date.now()}`,
-      title,
-      description: form.description,
-      owner,
-      quarter: form.quarter,
-      dueDate: form.dueDate,
-      status: form.status,
-      statusLabel,
-      progress,
-      labels: buildLabels(form.labels),
-      kpis: kpis.map(k => ({
-        id: k.id, name: k.name, current: k.current, target: k.target,
-        progress: 0, status: 'not-started' as Status, statusLabel: 'Not started',
-        owner, dueDate: '',
-      })),
-      linkedProjects: [],
-      activity: [{ id: `act-${Date.now()}`, actor: owner, action: 'created goal', target: title, time: 'Just now' }],
+    $fetch('/api/goals', {
+      method: 'POST',
+      body: {
+        title,
+        description: form.description,
+        status: form.status,
+        statusLabel,
+        progress: 0,
+        ownerId: user.value?.id ?? null,
+        quarter: form.quarter,
+        dueDate: form.dueDate,
+      },
+    }).then(() => {
+      refreshNuxtData('goals')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to create goal:', err)
     })
   }
-  emit('close')
 }
 </script>
 

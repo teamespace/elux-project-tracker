@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { statusOptions, priorityOptions, tasks as taskStore, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
+import { statusOptions, priorityOptions, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
 import { people, findPerson, avatarColor } from '~/shared/projects'
-import { taskDetails as myTaskDetails, findTaskById, type MyTaskDetail } from '~/shared/my-tasks'
-import { getAvatar } from '~/shared/avatar'
 
 const props = defineProps<{
   mode?: 'create' | 'edit' | 'view'
@@ -19,6 +17,7 @@ const defaultPriority: TaskPriority = props.initialData?.priority ?? 'medium'
 const defaultAssignee = props.initialData?.assignee?.name ?? people[0]?.name ?? ''
 const defaultProject = props.initialData?.projectName ?? props.initialData?.epicName ?? ''
 const defaultDue = props.initialData?.dueDate ?? ''
+const { user } = useUserSession()
 
 const form = reactive({
   title: props.initialData?.title ?? '',
@@ -87,71 +86,57 @@ function removeAttachment(id: string) {
   if (idx !== -1) attachments.splice(idx, 1)
 }
 
-// Load my-tasks detail data when editing
-if (isEdit.value && props.initialData?.id) {
-  const detail = myTaskDetails[props.initialData.id]
-  if (detail) {
-    const myD = detail as unknown as MyTaskDetail
-    if (myD.subtasks) {
-      myD.subtasks.forEach(s => subtasks.push({ id: s.id, title: s.title, done: s.done }))
-    }
-    if (myD.comments) {
-      myD.comments.forEach(c => comments.push({ id: c.id, author: c.author.name, aInit: c.author.initials, text: c.text, time: c.time }))
-    }
-    if (myD.attachments) {
-      myD.attachments.forEach(a => attachments.push({ id: a.id, name: a.name, size: typeof a.size === 'string' ? a.size : `${Math.round(a.size / 1024)} KB`, type: a.type }))
-    }
-  }
-}
-
 function submit() {
   const title = form.title.trim()
   if (!title) return
-  const assignee = findPerson(form.assignee) ?? people[0]
+  const statusLabel = statusOpt.value?.label ?? 'To Do'
+  const priorityLabel = priorityOpt.value?.label ?? 'MED'
 
   if (isView.value && props.initialData?.id) {
-    const existing = taskStore.find(t => t.id === props.initialData!.id)
-    if (existing) {
-      existing.title = title
-      existing.description = form.description
-      existing.status = form.status
-      existing.statusLabel = statusOpt.value?.label ?? 'To Do'
-      existing.priority = form.priority
-      existing.priorityLabel = priorityOpt.value?.label ?? 'Medium'
-      existing.assignee = { id: existing.assignee?.id ?? `u-${Date.now()}`, initials: assignee?.initials ?? 'R', name: assignee?.name ?? 'Rasya', avatar: assignee?.avatar }
-      existing.epicName = form.project
-      existing.projectName = form.project
-      existing.dueDate = form.dueDate
-      existing.dueDateLabel = form.dueDate
-    }
-    const detail = myTaskDetails[props.initialData.id]
-    if (detail) {
-      const myD = detail as unknown as MyTaskDetail
-      myD.subtasks = subtasks.map(s => ({ id: s.id, title: s.title, done: s.done, dueDate: '', assignee: '' }))
-      myD.comments = comments.map(c => ({ id: c.id, author: { name: c.author, initials: c.aInit }, text: c.text, time: c.time }))
-    }
+    $fetch(`/api/tasks/${props.initialData.id}`, {
+      method: 'PUT',
+      body: {
+        title,
+        description: form.description,
+        status: form.status,
+        statusLabel,
+        priority: form.priority,
+        priorityLabel,
+        assigneeId: user.value?.id ?? null,
+        projectId: form.project,
+        projectName: form.project,
+        dueDate: form.dueDate,
+      },
+    }).then(() => {
+      refreshNuxtData('tasks')
+      refreshNuxtData('my-work')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to update task:', err)
+    })
   } else {
-    taskStore.push({
-      id: `task-${Date.now()}`,
-      title,
-      description: form.description,
-      status: form.status,
-      statusLabel: statusOpt.value?.label ?? 'To Do',
-      priority: form.priority,
-      priorityLabel: priorityOpt.value?.label ?? 'Medium',
-      assignee: { id: `u-${Date.now()}`, initials: assignee?.initials ?? 'R', name: assignee?.name ?? 'Rasya', avatar: assignee?.avatar },
-      epicId: '',
-      epicName: form.project,
-      projectId: '',
-      projectName: form.project,
-      dueDate: form.dueDate,
-      dueDateLabel: form.dueDate,
-      progress: 0,
-      comments: 0,
-      attachments: 0,
+    $fetch('/api/tasks', {
+      method: 'POST',
+      body: {
+        title,
+        description: form.description,
+        status: form.status,
+        statusLabel,
+        priority: form.priority,
+        priorityLabel,
+        assigneeId: user.value?.id ?? null,
+        projectId: form.project,
+        projectName: form.project,
+        dueDate: form.dueDate,
+      },
+    }).then(() => {
+      refreshNuxtData('tasks')
+      refreshNuxtData('my-work')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to create task:', err)
     })
   }
-  emit('close')
 }
 </script>
 

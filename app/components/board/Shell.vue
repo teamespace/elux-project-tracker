@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, isRef, ref, type Ref } from 'vue'
+import { computed, isRef, ref, watch, type Ref } from 'vue'
 import { useDropdownCloser } from '~/composables/useClickOutside'
 import {
-  assigneeOptions,
   priorityOptions,
-  projectOptions,
   statusOptions,
   statuses,
-  tasks as allTasks,
   type Task,
 } from '~/shared/board'
 
@@ -15,7 +12,19 @@ type ViewMode = 'kanban' | 'table' | 'list' | 'calendar'
 
 const currentView = ref<ViewMode>('kanban')
 
-const tasks = ref<Task[]>([...allTasks])
+const { data: tasksData, pending } = await useAsyncData('board-tasks', () => $fetch('/api/tasks'))
+const tasks = ref<Task[]>([])
+
+watch(tasksData, (val) => {
+  tasks.value = (val ?? []).map(t => ({
+    ...t,
+    epicId: t.projectId,
+    epicName: t.projectName,
+  }))
+}, { immediate: true })
+
+const assigneeOptions = computed(() => [...new Set(tasks.value.map(t => t.assignee.name))])
+const projectOptions = computed(() => [...new Set(tasks.value.map(t => t.epicName))])
 
 const dueDateOptions = [
   { value: 'overdue', label: 'Overdue' },
