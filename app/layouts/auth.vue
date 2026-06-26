@@ -1,50 +1,10 @@
 <script setup lang="ts">
-const AUTH_IMAGE = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=85&auto=format&fit=crop'
+const AUTH_IMAGE = '/images/auth-hero.webp'
 </script>
 
 <template>
   <div class="flex min-h-screen w-full bg-white">
-    <!-- Left: image / visual side -->
-    <aside class="relative hidden overflow-hidden lg:block lg:w-1/2 xl:w-[55%]">
-      <img
-        :src="AUTH_IMAGE"
-        alt=""
-        class="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-      >
-      <!-- Gradient overlay for legibility -->
-      <div class="absolute inset-0 bg-gradient-to-br from-black/55 via-black/25 to-black/45" />
-
-      <!-- Top brand -->
-      <div class="absolute left-10 top-10 z-10 flex items-center gap-2.5 text-white">
-        <div class="grid size-9 place-items-center rounded-[10px] bg-white/15 backdrop-blur-md ring-1 ring-white/25">
-          <UIcon name="ph:mountains-duotone" class="size-5" />
-        </div>
-        <div class="leading-tight">
-          <div class="text-[15px] font-semibold tracking-tight">Elux Tracker</div>
-          <div class="text-[11px] text-white/70">Project workspace</div>
-        </div>
-      </div>
-
-      <!-- Bottom testimonial -->
-      <div class="absolute inset-x-10 bottom-10 z-10 max-w-md text-white">
-        <UIcon name="ph:quotes" class="size-7 text-white/60" />
-        <p class="mt-3 text-[20px] font-medium leading-[1.4] tracking-tight">
-          One workspace to plan, track, and ship every project with your team.
-        </p>
-        <div class="mt-5 flex items-center gap-3">
-          <div class="grid size-9 place-items-center rounded-full bg-white/20 text-[12px] font-semibold backdrop-blur-md ring-1 ring-white/30">
-            R
-          </div>
-          <div class="leading-tight">
-            <div class="text-[13px] font-medium">Rasya Aulia</div>
-            <div class="text-[11px] text-white/70">Product Designer · Elux</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Right: form side -->
+    <!-- Left: form side -->
     <main class="flex w-full flex-col lg:w-1/2 xl:w-[45%]">
       <div class="flex flex-1 items-center justify-center px-6 py-12 sm:px-10">
         <div class="w-full max-w-[380px]">
@@ -64,5 +24,28 @@ const AUTH_IMAGE = 'https://images.unsplash.com/photo-1497366216548-37526070297c
         </div>
       </div>
     </main>
+
+    <!-- Right: image / visual side -->
+    <aside class="relative hidden overflow-hidden lg:block lg:w-1/2 xl:w-[55%]">
+      <img
+        :src="AUTH_IMAGE"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+      >
+      <!-- Soft overlay so brand mark stays legible -->
+      <div class="absolute inset-0 bg-gradient-to-bl from-white/10 via-transparent to-black/15" />
+
+      <!-- Top brand mark on image -->
+      <div class="absolute left-10 top-10 z-10 flex items-center gap-2.5">
+        <div class="grid size-9 place-items-center rounded-[10px] bg-white/85 backdrop-blur-md ring-1 ring-white/40 shadow-sm">
+          <UIcon name="ph:mountains-duotone" class="size-5 text-[var(--color-accent)]" />
+        </div>
+        <div class="leading-tight">
+          <div class="text-[15px] font-semibold tracking-tight text-gray-900">Elux Tracker</div>
+          <div class="text-[11px] text-gray-600">Project workspace</div>
+        </div>
+      </div>
+    </aside>
   </div>
 </template>
