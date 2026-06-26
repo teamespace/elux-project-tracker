@@ -33,19 +33,6 @@ const AUTH_IMAGE = '/images/auth-hero.webp'
         class="absolute inset-0 h-full w-full object-cover"
         loading="eager"
       >
-      <!-- Soft overlay so brand mark stays legible -->
-      <div class="absolute inset-0 bg-gradient-to-bl from-white/10 via-transparent to-black/15" />
-
-      <!-- Top brand mark on image -->
-      <div class="absolute left-10 top-10 z-10 flex items-center gap-2.5">
-        <div class="grid size-9 place-items-center rounded-[10px] bg-white/85 backdrop-blur-md ring-1 ring-white/40 shadow-sm">
-          <UIcon name="ph:mountains-duotone" class="size-5 text-[var(--color-accent)]" />
-        </div>
-        <div class="leading-tight">
-          <div class="text-[15px] font-semibold tracking-tight text-gray-900">Elux Tracker</div>
-          <div class="text-[11px] text-gray-600">Project workspace</div>
-        </div>
-      </div>
     </aside>
   </div>
 </template>
