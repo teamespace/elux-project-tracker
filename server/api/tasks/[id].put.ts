@@ -1,5 +1,5 @@
 import { useDB, eq } from '../../utils/db'
-import { tasks } from '../../database/schema'
+import { tasks, projects } from '../../database/schema'
 import { sql } from '../../utils/db'
 import { requireAuth } from '../../utils/permissions'
 import { logActivity } from '../../utils/activity'
@@ -24,9 +24,20 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  const task = await db.select().from(tasks).where(eq(tasks.id, id)).get()
+
   await db.update(tasks)
     .set({ ...body, updatedAt: sql`(datetime('now'))` })
     .where(eq(tasks.id, id))
+
+  if (task?.projectId && (body.status === 'done' || body.done === true)) {
+    const projectTasks = await db.select().from(tasks).where(eq(tasks.projectId, task.projectId)).all()
+    const doneCount = projectTasks.filter(t => t.done || t.status === 'done').length
+    await db.update(projects).set({
+      doneT: doneCount,
+      progress: projectTasks.length > 0 ? Math.round((doneCount / projectTasks.length) * 100) : 0,
+    }).where(eq(projects.id, task.projectId))
+  }
 
   await logActivity(event, 'updated task', 'task', id, body.title ?? '')
 

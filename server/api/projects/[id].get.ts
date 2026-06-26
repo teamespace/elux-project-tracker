@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   return {
     ...proj,
     owner: owner ? { initials: owner.initials, name: owner.name, avatar: owner.avatar } : null,
-    assignees: members.map(m => ({ seed: m.seed, bg: m.bg, name: m.seed })),
+    assignees: members.map(m => ({ userId: m.userId, seed: m.seed, bg: m.bg, name: m.seed })),
     childTasks: enrichedTasks,
     comments: enrichedComments,
     activities: activityList.map(a => ({

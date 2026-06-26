@@ -62,11 +62,16 @@ const proj = ref<PProject>(emptyProj())
 
 function mapProject(p: any): PProject {
   const own = fmtOwner(p.owner)
-  const assignees: PAssignee[] = (p.assignees || []).map((a: any) => ({
-    seed: a.seed || a.name || '',
-    bg: a.bg || 'b6e3f4',
-    name: a.name || '',
-  }))
+  const assigneeById: Record<string, PAssignee> = {}
+  const assignees: PAssignee[] = (p.assignees || []).map((a: any) => {
+    const entry: PAssignee = {
+      seed: a.seed || a.name || '',
+      bg: a.bg || 'b6e3f4',
+      name: a.name || '',
+    }
+    assigneeById[a.userId] = entry
+    return entry
+  })
   return {
     id: p.id, key: p.key || '', icon: p.icon || '📋', name: p.name, subtitle: p.subtitle || p.category || '',
     description: p.description || '',
@@ -82,7 +87,7 @@ function mapProject(p: any): PProject {
     assignees,
     quickLinks: p.quickLinks || [],
     tasks: (p.childTasks || []).map((t: any) => {
-      const ta = assignees.find((a: PAssignee) => a.name === t.assigneeId)
+      const ta = assigneeById[t.assigneeId] || assignees.find((a: PAssignee) => a.name === t.assigneeId)
       return {
         id: t.id, title: t.title, done: t.done, date: t.dueDate || '',
         late: false,

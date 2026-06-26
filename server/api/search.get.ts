@@ -1,6 +1,5 @@
 import { useDB, like } from '../utils/db'
 import { tasks, projects, goals } from '../database/schema'
-import { or } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const { q } = getQuery(event) as { q: string }

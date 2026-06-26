@@ -1,6 +1,6 @@
-import { useDB, eq } from '../utils/db'
+import { useDB } from '../utils/db'
 import { tasks, projects, criticalIssues, activity } from '../database/schema'
-import { desc, and } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 
 export default defineEventHandler(async (_event) => {
   const db = useDB()
@@ -14,7 +14,7 @@ export default defineEventHandler(async (_event) => {
     .all()
 
   const total = allTasks.length
-  const done = allTasks.filter(t => t.done).length
+  const done = allTasks.filter(t => t.done || t.status === 'done').length
   const inProgress = allTasks.filter(t => t.status === 'in-progress').length
   const overdue = allTasks.filter(t => t.dueType === 'overdue' && !t.done).length
   const atRisk = allProjects.filter(p => p.status === 'at-risk').length

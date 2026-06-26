@@ -40,6 +40,7 @@ export const createTaskSchema = z.object({
   projectName: z.string().optional(),
   dueDate: z.string().optional(),
   dueType: z.enum(['today', 'week', 'overdue', 'none', 'all']).optional(),
+  done: z.boolean().optional(),
 })
 
 export const updateTaskSchema = createTaskSchema.partial()
