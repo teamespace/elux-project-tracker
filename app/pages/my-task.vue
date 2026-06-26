@@ -526,7 +526,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
             <tbody>
               <tr
                 v-for="task in paginatedTasks" :key="task.id"
-                class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50 last:border-b-0"
+                class="mw-tbl-row cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50 last:border-b-0"
                 :data-project="task.project"
                 :data-priority="task.priority"
                 :data-due="task.dueType"
@@ -693,3 +693,9 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
     </div>
   </div>
 </template>
+
+<style scoped>
+.mw-tbl-row:hover .task-more-btn {
+  opacity: 1;
+}
+</style>
