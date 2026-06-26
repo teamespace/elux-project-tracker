@@ -17,8 +17,11 @@ const activeStatCard = ref<GroupId | 'all'>('all')
 const dueFilter = ref<DueFilter>('all')
 const projectFilter = ref('')
 const priorityFilter = ref('')
+const statusFilter = ref('')
 const viewMode = ref<'list' | 'table'>('list')
 const openDd = ref('')
+const tablePage = ref(1)
+const pageSize = 10
 
 const collapsedGroups = ref<Set<GroupId>>(new Set(['completed']))
 
@@ -47,27 +50,38 @@ const dueOptions = [
   { label: 'No date',   value: 'none' },
 ]
 const projectOptions = [
-  { label: 'All Projects',    value: '' },
+  { label: 'Project',    value: '' },
   { label: 'Alpha Project',   value: 'Alpha Project' },
   { label: 'Beta Launch',     value: 'Beta Launch' },
   { label: 'Mobile App MVP',  value: 'Mobile App MVP' },
   { label: 'Design System v2', value: 'Design System v2' },
 ]
 const priorityOptions = [
-  { label: 'All Priorities', value: '' },
+  { label: 'Priorities', value: '' },
   { label: 'High',   value: 'high' },
   { label: 'Medium', value: 'medium' },
   { label: 'Low',    value: 'low' },
+]
+const statusOptions = [
+  { label: 'Status', value: '' },
+  { label: 'To Do',       value: 'todo' },
+  { label: 'In Progress', value: 'inprogress' },
+  { label: 'In Review',   value: 'inreview' },
+  { label: 'Overdue',     value: 'overdue' },
+  { label: 'Completed',   value: 'completed' },
 ]
 
 const selectedDueLabel = computed(() =>
   dueOptions.find(o => o.value === dueFilter.value)?.label ?? 'Due date'
 )
 const selectedProjectLabel = computed(() =>
-  projectOptions.find(o => o.value === projectFilter.value)?.label ?? 'All Projects'
+  projectOptions.find(o => o.value === projectFilter.value)?.label ?? 'Project'
 )
 const selectedPriorityLabel = computed(() =>
-  priorityOptions.find(o => o.value === priorityFilter.value)?.label ?? 'All Priorities'
+  priorityOptions.find(o => o.value === priorityFilter.value)?.label ?? 'Priorities'
+)
+const selectedStatusLabel = computed(() =>
+  statusOptions.find(o => o.value === statusFilter.value)?.label ?? 'Status'
 )
 
 const enrichedGroups = computed(() =>
@@ -91,6 +105,7 @@ const filteredGroups = computed(() =>
       if (dueFilter.value !== 'all' && t.dueType !== dueFilter.value) return false
       if (projectFilter.value && t.project !== projectFilter.value) return false
       if (priorityFilter.value && t.priority !== priorityFilter.value) return false
+      if (statusFilter.value && g.id !== statusFilter.value) return false
       return true
     }),
   })).filter(g => g.tasks.length > 0)
@@ -99,6 +114,21 @@ const filteredGroups = computed(() =>
 const allFilteredTasks = computed(() =>
   filteredGroups.value.flatMap(g => g.tasks.map(t => ({ ...t, groupId: g.id, groupLabel: g.label, statusInfo: g.statusInfo })))
 )
+
+const paginatedTasks = computed(() => {
+  const start = (tablePage.value - 1) * pageSize
+  return allFilteredTasks.value.slice(start, start + pageSize)
+})
+
+const totalPages = computed(() => Math.max(1, Math.ceil(allFilteredTasks.value.length / pageSize)))
+
+function goToPage(page: number) {
+  tablePage.value = Math.min(Math.max(1, page), totalPages.value)
+}
+
+watch([projectFilter, priorityFilter, dueFilter, statusFilter, activeStatCard, viewMode], () => {
+  tablePage.value = 1
+})
 
 function navigateToTask(taskId: string) {
   navigateTo(`/tasks/${taskId}`)
@@ -322,6 +352,23 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
             </div>
           </div>
         </div>
+
+        <!-- Status dropdown -->
+        <div class="mw-df-wrap" @click.stop="toggleDd($event, 'status')">
+          <button class="mw-df-btn" :class="{ 'has-filter': statusFilter !== '' }">
+            <span>{{ selectedStatusLabel }}</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mw-df-dd" :class="{ open: openDd === 'status' }">
+            <div
+              v-for="opt in statusOptions" :key="opt.value"
+              class="mw-df-item" :class="{ 'active-item': statusFilter === opt.value }"
+              @click="statusFilter = opt.value; openDd = ''"
+            >
+              {{ opt.label }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- List / Table toggle -->
@@ -470,12 +517,12 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                 <th class="px-4 py-3 text-[12px] font-semibold text-gray-600">
                   Progress
                 </th>
-                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600" style="width:36px" />
+                <th class="px-4 py-3 text-[12px] font-semibold text-gray-600" style="width:44px">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="task in allFilteredTasks" :key="task.id"
+                v-for="task in paginatedTasks" :key="task.id"
                 class="cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50 last:border-b-0"
                 :data-project="task.project"
                 :data-priority="task.priority"
@@ -568,7 +615,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                       class="task-action-dd task-action-dd--right"
                       @click.stop
                     >
-                      <button class="task-action-item" @click.stop="viewTask(task, task.groupId)">
+                      <button class="task-action-item" @click.stop="navigateToTask(task.id)">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         View
                       </button>
@@ -585,13 +632,59 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                   </div>
                 </td>
               </tr>
-              <tr v-if="allFilteredTasks.length === 0">
-                <td colspan="7" class="px-4 py-10 text-center text-[14px] text-gray-400">
+              <tr v-if="paginatedTasks.length === 0">
+                <td colspan="8" class="px-4 py-10 text-center text-[14px] text-gray-400">
                   No tasks match the selected filters.
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="allFilteredTasks.length > pageSize" class="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
+          <span class="text-[12px] text-gray-500">
+            Showing {{ ((tablePage - 1) * pageSize) + 1 }}–{{ Math.min(tablePage * pageSize, allFilteredTasks.length) }} of {{ allFilteredTasks.length }} tasks
+          </span>
+          <div class="flex items-center gap-1">
+            <button
+              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+              :disabled="tablePage <= 1"
+              @click="goToPage(1)"
+            >
+              First
+            </button>
+            <button
+              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+              :disabled="tablePage <= 1"
+              @click="goToPage(tablePage - 1)"
+            >
+              Prev
+            </button>
+            <button
+              v-for="p in totalPages"
+              :key="p"
+              class="mx-0.5 flex h-7 w-7 items-center justify-center rounded text-[12px] font-medium transition-colors"
+              :class="p === tablePage ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-200'"
+              @click="goToPage(p)"
+            >
+              {{ p }}
+            </button>
+            <button
+              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+              :disabled="tablePage >= totalPages"
+              @click="goToPage(tablePage + 1)"
+            >
+              Next
+            </button>
+            <button
+              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+              :disabled="tablePage >= totalPages"
+              @click="goToPage(totalPages)"
+            >
+              Last
+            </button>
+          </div>
         </div>
       </div>
     </div>

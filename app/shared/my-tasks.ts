@@ -140,20 +140,20 @@ export function statusFromGroup(groupId: GroupId): { id: string; label: string }
 
 export function statusClass(groupId: GroupId): string {
   switch (groupId) {
-    case 'overdue':
-    case 'inprogress': return 'text-blue-700 bg-blue-50 border-blue-200'
+    case 'overdue': return 'text-red-700 bg-red-50 border-red-200'
+    case 'inprogress': return 'text-amber-700 bg-amber-50 border-amber-200'
     case 'todo': return 'text-gray-700 bg-gray-100 border-gray-200'
-    case 'inreview': return 'text-amber-700 bg-amber-50 border-amber-200'
+    case 'inreview': return 'text-blue-700 bg-blue-50 border-blue-200'
     case 'completed': return 'text-green-700 bg-green-50 border-green-200'
   }
 }
 
 export function statusDotClass(groupId: GroupId): string {
   switch (groupId) {
-    case 'overdue':
-    case 'inprogress': return 'bg-blue-500'
+    case 'overdue': return 'bg-red-500'
+    case 'inprogress': return 'bg-amber-500'
     case 'todo': return 'bg-gray-400'
-    case 'inreview': return 'bg-amber-500'
+    case 'inreview': return 'bg-blue-500'
     case 'completed': return 'bg-green-500'
   }
 }
