@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { statusOptions, priorityOptions } from '~/shared/projects'
+import { statusOptions, priorityOptions, people, findPerson, avatarColor } from '~/shared/projects'
 import type { ProjectStatus, ProjectPriority } from '~/shared/projects'
 
 const props = defineProps<{
@@ -16,8 +16,8 @@ const canSubmit = computed(() => form.name.trim().length > 0)
 
 const initialStatus: ProjectStatus = (props.initialData?.status as ProjectStatus) ?? 'not-started'
 const initialPriority: ProjectPriority = (props.initialData?.priority as ProjectPriority) ?? 'medium'
-const initialOwner = (props.initialData?.owner as { name?: string } | undefined)?.name ?? user.value?.name ?? ''
-const initialAssignees = (props.initialData?.assignees as unknown[] | undefined)?.map((a) => (a as { name?: string }).name).filter((n): n is string => Boolean(n)) ?? (user.value?.name ? [user.value.name] : [])
+const initialOwner = (props.initialData?.owner as { name?: string } | undefined)?.name ?? people[0]?.name ?? ''
+const initialAssignees = (props.initialData?.assignees as unknown[] | undefined)?.map((a) => (a as { name?: string }).name).filter((n): n is string => Boolean(n)) ?? (people[0]?.name ? [people[0].name] : [])
 
 /* ── form state ── */
 const form = reactive({
