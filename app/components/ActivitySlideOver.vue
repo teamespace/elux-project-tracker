@@ -1,7 +1,13 @@
 // styled: agent-6
 <script setup lang="ts">
 import { ref } from 'vue'
-import { activityItems, type ActivityType } from '~/shared/activity'
+
+type ActivityType = 'moved' | 'created' | 'completed' | 'commented' | 'assigned'
+
+const { data: activityData } = await useAsyncData('activity-slideover', () =>
+  $fetch('/api/activity', { query: { limit: 20 } })
+)
+const activityItems = computed(() => activityData.value ?? [])
 
 const { state, close, setView } = useActivitySlideOver()
 
@@ -35,7 +41,7 @@ const search = ref('')
 const actionOptions: ActivityType[] = ['moved', 'created', 'completed', 'commented', 'assigned']
 const selectedActions = ref<ActivityType[]>([...actionOptions])
 
-const people = computed(() => [...new Set(activityItems.map(i => i.person))])
+const people = computed(() => [...new Set(activityItems.value.map((i: any) => i.person))])
 const selectedPeople = ref<string[]>([...people.value])
 
 const actionOpen = ref(false)
@@ -45,7 +51,7 @@ const personRef = ref<HTMLElement | null>(null)
 
 const filteredItems = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return activityItems.filter((item) => {
+  return activityItems.value.filter((item: any) => {
     const text = `${item.actor.name} ${item.text} ${item.project} ${item.time}`.toLowerCase()
     const matchesSearch = !q || text.includes(q)
     const matchesAction = selectedActions.value.length === 0 || selectedActions.value.includes(item.type)

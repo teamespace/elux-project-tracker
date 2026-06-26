@@ -1,6 +1,6 @@
 // styled: agent-5
 <script setup lang="ts">
-import { progressColor } from '~/shared/projects'
+
 
 interface Project {
   id: string

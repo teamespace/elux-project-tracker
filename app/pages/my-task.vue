@@ -1,19 +1,14 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'default', title: 'My Task', middleware: 'auth' })
-import {
-  type DueFilter,
-  type GroupId,
-  type MyTask,
-  currentUser,
-  groups as rawGroups,
-  statusClass,
-  statusDotClass,
-  priorityClass,
-  progressColor,
-  statusFromGroup,
-} from '~/shared/my-tasks'
 
-const activeStatCard = ref<GroupId | 'all'>('all')
+import type { DueFilter, MyTask } from '~/shared/my-tasks'
+
+const { data: myTasks } = await useAsyncData('my-work', () => $fetch('/api/my-work'))
+const { user: currentUser } = useUserSession()
+
+const deletedIds = ref<string[]>([])
+
+const activeStatCard = ref<string | 'all'>('all')
 const dueFilter = ref<DueFilter>('all')
 const projectFilter = ref('')
 const priorityFilter = ref('')
@@ -23,14 +18,14 @@ const openDd = ref('')
 const tablePage = ref(1)
 const pageSize = 10
 
-const collapsedGroups = ref<Set<GroupId>>(new Set(['completed']))
+const collapsedGroups = ref<Set<string>>(new Set(['done']))
 
-function toggleGroup(id: GroupId) {
+function toggleGroup(id: string) {
   if (collapsedGroups.value.has(id)) collapsedGroups.value.delete(id)
   else collapsedGroups.value.add(id)
 }
 
-function setStatCard(id: GroupId | 'all') {
+function setStatCard(id: string | 'all') {
   activeStatCard.value = activeStatCard.value === id ? 'all' : id
 }
 
@@ -65,10 +60,10 @@ const priorityOptions = [
 const statusOptions = [
   { label: 'Status', value: '' },
   { label: 'To Do',       value: 'todo' },
-  { label: 'In Progress', value: 'inprogress' },
-  { label: 'In Review',   value: 'inreview' },
+  { label: 'In Progress', value: 'in-progress' },
+  { label: 'In Review',   value: 'in-review' },
   { label: 'Overdue',     value: 'overdue' },
-  { label: 'Completed',   value: 'completed' },
+  { label: 'Completed',   value: 'done' },
 ]
 
 const selectedDueLabel = computed(() =>
@@ -84,17 +79,31 @@ const selectedStatusLabel = computed(() =>
   statusOptions.find(o => o.value === statusFilter.value)?.label ?? 'Status'
 )
 
+const groups = computed(() => {
+  if (!myTasks.value) return []
+  const order = ['overdue', 'in-progress', 'in-review', 'todo', 'done']
+  const labels: Record<string, string> = { 'in-progress': 'In Progress', 'in-review': 'In Review', todo: 'To Do', overdue: 'Overdue', done: 'Done' }
+  const grouped: Record<string, any[]> = {}
+  for (const t of myTasks.value) {
+    if (deletedIds.value.includes(t.id)) continue
+    const key = t.status ?? 'todo'
+    if (!grouped[key]) grouped[key] = []
+    grouped[key].push(t)
+  }
+  return order.filter(k => grouped[k]?.length).map(k => ({ id: k, label: labels[k] ?? k, tasks: grouped[k] }))
+})
+
 const enrichedGroups = computed(() =>
   groups.value.map(g => ({
     ...g,
     statusInfo: {
-      id: g.id === 'completed' ? 'done' : g.id === 'inprogress' || g.id === 'overdue' ? 'in-progress' : g.id === 'inreview' ? 'in-review' : 'todo',
-      label: g.id === 'completed' ? 'Done' : g.id === 'overdue' ? 'Overdue' : g.id === 'inprogress' ? 'In Progress' : g.id === 'inreview' ? 'In Review' : 'To Do',
+      id: g.id,
+      label: g.label,
     },
     tasks: g.tasks.map(t => ({
       ...t,
-      description: t.labels.map(l => l.text).join(' · ') || undefined,
-      progress: t.progress ?? (g.id === 'completed' ? 100 : g.id === 'inreview' ? 75 : g.id === 'inprogress' ? 50 : g.id === 'overdue' ? 25 : 0),
+      description: t.labels?.map((l: { text: string }) => l.text).join(' · ') || undefined,
+      progress: t.progress ?? (g.id === 'done' ? 100 : g.id === 'in-review' ? 75 : g.id === 'in-progress' ? 50 : g.id === 'overdue' ? 25 : 0),
       assignee: t.assignee ?? currentUser,
     })),
   }))
@@ -137,8 +146,6 @@ function navigateToTask(taskId: string) {
   navigateTo(`/tasks/${taskId}`)
 }
 
-const groups = ref(structuredClone(rawGroups))
-
 const taskSlideOver = useTaskSlideOver()
 const actionOpen = ref<string | null>(null)
 
@@ -149,7 +156,7 @@ function openActions(e: Event, id: string) {
 }
 function closeActions() { actionOpen.value = null }
 
-function taskToDraft(task: MyTask, groupId: GroupId): Partial<import('~/shared/board').Task> {
+function taskToDraft(task: MyTask, groupId: string): Partial<import('~/shared/board').Task> {
   const statusInfo = statusFromGroup(groupId)
   return {
     id: task.id,
@@ -172,31 +179,75 @@ function taskToDraft(task: MyTask, groupId: GroupId): Partial<import('~/shared/b
   }
 }
 
-function viewTask(task: MyTask, groupId: GroupId) {
+function viewTask(task: MyTask, groupId: string) {
   closeActions()
   taskSlideOver.openPeek(taskToDraft(task, groupId))
 }
 
-function editTask(task: MyTask, groupId: GroupId) {
+function editTask(task: MyTask, groupId: string) {
   closeActions()
   taskSlideOver.openEdit(task.id, taskToDraft(task, groupId))
 }
 
 function deleteTask(id: string) {
   closeActions()
-  for (const group of groups.value) {
-    const idx = group.tasks.findIndex(t => t.id === id)
-    if (idx !== -1) {
-      group.tasks.splice(idx, 1)
-      break
-    }
-  }
+  deletedIds.value.push(id)
 }
 
 onMounted(() => document.addEventListener('click', closeActions))
 onUnmounted(() => document.removeEventListener('click', closeActions))
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })
+
+function statusClass(groupId: string): string {
+  switch (groupId) {
+    case 'overdue': return 'text-red-700 bg-red-50 border-red-200'
+    case 'in-progress': return 'text-amber-700 bg-amber-50 border-amber-200'
+    case 'todo': return 'text-gray-700 bg-gray-100 border-gray-200'
+    case 'in-review': return 'text-blue-700 bg-blue-50 border-blue-200'
+    case 'done': return 'text-green-700 bg-green-50 border-green-200'
+    default: return ''
+  }
+}
+
+function statusDotClass(groupId: string): string {
+  switch (groupId) {
+    case 'overdue': return 'bg-red-500'
+    case 'in-progress': return 'bg-amber-500'
+    case 'todo': return 'bg-gray-400'
+    case 'in-review': return 'bg-blue-500'
+    case 'done': return 'bg-green-500'
+    default: return ''
+  }
+}
+
+function priorityClass(priority: string): string {
+  switch (priority) {
+    case 'high': return 'text-red-700 bg-red-50 border-red-200'
+    case 'medium': return 'text-amber-700 bg-amber-50 border-amber-200'
+    case 'low': return 'text-green-700 bg-green-50 border-green-200'
+    default: return ''
+  }
+}
+
+function progressColor(progress: number): string {
+  if (progress === 0) return 'bg-gray-300'
+  if (progress <= 33) return 'bg-amber-500'
+  if (progress <= 66) return 'bg-blue-500'
+  if (progress < 100) return 'bg-green-500'
+  return 'bg-green-600'
+}
+
+function statusFromGroup(groupId: string): { id: string; label: string } {
+  switch (groupId) {
+    case 'overdue': return { id: 'in-progress', label: 'Overdue' }
+    case 'in-progress': return { id: 'in-progress', label: 'In Progress' }
+    case 'todo': return { id: 'todo', label: 'To Do' }
+    case 'in-review': return { id: 'in-review', label: 'In Review' }
+    case 'done': return { id: 'done', label: 'Done' }
+    default: return { id: 'todo', label: 'To Do' }
+  }
+}
 </script>
 
 <template>

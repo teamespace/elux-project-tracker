@@ -1,6 +1,11 @@
 // styled: agent-2
 <script setup lang="ts">
-import { unreadCount } from '~/shared/notifications'
+const { data: notificationData } = await useAsyncData('notifications-header', () =>
+  $fetch('/api/notifications', { query: { limit: 1, unread: true } })
+)
+function unreadCount() {
+  return notificationData.value?.length ?? 0
+}
 
 const { toggle } = useSidebar()
 const search = useSearchModal()

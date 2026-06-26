@@ -1,5 +1,17 @@
 <script setup lang="ts">
-import { people, findPerson, avatarColor } from '~/shared/projects'
+const { data: peopleData } = await useAsyncData('kpi-people', () =>
+  $fetch('/api/people')
+)
+const people = computed(() => peopleData.value ?? [])
+
+function findPerson(name: string) {
+  return people.value.find((p: any) => p.name === name)
+}
+
+function avatarColor(index: number) {
+  const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-amber-600', 'bg-pink-600', 'bg-indigo-600']
+  return colors[Math.abs(index) % colors.length]
+}
 
 export interface KpiPayload {
   name: string
@@ -24,10 +36,14 @@ const form = reactive({
   target: 0,
   unit: '',
   dueDate: '',
-  owner: people[0]?.name ?? '',
+  owner: '',
 })
 
-const ownerPerson = computed(() => findPerson(form.owner) ?? people[0])
+if (people.value.length > 0) {
+  form.owner = people.value[0].name
+}
+
+const ownerPerson = computed(() => findPerson(form.owner) ?? people.value[0])
 
 function submit() {
   const name = form.name.trim()

@@ -6,14 +6,19 @@ import {
   projectOptions,
   statuses,
   statusOptions,
-  tasks,
   type Assignee,
   type Task,
   type TaskPriority,
   type TaskStatus,
 } from '~/shared/board'
 import { getAvatar } from '~/shared/avatar'
-import { taskDetails as myTaskDetails, findTaskById, groups } from '~/shared/my-tasks'
+
+const route = useRoute()
+const effectiveTaskId = computed(() => props.taskId ?? route.params.id as string)
+
+const { data: taskData } = effectiveTaskId.value
+  ? await useAsyncData(`task-detail-${effectiveTaskId.value}`, () => $fetch(`/api/tasks/${effectiveTaskId.value}`))
+  : { data: ref(null) }
 
 interface Comment {
   id: string
@@ -89,86 +94,6 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const taskDetails: Record<string, TaskDetailExtras> = {
-  'task-1': {
-    labels: ['design', 'auth'],
-    comments: [
-      { id: 'c1', author: { id: 'user-1', initials: 'R', name: 'Rasya' }, text: 'Flagged as high priority — needs to ship by the 10th.', time: 'Jun 17, 10:30am' },
-      { id: 'c2', author: { id: 'user-2', initials: 'D', name: 'Dito' }, text: 'Reviewing the form component now. Validation looks solid.', time: 'Jun 16, 3:15pm' },
-      { id: 'c3', author: { id: 'user-1', initials: 'R', name: 'Rasya' }, text: 'Initial mockups pushed to Figma. Ready for dev handoff.', time: 'Jun 15, 9:00am' },
-    ],
-    activities: [
-      { id: 'a1', actor: { id: 'user-1', initials: 'R', name: 'Rasya' }, text: 'changed status to In Review', time: 'Jun 17, 9:00am' },
-      { id: 'a2', actor: { id: 'user-1', initials: 'R', name: 'Rasya' }, text: 'set priority to High', time: 'Jun 15, 9:00am' },
-    ],
-    subtasks: [
-      { id: 'st-1', title: 'Draft wireframes', done: true, dueDate: '2026-07-05', assignee: 'Rasya' },
-      { id: 'st-2', title: 'Design review with team', done: false, dueDate: '2026-07-08', assignee: 'Dito' },
-    ],
-    attachments: [
-      { id: 'a1', name: 'login-mockup.png', size: 2457600, type: 'image/png' },
-    ],
-    startDate: '2026-07-01',
-    type: 'Task',
-  },
-  'task-2': {
-    labels: ['auth', 'backend'],
-    comments: [
-      { id: 'c4', author: { id: 'user-2', initials: 'D', name: 'Dito' }, text: 'Client-side validation is done. Moving to server-side checks.', time: 'Jun 17, 9:15am' },
-    ],
-    activities: [
-      { id: 'a3', actor: { id: 'user-2', initials: 'D', name: 'Dito' }, text: 'changed status to In Progress', time: 'Jun 16, 2:00pm' },
-    ],
-    subtasks: [
-      { id: 'st-3', title: 'Email regex validation', done: true, dueDate: '2026-07-10', assignee: 'Dito' },
-      { id: 'st-4', title: 'Server-side rules', done: false, dueDate: '2026-07-14', assignee: 'Dito' },
-    ],
-    attachments: [],
-    startDate: '2026-07-08',
-    type: 'Task',
-  },
-  'task-5': {
-    labels: ['settings', 'ui'],
-    comments: [
-      { id: 'c5', author: { id: 'user-3', initials: 'M', name: 'Maya' }, text: 'Please use the new AvatarUpload component from the design system.', time: 'Jun 29, 2:00pm' },
-    ],
-    activities: [
-      { id: 'a4', actor: { id: 'user-3', initials: 'M', name: 'Maya' }, text: 'changed status to In Progress', time: 'Jun 28, 11:00am' },
-    ],
-    subtasks: [
-      { id: 'st-5', title: 'Profile field layout', done: true, dueDate: '2026-08-01', assignee: 'Rasya' },
-      { id: 'st-6', title: 'Avatar upload flow', done: false, dueDate: '2026-08-04', assignee: 'Rara' },
-      { id: 'st-7', title: 'Validation messages', done: false, dueDate: '2026-08-05', assignee: 'Rasya' },
-    ],
-    attachments: [
-      { id: 'a2', name: 'profile-spec.pdf', size: 1048576, type: 'application/pdf' },
-    ],
-    startDate: '2026-07-28',
-    type: 'Task',
-  },
-  'task-8': {
-    labels: ['api', 'docs'],
-    comments: [
-      { id: 'c6', author: { id: 'user-2', initials: 'D', name: 'Dito' }, text: 'Reviewed and approved. Great work!', time: 'Jul 5, 4:00pm' },
-      { id: 'c7', author: { id: 'user-3', initials: 'M', name: 'Maya' }, text: 'All endpoint docs are complete. Ready for review.', time: 'Jul 4, 11:30am' },
-    ],
-    activities: [
-      { id: 'a5', actor: { id: 'user-3', initials: 'M', name: 'Maya' }, text: 'changed status to Done', time: 'Jul 5, 4:00pm' },
-      { id: 'a6', actor: { id: 'user-3', initials: 'M', name: 'Maya' }, text: 'added attachment endpoints-v1.pdf', time: 'Jul 4, 10:00am' },
-    ],
-    subtasks: [
-      { id: 'st-8', title: 'Document auth endpoints', done: true, dueDate: '2026-07-02', assignee: 'Maya' },
-      { id: 'st-9', title: 'Document user endpoints', done: true, dueDate: '2026-07-03', assignee: 'Maya' },
-      { id: 'st-10', title: 'Publish reference page', done: true, dueDate: '2026-07-05', assignee: 'Maya' },
-    ],
-    attachments: [
-      { id: 'a3', name: 'endpoints-v1.pdf', size: 3145728, type: 'application/pdf' },
-    ],
-    startDate: '2026-07-01',
-    type: 'Task',
-  },
-}
-
 const MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024
 
 function avatarColor(index: number) {
@@ -236,33 +161,7 @@ const activeTab = ref('comments')
 
 const task = computed<Task | null>(() => {
   if (props.mode === 'create' || !props.taskId) return null
-  const boardTask = tasks.find(t => t.id === props.taskId)
-  if (boardTask) return boardTask
-  const myTask = findTaskById(props.taskId)
-  if (myTask) {
-    const g = groups.find(grp => grp.tasks.some(gt => gt.id === props.taskId))
-    const statusMap: Record<string, TaskStatus> = { overdue: 'in-progress', inprogress: 'in-progress', todo: 'todo', inreview: 'in-review', completed: 'done' }
-    const taskStatus: TaskStatus = g ? (statusMap[g.id] as TaskStatus) ?? 'todo' : 'todo'
-    return {
-      id: myTask.id,
-      title: myTask.title,
-      description: myTask.description ?? '',
-      status: taskStatus,
-      statusLabel: taskStatus === 'todo' ? 'To Do' : taskStatus === 'in-progress' ? 'In Progress' : taskStatus === 'in-review' ? 'In Review' : 'Done',
-      priority: myTask.priority,
-      priorityLabel: myTask.priorityLabel,
-      assignee: { id: `u-${myTask.id}`, initials: myTask.assignee?.initials ?? '?', name: myTask.assignee?.name ?? 'Unassigned' },
-      epicId: '',
-      epicName: myTask.project,
-      projectId: `proj-${myTask.project.toLowerCase().replace(/\s+/g, '-')}`,
-      projectName: myTask.project,
-      dueDate: '',
-      dueDateLabel: myTask.due,
-      progress: myTask.progress ?? 0,
-      comments: 0,
-      attachments: 0,
-    }
-  }
+  if (taskData.value) return taskData.value as unknown as Task
   return null
 })
 
@@ -310,45 +209,20 @@ function loadData() {
     return
   }
 
-  const id = props.taskId
-  const t = id ? tasks.find(item => item.id === id) : undefined
-  const d = id ? (taskDetails[id] ?? myTaskDetails[id] as unknown as TaskDetailExtras) : undefined
+  const d = taskData.value as unknown as TaskDetailExtras | undefined
 
-  if (t) {
+  if (d) {
     form.value = {
-      title: t.title,
-      status: t.status,
-      assignee: t.assignee.name,
-      priority: t.priority,
-      dueDate: t.dueDate,
-      project: t.projectName,
-      startDate: d?.startDate ?? '',
-      type: d?.type ?? 'Task',
-      labels: d ? [...d.labels] : [],
-      description: t.description,
-      link: d?.link ?? '',
-      notionUrl: d?.notionUrl ?? '',
-      figmaUrl: d?.figmaUrl ?? '',
-    }
-  }
-  else if (d && id) {
-    const myTask = findTaskById(id)
-    const g = groups.find(grp => grp.tasks.some(gt => gt.id === id))
-    const statusMap: Record<string, TaskStatus> = {
-      overdue: 'in-progress', inprogress: 'in-progress', todo: 'todo', inreview: 'in-review', completed: 'done',
-    }
-    const taskStatus: TaskStatus = g ? (statusMap[g.id] as TaskStatus) ?? 'todo' : 'todo'
-    form.value = {
-      title: myTask?.title ?? (d as any).title ?? id,
-      status: taskStatus,
-      assignee: myTask?.assignee?.name ?? '',
-      priority: (myTask?.priority as TaskPriority) ?? 'medium',
-      dueDate: myTask?.due ?? '',
-      project: myTask?.project ?? '',
+      title: (d as any).title ?? '',
+      status: (d as any).status ?? 'todo',
+      assignee: (d as any).assignee?.name ?? '',
+      priority: (d as any).priority ?? 'medium',
+      dueDate: (d as any).dueDate ?? '',
+      project: (d as any).project ?? '',
       startDate: d.startDate ?? '',
       type: d.type ?? 'Task',
-      labels: myTask?.labels?.map(l => l.text) ?? (d.labels ?? []),
-      description: (d as any).fullDescription || myTask?.description || '',
+      labels: d.labels ?? [],
+      description: (d as any).description || '',
       link: d.link ?? '',
       notionUrl: d.notionUrl ?? '',
       figmaUrl: d.figmaUrl ?? '',
@@ -373,17 +247,14 @@ function loadData() {
       time: a.time,
     })) : []
     activeTab.value = 'comments'
-    return
-  }
-  else {
+  } else {
     form.value = emptyForm()
+    subtasks.value = []
+    comments.value = []
+    attachments.value = []
+    activities.value = []
+    activeTab.value = 'comments'
   }
-
-  subtasks.value = d ? d.subtasks.map(s => ({ ...s })) : []
-  comments.value = d ? d.comments.map(c => ({ ...c })) : []
-  attachments.value = d ? d.attachments.map(a => ({ ...a })) : []
-  activities.value = d ? d.activities.map(a => ({ ...a })) : []
-  activeTab.value = 'comments'
 }
 
 watch(() => [props.taskId, props.mode, props.draft], () => loadData(), { immediate: true, deep: true })

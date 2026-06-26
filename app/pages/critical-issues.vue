@@ -1,6 +1,11 @@
 // styled: agent-7
 <script setup lang="ts">
-import { criticalIssues, issuePriorityOptions, issueStatusOptions, type CriticalIssue } from '~/shared/criticalIssues'
+import { issuePriorityOptions, issueStatusOptions, type CriticalIssue } from '~/shared/criticalIssues'
+
+const { data: issuesData } = await useAsyncData('critical-issues', () =>
+  $fetch('/api/critical-issues')
+)
+const criticalIssues = computed(() => issuesData.value ?? [])
 
 interface FilterState {
   open: boolean

@@ -1,50 +1,47 @@
 <script setup lang="ts">
-import {
-  currentUser,
-  findTaskById,
-  findTaskDetailById,
-  groups,
-  statusFromGroup,
-  type GroupId,
-  type MyTaskActivity,
-  type MyTaskAttachment,
-  type MyTaskComment,
-  type MyTaskDetail,
-  type MyTaskSubtask,
-} from '~/shared/my-tasks'
+import { currentUser, type MyTaskActivity, type MyTaskAttachment, type MyTaskComment, type MyTaskSubtask } from '~/shared/my-tasks'
 
 definePageMeta({ layout: false, title: 'Task Detail' })
 
 const route = useRoute()
-const id = route.params.id as string
-
-const task = computed(() => findTaskById(id))
-const detail = computed<MyTaskDetail | undefined>(() => findTaskDetailById(id))
-
-const groupId = computed<GroupId | undefined>(() => {
-  for (const g of groups) {
-    if (g.tasks.some(t => t.id === id)) return g.id
-  }
-  return undefined
-})
+const { data: taskData } = await useAsyncData(`task-${route.params.id}`, () =>
+  $fetch(`/api/tasks/${route.params.id}`)
+)
+const task = computed(() => taskData.value ?? null)
+const detail = task
 
 const statusInfo = computed(() => {
-  if (groupId.value) return statusFromGroup(groupId.value)
-  return { id: 'todo', label: 'To Do' }
+  if (!task.value?.status) return { id: 'todo', label: 'To Do' }
+  const statusMap: Record<string, { id: string; label: string }> = {
+    todo: { id: 'todo', label: 'To Do' },
+    inprogress: { id: 'inprogress', label: 'In Progress' },
+    inreview: { id: 'inreview', label: 'In Review' },
+    completed: { id: 'completed', label: 'Done' },
+    overdue: { id: 'overdue', label: 'Overdue' },
+  }
+  return statusMap[task.value.status] ?? { id: 'todo', label: 'To Do' }
 })
 
-const progress = computed(() => detail.value?.progress ?? 0)
+const progress = computed(() => task.value?.progress ?? 0)
 
 const subtasks = ref<MyTaskSubtask[]>([])
 const comments = ref<MyTaskComment[]>([])
 const activities = ref<MyTaskActivity[]>([])
 const attachments = ref<MyTaskAttachment[]>([])
 
-watch(() => detail.value, (d) => {
-  subtasks.value = d ? d.subtasks.map(s => ({ ...s })) : []
-  comments.value = d ? d.comments.map(c => ({ ...c })) : []
-  activities.value = d ? d.activities.map(a => ({ ...a })) : []
-  attachments.value = d ? d.attachments.map(a => ({ ...a })) : []
+watch(() => taskData.value, (d) => {
+  if (d) {
+    subtasks.value = d.subtasks?.map((s: any) => ({ ...s })) ?? []
+    comments.value = d.comments?.map((c: any) => ({ ...c })) ?? []
+    activities.value = d.activities?.map((a: any) => ({ ...a })) ?? []
+    attachments.value = d.attachments?.map((a: any) => ({ ...a })) ?? []
+  }
+  else {
+    subtasks.value = []
+    comments.value = []
+    activities.value = []
+    attachments.value = []
+  }
 }, { immediate: true })
 
 type TabId = 'subtasks' | 'comments' | 'activity' | 'attachments'
@@ -178,11 +175,7 @@ const userOptions = [
 ]
 
 const projectOptions = computed(() => {
-  const set = new Set<string>()
-  for (const g of groups) {
-    for (const t of g.tasks) set.add(t.project)
-  }
-  return Array.from(set)
+  return task.value?.project ? [task.value.project] : []
 })
 
 const statusOptions = [
@@ -217,8 +210,8 @@ watch(() => task.value, (t) => {
   editForm.labels = t.labels.map(l => l.text).join(', ') ?? ''
 }, { immediate: true })
 
-watch(() => groupId.value, (g) => {
-  editForm.status = g ?? 'todo'
+watch(() => task.value?.status, (status) => {
+  if (status) editForm.status = status
 }, { immediate: true })
 
 watch(() => detail.value?.assignee?.name, (name) => {

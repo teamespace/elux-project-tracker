@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { notifications, unreadCount, markAllRead } from '~/shared/notifications'
+import { unreadCount, markAllRead } from '~/shared/notifications'
 import { getAvatar } from '~/shared/avatar'
+
+const { data: notifData } = await useAsyncData('notifications', () =>
+  $fetch('/api/notifications')
+)
+const notifications = computed(() => notifData.value ?? [])
 
 definePageMeta({
   layout: 'default',

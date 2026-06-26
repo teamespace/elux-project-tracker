@@ -1,6 +1,11 @@
 // styled: agent-7
 <script setup lang="ts">
-import { activityActionOptions, activityItems, activityPeopleOptions, type ActivityType } from '~/shared/activity'
+import { activityActionOptions, activityPeopleOptions, type ActivityType } from '~/shared/activity'
+
+const { data: activityData } = await useAsyncData('activity', () =>
+  $fetch('/api/activity', { query: { limit: 50 } })
+)
+const activityItems = computed(() => activityData.value ?? [])
 
 interface FilterState {
   open: boolean
