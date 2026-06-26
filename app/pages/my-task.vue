@@ -179,7 +179,7 @@ function viewTask(task: MyTask, groupId: GroupId) {
 
 function editTask(task: MyTask, groupId: GroupId) {
   closeActions()
-  taskSlideOver.openEdit(task.id)
+  taskSlideOver.openEdit(task.id, taskToDraft(task, groupId))
 }
 
 function deleteTask(id: string) {

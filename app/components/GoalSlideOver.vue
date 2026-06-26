@@ -61,21 +61,13 @@ const goal = computed(() => state.value.draft ?? (state.value.goalId ? goalById(
         <!-- Topbar -->
         <div class="flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 px-4 py-2.5">
           <div ref="menuRef" class="relative flex items-center gap-1">
-            <button
-              class="so-icon-btn"
-              data-tooltip="Open detail page"
-              @click="navigateTo(`/goals/${state.goalId}`); close()"
-            >
-              <UIcon name="ph:arrow-square-out" class="size-4" />
-            </button>
+            <UTooltip text="Open detail page">
+              <UButton variant="ghost" color="neutral" size="xs" square icon="ph:arrow-square-out" @click="navigateTo(`/goals/${state.goalId}`); close()" />
+            </UTooltip>
             <div class="h-4 w-px bg-gray-200" />
-            <button
-              class="so-icon-btn"
-              data-tooltip="Change view"
-              @click="menuOpen = !menuOpen"
-            >
-              <UIcon name="ph:layout" class="size-4" />
-            </button>
+            <UTooltip text="Change view">
+              <UButton variant="ghost" color="neutral" size="xs" square icon="ph:layout" @click="menuOpen = !menuOpen" />
+            </UTooltip>
             <div v-if="menuOpen" class="absolute left-0 top-full z-50 mt-1.5 min-w-[170px] rounded-[10px] border border-gray-200 bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
               <button
                 v-for="opt in layoutOptions" :key="opt.value"
@@ -88,9 +80,9 @@ const goal = computed(() => state.value.draft ?? (state.value.goalId ? goalById(
               </button>
             </div>
           </div>
-          <button class="so-icon-btn" data-tooltip="Close" @click="close">
-            <UIcon name="ph:x" class="size-4" />
-          </button>
+          <UTooltip text="Close">
+            <UButton variant="ghost" color="neutral" size="xs" square icon="ph:x" @click="close" />
+          </UTooltip>
         </div>
 
         <!-- Body -->
@@ -102,40 +94,3 @@ const goal = computed(() => state.value.draft ?? (state.value.goalId ? goalById(
     </Transition>
   </Teleport>
 </template>
-
-<style scoped>
-.so-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: none;
-  background: transparent;
-  color: #6B7280;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  position: relative;
-}
-.so-icon-btn:hover {
-  background: #F3F4F6;
-  color: #111827;
-}
-.so-icon-btn[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1F2937;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 100;
-}
-</style>

@@ -55,13 +55,14 @@ onMounted(() => {
 <template>
   <header class="flex h-[52px] shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6">
     <div class="flex items-center">
-      <button
-        class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-        data-tooltip="Toggle sidebar"
-        @click="toggle"
-      >
-        <UIcon name="ph:sidebar" class="size-4" />
-      </button>
+      <UTooltip text="Toggle sidebar">
+        <button
+          class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          @click="toggle"
+        >
+          <UIcon name="ph:sidebar" class="size-4" />
+        </button>
+      </UTooltip>
       <div class="mx-3 h-[18px] w-px bg-gray-200" />
       <div class="text-[13px] text-gray-900">
         <slot name="breadcrumb">

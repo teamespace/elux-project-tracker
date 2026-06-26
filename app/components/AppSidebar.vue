@@ -42,12 +42,13 @@ const footerNavItems: NavItem[] = [
       class="flex h-16 items-center"
       :class="isOpen ? 'justify-start px-3.5 gap-2.5' : 'justify-center'"
     >
-      <div
-        class="flex size-7 items-center justify-center rounded-md text-[13px] font-bold text-white" style="background:oklch(60.6% 0.25 292.717)"
-        :data-tooltip="isOpen ? undefined : 'Elux Space'"
-      >
-        E
-      </div>
+      <UTooltip :text="isOpen ? undefined : 'Elux Space'">
+        <div
+          class="flex size-7 items-center justify-center rounded-md text-[13px] font-bold text-white" style="background:oklch(60.6% 0.25 292.717)"
+        >
+          E
+        </div>
+      </UTooltip>
       <span v-if="isOpen" class="text-[14px] font-semibold text-gray-700">Elux Space</span>
     </div>
 
@@ -56,24 +57,23 @@ const footerNavItems: NavItem[] = [
       <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Workspace</p>
     </div>
     <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
-      <NuxtLink
-        v-for="item in workspaceNavItems"
-        :key="item.label"
-        :to="item.to"
-        :data-tooltip="!isOpen ? item.label : undefined"
-        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
-        :class="[
-          isOpen
-            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
-            : 'size-10 justify-center rounded-[10px]',
-          isActive(item.to)
-            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
-            : '',
-        ]"
-      >
-        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
-        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
-      </NuxtLink>
+      <UTooltip v-for="item in workspaceNavItems" :key="item.label" :text="!isOpen ? item.label : undefined">
+        <NuxtLink
+          :to="item.to"
+          class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+          :class="[
+            isOpen
+              ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+              : 'size-10 justify-center rounded-[10px]',
+            isActive(item.to)
+              ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+              : '',
+          ]"
+        >
+          <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+          <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
+        </NuxtLink>
+      </UTooltip>
     </nav>
 
     <!-- Personal section -->
@@ -81,24 +81,23 @@ const footerNavItems: NavItem[] = [
       <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Personal</p>
     </div>
     <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
-      <NuxtLink
-        v-for="item in personalNavItems"
-        :key="item.label"
-        :to="item.to"
-        :data-tooltip="!isOpen ? item.label : undefined"
-        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
-        :class="[
-          isOpen
-            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
-            : 'size-10 justify-center rounded-[10px]',
-          isActive(item.to)
-            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
-            : '',
-        ]"
-      >
-        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
-        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
-      </NuxtLink>
+      <UTooltip v-for="item in personalNavItems" :key="item.label" :text="!isOpen ? item.label : undefined">
+        <NuxtLink
+          :to="item.to"
+          class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+          :class="[
+            isOpen
+              ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+              : 'size-10 justify-center rounded-[10px]',
+            isActive(item.to)
+              ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+              : '',
+          ]"
+        >
+          <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+          <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
+        </NuxtLink>
+      </UTooltip>
     </nav>
 
     <!-- Spacer -->
@@ -106,24 +105,23 @@ const footerNavItems: NavItem[] = [
 
     <!-- Bottom nav -->
     <nav class="flex flex-col gap-0.5" :class="isOpen ? 'items-start px-0' : 'items-center px-2'">
-      <NuxtLink
-        v-for="item in footerNavItems"
-        :key="item.label"
-        :to="item.to"
-        :data-tooltip="!isOpen ? item.label : undefined"
-        class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
-        :class="[
-          isOpen
-            ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
-            : 'size-10 justify-center rounded-[10px]',
-          isActive(item.to)
-            ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
-            : '',
-        ]"
-      >
-        <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
-        <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
-      </NuxtLink>
+      <UTooltip v-for="item in footerNavItems" :key="item.label" :text="!isOpen ? item.label : undefined">
+        <NuxtLink
+          :to="item.to"
+          class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
+          :class="[
+            isOpen
+              ? 'h-10 w-[calc(100%-16px)] mx-2 gap-2.5 px-2.5 text-[13px] text-gray-600 rounded-lg'
+              : 'size-10 justify-center rounded-[10px]',
+            isActive(item.to)
+              ? 'bg-white text-blue-600 shadow-sm hover:text-blue-600'
+              : '',
+          ]"
+        >
+          <UIcon :name="item.icon" class="size-[18px] shrink-0" :class="isActive(item.to) ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'" />
+          <span v-if="isOpen" class="whitespace-nowrap font-medium">{{ item.label }}</span>
+        </NuxtLink>
+      </UTooltip>
     </nav>
 
     <!-- User footer -->
@@ -131,13 +129,14 @@ const footerNavItems: NavItem[] = [
       class="flex items-center border-t border-gray-100"
       :class="isOpen ? 'gap-2.5 px-3.5 pt-3 pb-4' : 'justify-center px-2 py-3'"
     >
-      <UAvatar
-        src="https://api.dicebear.com/9.x/micah/svg?seed=Rasya"
-        text="R"
-        size="sm"
-        class="shrink-0"
-        :data-tooltip="isOpen ? undefined : 'Rasya Ardiansyah'"
-      />
+      <UTooltip :text="isOpen ? undefined : 'Rasya Ardiansyah'">
+        <UAvatar
+          src="https://api.dicebear.com/9.x/micah/svg?seed=Rasya"
+          text="R"
+          size="sm"
+          class="shrink-0"
+        />
+      </UTooltip>
       <div v-if="isOpen" class="flex min-w-0 flex-1 flex-col">
         <span class="truncate text-[13px] font-semibold text-gray-800">Rasya Ardiansyah</span>
         <span class="truncate text-[11px] text-gray-400">Product Designer</span>

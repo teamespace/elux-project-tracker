@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { statusOptions, priorityOptions, tasks as taskStore, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
 import { people, findPerson, avatarColor } from '~/shared/projects'
+import { taskDetails as myTaskDetails, findTaskById, type MyTaskDetail } from '~/shared/my-tasks'
+import { getAvatar } from '~/shared/avatar'
 
 const props = defineProps<{
   mode?: 'create' | 'edit' | 'view'
@@ -10,6 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 
 const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
+const isEdit = computed(() => props.mode === 'edit')
 
 const defaultStatus: TaskStatus = props.initialData?.status ?? 'todo'
 const defaultPriority: TaskPriority = props.initialData?.priority ?? 'medium'
@@ -28,11 +31,14 @@ const form = reactive({
   description: props.initialData?.description ?? '',
 })
 
-const subtasks = reactive<{ id: string; title: string; done: boolean }[]>(props.initialData ? [] : [])
+const subtasks = reactive<{ id: string; title: string; done: boolean }[]>([])
+const comments = reactive<{ id: string; author: string; aInit: string; text: string; time: string }[]>([])
+const attachments = reactive<{ id: string; name: string; size: string; type: string }[]>([])
 const showSubtaskInput = ref(false)
 const newSubtask = ref('')
-
+const newComment = ref('')
 const openDd = ref<string | null>(null)
+
 function toggleDd(field: string, e: MouseEvent) {
   e.stopPropagation()
   openDd.value = openDd.value === field ? null : field
@@ -69,6 +75,35 @@ function addSubtask() {
   showSubtaskInput.value = false
 }
 
+function addComment() {
+  const text = newComment.value.trim()
+  if (!text) return
+  comments.push({ id: `c-${Date.now()}`, author: 'Rasya', aInit: 'RA', text, time: 'Just now' })
+  newComment.value = ''
+}
+
+function removeAttachment(id: string) {
+  const idx = attachments.findIndex(a => a.id === id)
+  if (idx !== -1) attachments.splice(idx, 1)
+}
+
+// Load my-tasks detail data when editing
+if (isEdit.value && props.initialData?.id) {
+  const detail = myTaskDetails[props.initialData.id]
+  if (detail) {
+    const myD = detail as unknown as MyTaskDetail
+    if (myD.subtasks) {
+      myD.subtasks.forEach(s => subtasks.push({ id: s.id, title: s.title, done: s.done }))
+    }
+    if (myD.comments) {
+      myD.comments.forEach(c => comments.push({ id: c.id, author: c.author.name, aInit: c.author.initials, text: c.text, time: c.time }))
+    }
+    if (myD.attachments) {
+      myD.attachments.forEach(a => attachments.push({ id: a.id, name: a.name, size: typeof a.size === 'string' ? a.size : `${Math.round(a.size / 1024)} KB`, type: a.type }))
+    }
+  }
+}
+
 function submit() {
   const title = form.title.trim()
   if (!title) return
@@ -88,6 +123,12 @@ function submit() {
       existing.projectName = form.project
       existing.dueDate = form.dueDate
       existing.dueDateLabel = form.dueDate
+    }
+    const detail = myTaskDetails[props.initialData.id]
+    if (detail) {
+      const myD = detail as unknown as MyTaskDetail
+      myD.subtasks = subtasks.map(s => ({ id: s.id, title: s.title, done: s.done, dueDate: '', assignee: '' }))
+      myD.comments = comments.map(c => ({ id: c.id, author: { name: c.author, initials: c.aInit }, text: c.text, time: c.time }))
     }
   } else {
     taskStore.push({
@@ -250,6 +291,45 @@ function submit() {
         </button>
       </div>
 
+      <!-- COMMENTS -->
+      <div class="sec-hdr">Comments</div>
+      <div class="tasks-wrap">
+        <div v-for="c in comments" :key="c.id" class="cmt-row">
+          <div class="cmt-av">{{ c.aInit }}</div>
+          <div class="cmt-body">
+            <div class="cmt-head">
+              <span class="cmt-author">{{ c.author }}</span>
+              <span class="cmt-time">{{ c.time }}</span>
+            </div>
+            <div class="cmt-text">{{ c.text }}</div>
+          </div>
+        </div>
+        <div v-if="comments.length === 0 && !isView" class="cmt-empty">No comments yet.</div>
+        <div v-if="!isView" class="cmt-input-row">
+          <div class="cmt-av" style="background:#DBEAFE;color:#2563EB">RA</div>
+          <input v-model="newComment" class="cmt-input" placeholder="Add a comment…" @keydown.enter="addComment">
+          <button class="cmt-send" @click="addComment">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-6-5 12-2-5-5-1z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ATTACHMENTS -->
+      <div class="sec-hdr">Attachments</div>
+      <div class="tasks-wrap">
+        <div v-for="a in attachments" :key="a.id" class="attach-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="attach-icon"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          <div class="attach-info">
+            <span class="attach-name">{{ a.name }}</span>
+            <span class="attach-size">{{ a.size }}</span>
+          </div>
+          <button class="attach-del" @click="removeAttachment(a.id)">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div v-if="attachments.length === 0" class="cmt-empty">No attachments yet.</div>
+      </div>
+
       <!-- DESCRIPTION -->
       <div class="sec-hdr">Description</div>
       <div class="desc-wrap">
@@ -272,8 +352,8 @@ function submit() {
         </button>
       </div>
       <div class="footer-right">
-        <button class="btn-cancel" @click="$emit('close')">{{ isView ? 'Close' : 'Cancel' }}</button>
-        <button v-if="!isView" class="btn-create" @click="submit">Create task</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ isView && !isEdit ? 'Close' : 'Cancel' }}</button>
+        <button v-if="!isView" class="btn-create" @click="submit">{{ isEdit ? 'Save changes' : 'Create task' }}</button>
         <button v-else class="btn-create" @click="submit">Save changes</button>
       </div>
     </div>
@@ -403,6 +483,42 @@ function submit() {
   cursor: pointer; font-family: inherit; margin-top: 4px; transition: all .1s;
 }
 .add-task-btn:hover { border-color: #D1D5DB; color: #6B7280; background: #F9FAFB; }
+
+/* COMMENTS */
+.cmt-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.cmt-av { width: 26px; height: 26px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cmt-body { flex: 1; min-width: 0; }
+.cmt-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+.cmt-author { font-size: 12.5px; font-weight: 600; color: #111827; }
+.cmt-time { font-size: 11px; color: #9CA3AF; }
+.cmt-text { font-size: 13px; color: #4B5563; line-height: 1.5; }
+.cmt-empty { font-size: 13px; color: #9CA3AF; padding: 4px 0; }
+.cmt-input-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
+.cmt-input {
+  flex: 1; border: 1px solid #E5E7EB; border-radius: 8px;
+  padding: 8px 12px; font-size: 13px; outline: none; font-family: inherit; color: #111827;
+}
+.cmt-input::placeholder { color: #D1D5DB; }
+.cmt-input:focus { border-color: #2563EB; }
+.cmt-send {
+  width: 32px; height: 32px; background: #2563EB; border: none;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; margin-top: 1px; padding: 0;
+}
+.cmt-send:hover { background: #1D4ED8; }
+
+/* ATTACHMENTS */
+.attach-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #F9FAFB; }
+.attach-icon { color: #9CA3AF; flex-shrink: 0; }
+.attach-info { flex: 1; min-width: 0; }
+.attach-name { display: block; font-size: 13px; color: #374151; }
+.attach-size { font-size: 11px; color: #9CA3AF; }
+.attach-del {
+  display: none; width: 18px; height: 18px; align-items: center; justify-content: center;
+  border-radius: 50%; border: none; background: transparent; color: #9CA3AF; cursor: pointer; padding: 0;
+}
+.attach-row:hover .attach-del { display: flex; }
+.attach-del:hover { color: #EF4444; }
 
 /* DESCRIPTION */
 .desc-wrap { padding: 8px 24px 16px; }
