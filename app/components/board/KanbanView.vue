@@ -17,7 +17,7 @@ const dragOverStatusId = ref<string | null>(null)
 const slideOver = useTaskSlideOver()
 
 const onCardClick = (task: Task) => {
-  slideOver.openPeek(task)
+  slideOver.openEdit(task.id)
 }
 
 const tasksByStatus = computed(() => {

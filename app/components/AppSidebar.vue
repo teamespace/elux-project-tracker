@@ -44,7 +44,7 @@ const footerNavItems: NavItem[] = [
     >
       <div
         class="flex size-7 items-center justify-center rounded-md text-[13px] font-bold text-white" style="background:oklch(60.6% 0.25 292.717)"
-        :title="isOpen ? undefined : 'Elux Space'"
+        :data-tooltip="isOpen ? undefined : 'Elux Space'"
       >
         E
       </div>
@@ -60,7 +60,7 @@ const footerNavItems: NavItem[] = [
         v-for="item in workspaceNavItems"
         :key="item.label"
         :to="item.to"
-        :title="!isOpen ? item.label : undefined"
+        :data-tooltip="!isOpen ? item.label : undefined"
         class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
         :class="[
           isOpen
@@ -85,7 +85,7 @@ const footerNavItems: NavItem[] = [
         v-for="item in personalNavItems"
         :key="item.label"
         :to="item.to"
-        :title="!isOpen ? item.label : undefined"
+        :data-tooltip="!isOpen ? item.label : undefined"
         class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
         :class="[
           isOpen
@@ -110,7 +110,7 @@ const footerNavItems: NavItem[] = [
         v-for="item in footerNavItems"
         :key="item.label"
         :to="item.to"
-        :title="!isOpen ? item.label : undefined"
+        :data-tooltip="!isOpen ? item.label : undefined"
         class="group flex items-center text-gray-400 transition-colors hover:bg-black/[0.06] hover:text-gray-700"
         :class="[
           isOpen
@@ -136,7 +136,7 @@ const footerNavItems: NavItem[] = [
         text="R"
         size="sm"
         class="shrink-0"
-        :title="isOpen ? undefined : 'Rasya Ardiansyah'"
+        :data-tooltip="isOpen ? undefined : 'Rasya Ardiansyah'"
       />
       <div v-if="isOpen" class="flex min-w-0 flex-1 flex-col">
         <span class="truncate text-[13px] font-semibold text-gray-800">Rasya Ardiansyah</span>

@@ -1036,3 +1036,30 @@ body {
 
 /* ─── GOAL STATUS PILL — COMPLETED VARIANT ─── */
 .goal-status-pill.completed { background: oklch(96% 0.04 292.717); color: oklch(52% 0.27 292.717); }
+
+/* ─── CSS TOOLTIP ─── */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1F2937;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+  animation: tooltip-fade-in 0.15s ease-out;
+}
+@keyframes tooltip-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(2px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

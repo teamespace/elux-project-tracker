@@ -57,6 +57,7 @@ onMounted(() => {
     <div class="flex items-center">
       <button
         class="flex size-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        data-tooltip="Toggle sidebar"
         @click="toggle"
       >
         <UIcon name="ph:sidebar" class="size-4" />
