@@ -126,7 +126,9 @@ function taskToDraft(task: MyTask, groupId: GroupId): Partial<import('~/shared/b
     statusLabel: statusInfo.label,
     priority: task.priority,
     priorityLabel: task.priorityLabel,
-    assignee: task.assignee ?? currentUser,
+    assignee: task.assignee
+      ? { id: `u-${task.id}`, ...task.assignee }
+      : { id: 'u-me', name: currentUser.name, initials: currentUser.initials },
     epicName: task.project,
     projectName: task.project,
     dueDate: '',
@@ -142,9 +144,9 @@ function viewTask(task: MyTask, groupId: GroupId) {
   taskSlideOver.openPeek(taskToDraft(task, groupId))
 }
 
-function editTask(id: string) {
+function editTask(task: MyTask, groupId: GroupId) {
   closeActions()
-  navigateTo(`/tasks/${id}`)
+  taskSlideOver.openEdit(task.id, taskToDraft(task, groupId))
 }
 
 function deleteTask(id: string) {
@@ -421,7 +423,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   View
                 </button>
-                <button class="task-action-item" @click.stop="editTask(task.id)">
+                <button class="task-action-item" @click.stop="editTask(task, group.id)">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Edit
                 </button>
@@ -571,7 +573,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         View
                       </button>
-                      <button class="task-action-item" @click.stop="editTask(task.id)">
+                      <button class="task-action-item" @click.stop="editTask(task, task.groupId)">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Edit
                       </button>

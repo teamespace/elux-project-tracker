@@ -1,38 +1,39 @@
 <script setup lang="ts">
-import { people, statusOptions, priorityOptions, findPerson, avatarColor } from '~/shared/projects'
-import type { ProjectStatus, ProjectPriority } from '~/shared/projects'
+import { people, statusOptions, priorityOptions, findPerson, avatarColor, projects } from '~/shared/projects'
+import type { ProjectStatus, ProjectPriority, Person, ProjectChildTask } from '~/shared/projects'
 
 const props = defineProps<{
-  mode?: 'create' | 'view'
-  initialData?: Record<string, any>
+  mode?: 'create' | 'edit' | 'view'
+  initialData?: Record<string, unknown>
 }>()
 
 const emit = defineEmits<{ close: [] }>()
 
-const isView = computed(() => props.mode === 'view')
+const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
+const isEdit = computed(() => props.mode === 'edit')
 
-const initialStatus: ProjectStatus = props.initialData?.status ?? 'not-started'
-const initialPriority: ProjectPriority = props.initialData?.priority ?? 'medium'
-const initialOwner = props.initialData?.owner?.name ?? people[0]?.name ?? ''
-const initialAssignees = props.initialData?.assignees?.map((a: any) => a.name).filter(Boolean) ?? [people[0]?.name ?? '']
+const initialStatus: ProjectStatus = (props.initialData?.status as ProjectStatus) ?? 'not-started'
+const initialPriority: ProjectPriority = (props.initialData?.priority as ProjectPriority) ?? 'medium'
+const initialOwner = (props.initialData?.owner as { name?: string } | undefined)?.name ?? people[0]?.name ?? ''
+const initialAssignees = (props.initialData?.assignees as unknown[] | undefined)?.map((a) => (a as { name?: string }).name).filter((n): n is string => Boolean(n)) ?? [people[0]?.name ?? '']
 
 /* ── form state ── */
 const form = reactive({
-  name: props.initialData?.name ?? '',
+  name: (props.initialData?.name as string) ?? '',
   status: initialStatus,
   priority: initialPriority,
   owner: initialOwner,
-  start: props.initialData?.startDate ?? props.initialData?.start ?? '',
-  due: props.initialData?.endDate ?? props.initialData?.due ?? '',
-  labels: Array.isArray(props.initialData?.labels) ? props.initialData.labels.join(', ') : (props.initialData?.labels ?? ''),
-  category: props.initialData?.category ?? '',
-  figma: props.initialData?.links?.figma ?? props.initialData?.figma ?? '',
-  notion: props.initialData?.links?.notion ?? props.initialData?.notion ?? '',
-  description: props.initialData?.description ?? '',
+  start: (props.initialData?.startDate as string) ?? (props.initialData?.start as string) ?? '',
+  due: (props.initialData?.endDate as string) ?? (props.initialData?.due as string) ?? '',
+  labels: Array.isArray(props.initialData?.labels) ? props.initialData.labels.join(', ') : (props.initialData?.labels as string) ?? '',
+  category: (props.initialData?.category as string) ?? '',
+  figma: (props.initialData?.links as { figma?: string } | undefined)?.figma ?? (props.initialData?.figma as string) ?? '',
+  notion: (props.initialData?.links as { notion?: string } | undefined)?.notion ?? (props.initialData?.notion as string) ?? '',
+  description: (props.initialData?.description as string) ?? '',
   assignees: initialAssignees,
 })
 
-const childTasks = reactive<{ id: string; title: string; done: boolean }[]>(props.initialData?.childTasks?.map((t: any) => ({ id: t.id, title: t.title, done: t.done })) ?? [])
+const childTasks = reactive<{ id: string; title: string; done: boolean }[]>((props.initialData?.childTasks as unknown[] | undefined)?.map((t) => ({ id: (t as { id?: string }).id ?? `ct-${Date.now()}`, title: (t as { title?: string }).title ?? '', done: Boolean((t as { done?: boolean }).done) })) ?? [])
 const newTaskTitle = ref('')
 const showTaskInput = ref(false)
 
@@ -90,9 +91,33 @@ function removeAssignee(name: string) {
 }
 
 function submit() {
-  if (isView.value) {
+  if (isEdit.value && props.initialData?.id) {
+    const existing = projects.find(p => p.id === props.initialData!.id)
+    if (existing) {
+      existing.name = form.name
+      existing.description = form.description
+      existing.status = form.status
+      existing.statusLabel = statusOpt.value?.label ?? existing.statusLabel
+      existing.priority = form.priority
+      existing.priorityLabel = priorityOpt.value?.label ?? existing.priorityLabel
+      existing.owner = findPerson(form.owner) ?? existing.owner
+      existing.createdDate = form.start
+      existing.dueDate = form.due
+      existing.labels = form.labels
+      existing.category = form.category
+      existing.links = {
+        attach: existing.links?.attach ?? '',
+        notion: form.notion,
+        figma: form.figma,
+      }
+      existing.assignees = form.assignees.map(name => findPerson(name)).filter((p): p is Person => p !== null)
+      existing.childTasks = childTasks.map(t => ({ ...t, dueDate: '', assignee: '' })) as ProjectChildTask[]
+    }
+  }
+  else if (isView.value) {
     console.log('Update project', props.initialData?.id, { ...form, childTasks })
-  } else {
+  }
+  else {
     console.log('Create project', { ...form, childTasks })
   }
   emit('close')

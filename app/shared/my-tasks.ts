@@ -67,7 +67,7 @@ export interface MyTaskDetail extends MyTask {
   type?: string
 }
 
-export const currentUser = { name: 'Rasya Ardiansyah', initials: 'RA' }
+export const currentUser: { name: string; initials: string; avatar?: string } = { name: 'Rasya Ardiansyah', initials: 'RA' }
 
 export const groups: MyTaskGroup[] = [
   {

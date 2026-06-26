@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocumentClick)
 })
 
-const goal = computed(() => state.value.goalId ? goalById(state.value.goalId) : undefined)
+const goal = computed(() => state.value.draft ?? (state.value.goalId ? goalById(state.value.goalId) : undefined))
 </script>
 
 <template>

@@ -16,6 +16,10 @@ interface Project {
   priority: 'high' | 'medium' | 'low'
   priorityLabel: string
   assignees: { initials: string; name: string; avatar: string }[]
+  category?: string
+  labels?: string
+  links?: { figma?: string; notion?: string; attach?: string }
+  childTasks?: { id: string; title: string; done: boolean }[]
 }
 
 const props = defineProps<{
@@ -42,9 +46,23 @@ function viewProject(p: Project) {
   })
 }
 
-function editProject(id: string) {
+function editProject(p: Project) {
   closeMenu()
-  navigateTo(`/projects/${id}`)
+  projectSlideOver.openEdit(p.id, {
+    id: p.id,
+    name: p.name,
+    status: p.status,
+    priority: p.priority,
+    description: p.description,
+    category: p.category ?? '',
+    startDate: p.createdDate,
+    endDate: p.dueDate,
+    labels: p.labels ?? '',
+    figma: p.links?.figma ?? '',
+    notion: p.links?.notion ?? '',
+    assignees: p.assignees.map(a => ({ name: a.name, initials: a.initials, avatar: a.avatar })),
+    childTasks: p.childTasks?.map(t => ({ id: t.id, title: t.title, done: t.done })) ?? [],
+  })
 }
 
 const filterOpen = ref(false)
@@ -290,7 +308,7 @@ function avatarColorForInitials(initials: string): string {
       <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       View
     </button>
-    <button class="ctx-item" @click="editProject(openMenuId)">
+    <button class="ctx-item" @click="editProject(filteredProjects.find(p => p.id === openMenuId)!)">
       <svg class="ctx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Edit
     </button>

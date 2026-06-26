@@ -91,9 +91,23 @@ function viewGoal(id: string) {
   navigateTo(`/goals/${id}`)
 }
 
-function editGoal(id: string) {
+function editGoal(g: GoalData) {
   closeActions()
-  goalSlideOver.openEdit(id)
+  goalSlideOver.openEdit(g.id, {
+    id: g.id,
+    title: g.title,
+    description: g.description,
+    status: g.status,
+    statusLabel: g.statusLabel,
+    owner: { initials: g.members[0]?.seed.slice(0, 1).toUpperCase() ?? 'R', name: g.members[0]?.seed ?? 'Rasya' },
+    quarter: g.period,
+    dueDate: g.dueDate,
+    progress: g.progress,
+    labels: [],
+    kpis: [],
+    linkedProjects: g.projects.map(p => ({ id: p.key, title: p.name, project: p.name, status: g.status, statusLabel: g.statusLabel, progress: g.progress, taskCount: 0 })),
+    activity: [],
+  })
 }
 
 function deleteGoal(id: string) {
@@ -196,7 +210,7 @@ onUnmounted(() => document.removeEventListener('click', closeActions))
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   View
                 </button>
-                <button class="goal-action-item" @click.stop="editGoal(g.id)">
+                <button class="goal-action-item" @click.stop="editGoal(g)">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Edit
                 </button>

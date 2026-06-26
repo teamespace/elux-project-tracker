@@ -69,9 +69,22 @@ function viewProject(p: Proj) {
   })
 }
 
-function editProject(id: string) {
+function editProject(p: Proj) {
   closeActions()
-  navigateTo(`/projects/${id}`)
+  projectSlideOver.openEdit(p.id, {
+    id: p.id,
+    name: p.name,
+    status: p.status,
+    priority: p.priority,
+    description: p.description,
+    category: p.category,
+    startDate: '',
+    endDate: p.dueLabel,
+    labels: '',
+    figma: '',
+    notion: '',
+    assignees: p.assignees.map(a => ({ name: a.name, initials: a.seed.charAt(0), avatar: avatarUrl(a.seed, a.bg) })),
+  })
 }
 
 function deleteProject(id: string) {
@@ -210,7 +223,7 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 View
               </button>
-              <button class="proj-action-item" @click.stop="editProject(p.id)">
+              <button class="proj-action-item" @click.stop="editProject(p)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Edit
               </button>
@@ -307,7 +320,7 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     View
                   </button>
-                  <button class="proj-action-item" @click.stop="editProject(p.id)">
+                  <button class="proj-action-item" @click.stop="editProject(p)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     Edit
                   </button>

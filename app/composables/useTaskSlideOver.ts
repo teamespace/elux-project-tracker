@@ -21,10 +21,10 @@ export function useTaskSlideOver() {
     state.value.isOpen = true
   }
 
-  function openEdit(taskId: string) {
+  function openEdit(taskId: string, draft?: Partial<Task>) {
     state.value.mode = 'edit'
     state.value.taskId = taskId
-    state.value.draft = undefined
+    state.value.draft = draft
     state.value.isOpen = true
   }
 

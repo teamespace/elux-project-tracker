@@ -137,8 +137,8 @@ onBeforeUnmount(() => {
         <!-- Body -->
         <div class="flex-1 overflow-hidden">
           <ProjectCreateContent
-            v-if="state.mode === 'create' || state.mode === 'peek'"
-            :mode="state.mode === 'peek' ? 'view' : 'create'"
+            v-if="state.mode === 'create' || state.mode === 'peek' || state.mode === 'edit'"
+            :mode="state.mode === 'peek' ? 'view' : state.mode === 'edit' ? 'edit' : 'create'"
             :initial-data="state.draft"
             @close="close"
           />

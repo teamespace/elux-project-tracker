@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { statusOptions, priorityOptions, tasks as taskStore, statuses, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
+import { statusOptions, priorityOptions, tasks as taskStore, type TaskStatus, type TaskPriority, type Task } from '~/shared/board'
 import { people, findPerson, avatarColor } from '~/shared/projects'
 
 const props = defineProps<{
-  mode?: 'create' | 'view'
+  mode?: 'create' | 'edit' | 'view'
   initialData?: Partial<Task>
 }>()
 
 const emit = defineEmits<{ close: [] }>()
 
-const isView = computed(() => props.mode === 'view')
+const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
 
 const defaultStatus: TaskStatus = props.initialData?.status ?? 'todo'
 const defaultPriority: TaskPriority = props.initialData?.priority ?? 'medium'
