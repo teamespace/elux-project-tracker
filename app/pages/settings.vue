@@ -4,6 +4,20 @@ definePageMeta({ layout: 'default', title: 'Settings', middleware: 'auth' })
 type Tab = 'general' | 'members' | 'notifications' | 'profile' | 'danger'
 const activeTab = ref<Tab>('general')
 
+const { open: openMemberInvite, refreshKey: memberRefreshKey } = useMemberInvite()
+
+const { data: members, refresh: refreshMembers } = await useFetch('/api/team', {
+  transform: (res: any[]) => res.map(m => ({
+    name: m.name,
+    email: m.email,
+    role: m.role === 'admin' ? 'Admin' : m.role === 'manager' ? 'Manager' : m.role === 'intern' ? 'Intern' : 'Member',
+    avatar: m.avatar ? `https://api.dicebear.com/9.x/open-peeps/svg?seed=${m.initials}&backgroundColor=b6e3f4&backgroundType=solid` : `https://api.dicebear.com/9.x/open-peeps/svg?seed=${m.initials}&backgroundColor=b6e3f4&backgroundType=solid`,
+  })),
+  default: () => [],
+})
+
+watch(memberRefreshKey, () => refreshMembers())
+
 const notifSettings = reactive([
   { key: 'task_assigned', label: 'Task assigned to me', sub: 'Get notified when someone assigns you a task', enabled: true },
   { key: 'task_overdue', label: 'Task overdue', sub: 'Reminder when a task is past its due date', enabled: true },
@@ -12,13 +26,6 @@ const notifSettings = reactive([
   { key: 'weekly_digest', label: 'Weekly digest', sub: 'Summary of your work every Monday', enabled: true },
 ])
 
-const members = [
-  { name: 'Rasya Ardiansyah', email: 'rasya@queebo.chat', role: 'Admin', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid' },
-  { name: 'Maya Putri', email: 'maya@queebo.chat', role: 'Member', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid' },
-  { name: 'Dito Santoso', email: 'dito@queebo.chat', role: 'Member', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid' },
-  { name: 'Rara Hapsari', email: 'rara@queebo.chat', role: 'Member', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Rara&backgroundColor=f9a8d4&backgroundType=solid' },
-  { name: 'Lintang Dewi', email: 'lintang@queebo.chat', role: 'Member', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid' },
-]
 </script>
 
 <template>
@@ -107,7 +114,7 @@ const members = [
               <div class="s-card-title">Team Members</div>
               <div class="s-card-desc">Manage who has access to this workspace.</div>
             </div>
-            <button class="s-btn-primary">Invite member</button>
+            <button class="s-btn-primary" @click="openMemberInvite">Invite member</button>
           </div>
           <div class="s-divider"/>
           <table class="s-members-table">
@@ -231,4 +238,5 @@ const members = [
 
     </div>
   </div>
+  <MemberInviteSlideOver />
 </template>
