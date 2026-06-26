@@ -130,7 +130,7 @@ export const groups: MyTaskGroup[] = [
 
 export function statusFromGroup(groupId: GroupId): { id: string; label: string } {
   switch (groupId) {
-    case 'overdue': return { id: 'in-progress', label: 'In Progress' }
+    case 'overdue': return { id: 'in-progress', label: 'Overdue' }
     case 'inprogress': return { id: 'in-progress', label: 'In Progress' }
     case 'todo': return { id: 'todo', label: 'To Do' }
     case 'inreview': return { id: 'in-review', label: 'In Review' }

@@ -87,7 +87,10 @@ const selectedStatusLabel = computed(() =>
 const enrichedGroups = computed(() =>
   groups.value.map(g => ({
     ...g,
-    statusInfo: { id: g.id === 'completed' ? 'done' : g.id === 'inprogress' || g.id === 'overdue' ? 'in-progress' : g.id === 'inreview' ? 'in-review' : 'todo', label: g.id === 'completed' ? 'Done' : g.id === 'inprogress' || g.id === 'overdue' ? 'In Progress' : g.id === 'inreview' ? 'In Review' : 'To Do' },
+    statusInfo: {
+      id: g.id === 'completed' ? 'done' : g.id === 'inprogress' || g.id === 'overdue' ? 'in-progress' : g.id === 'inreview' ? 'in-review' : 'todo',
+      label: g.id === 'completed' ? 'Done' : g.id === 'overdue' ? 'Overdue' : g.id === 'inprogress' ? 'In Progress' : g.id === 'inreview' ? 'In Review' : 'To Do',
+    },
     tasks: g.tasks.map(t => ({
       ...t,
       description: t.labels.map(l => l.text).join(' · ') || undefined,
