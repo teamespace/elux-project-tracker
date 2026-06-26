@@ -89,19 +89,7 @@ function closeActions() { actionOpen.value = null }
 
 function viewProject(p: Proj) {
   closeActions()
-  projectSlideOver.openPeek(p.id, {
-    id: p.id,
-    name: p.name,
-    status: p.status,
-    priority: p.priority,
-    description: p.description,
-    category: p.category,
-    dueLabel: p.dueLabel,
-    assignees: p.assignees.map(a => ({ name: a.name, initials: a.name.charAt(0), avatar: avatarUrl(a.seed, a.bg) })),
-    childTasks: p.childTasks,
-    commentsList: p.commentsList,
-    attachmentsList: p.attachmentsList,
-  })
+  navigateTo(`/projects/${p.id}`)
 }
 
 function editProject(p: Proj) {
@@ -240,8 +228,19 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
       </div>
     </div>
 
+    <!-- ── LOADING SKELETON ── -->
+    <div v-if="pending" class="proj-card-grid" style="overflow-y:auto;">
+      <div v-for="i in 8" :key="i" class="proj-card proj-card--skeleton">
+        <div class="skeleton-line skeleton-line--short" />
+        <div class="skeleton-line skeleton-line--long" />
+        <div class="skeleton-line skeleton-line--med" />
+        <div class="skeleton-line skeleton-line--med" />
+        <div class="skeleton-line skeleton-line--short" />
+      </div>
+    </div>
+
     <!-- ── CARD VIEW ── -->
-    <div v-if="viewMode === 'card'" class="proj-card-grid" style="overflow-y:auto;">
+    <div v-else-if="viewMode === 'card'" class="proj-card-grid" style="overflow-y:auto;">
       <NuxtLink v-for="p in filteredProjects" :key="p.id" :to="`/projects/${p.id}`" class="proj-card">
         <div class="proj-card-header">
           <span class="proj-priority-tag" :class="p.priority">
@@ -421,5 +420,28 @@ const progIcon = (p: Proj) => p.status === 'on-track' && p.progress >= 50
 .proj-action-item--danger:hover {
   background: #FEF2F2;
   color: #B91C1C;
+}
+
+.proj-card--skeleton {
+  pointer-events: none;
+  padding: 16px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 10px;
+}
+
+.skeleton-line--short { width: 40%; }
+.skeleton-line--med   { width: 65%; }
+.skeleton-line--long  { width: 90%; }
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 </style>

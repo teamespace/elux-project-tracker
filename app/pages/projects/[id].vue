@@ -101,25 +101,25 @@ function mapProject(p: any): PProject {
       const aname = typeof ca === 'string' ? ca : ca?.name || ''
       return {
         author: aname,
-        aInit: aname.charAt(0) || '?',
-        aBg: ca?.bg || '#F3F4F6',
-        aColor: ca?.color || '#374151',
+        aInit: ca?.initials || aname.charAt(0) || '?',
+        aBg: '#DBEAFE',
+        aColor: '#2563EB',
         time: c.createdAt || '',
         text: c.text || '',
       }
     }),
     attachments: p.attachments || [],
     activity: (p.activities || []).map((a: any) => {
-      const aa = a.author || {}
+      const aa = a.actor || a.author || {}
       const aname = typeof aa === 'string' ? aa : aa?.name || ''
       return {
         id: a.id,
         author: aname,
-        aInit: aname.charAt(0) || '?',
-        aBg: aa?.bg || '#F3F4F6',
-        aColor: aa?.color || '#374151',
-        time: a.createdAt || a.time || '',
-        text: a.text || '',
+        aInit: aa?.initials || aname.charAt(0) || '?',
+        aBg: '#DBEAFE',
+        aColor: '#2563EB',
+        time: a.time || a.createdAt || '',
+        text: a.text || a.action || '',
         target: a.target,
       }
     }),
@@ -174,6 +174,34 @@ const newLinkLabel = ref('')
 const newLinkUrl = ref('')
 const editingInline = ref<string | null>(null)
 const inlineValue = ref('')
+
+const newCommentText = ref('')
+const commentPending = ref(false)
+
+async function addComment() {
+  const text = newCommentText.value.trim()
+  if (!text) return
+  commentPending.value = true
+  try {
+    const res = await $fetch('/api/comments', {
+      method: 'POST',
+      body: { parentType: 'project', parentId: proj.value.id, text },
+    })
+    proj.value.comments.unshift({
+      author: 'You',
+      aInit: 'Y',
+      aBg: '#DBEAFE',
+      aColor: '#2563EB',
+      time: 'Just now',
+      text,
+    })
+    newCommentText.value = ''
+  } catch (e) {
+    console.error('Failed to post comment:', e)
+  } finally {
+    commentPending.value = false
+  }
+}
 
 const newAttachmentUrl = ref('')
 const attachmentError = ref('')
@@ -609,8 +637,8 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
             <div v-if="!proj.comments.length" class="pd-empty">No comments yet.</div>
             <div class="pd-cinput-row">
               <div class="pd-cav" style="background:#DBEAFE;color:#2563EB">R</div>
-              <div class="pd-cinput">Add a comment…</div>
-              <button class="pd-send">
+              <input v-model="newCommentText" class="pd-cinput-real" placeholder="Add a comment…" @keydown.enter.prevent="addComment" :disabled="commentPending">
+              <button class="pd-send" @click="addComment" :disabled="commentPending || !newCommentText.trim()">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-6-5 12-2-5-5-1z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
@@ -667,6 +695,10 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
                 <span class="pd-dropzone-hint">Max 10 MB per file</span>
               </div>
               <div v-if="attachmentError" class="pd-attach-error">{{ attachmentError }}</div>
+              <div class="pd-attach-note">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9CA3AF" stroke-width="1.4"/><path d="M8 5v3M8 10.5v.5" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Attachments are stored in your browser session and will be lost when you navigate away. Backend storage coming soon.
+              </div>
             </div>
 
             <button v-else class="pd-add-task" @click="showAttachmentForm = true">
@@ -1082,8 +1114,13 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
 .pd-cinput-row { display:flex; gap:10px; align-items:center; margin-top:14px; }
 .pd-cinput { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:9px 14px; font-size:13px; color:#9CA3AF; cursor:text; }
 .pd-cinput:hover { border-color:#D1D5DB; }
+.pd-cinput-real { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:9px 14px; font-size:13px; color:#111827; font-family:inherit; outline:none; background:transparent; }
+.pd-cinput-real::placeholder { color:#9CA3AF; }
+.pd-cinput-real:hover { border-color:#D1D5DB; }
+.pd-cinput-real:focus { border-color:oklch(60.6% 0.25 292.717); }
 .pd-send { width:32px; height:32px; background:oklch(60.6% 0.25 292.717); border:none; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
 .pd-send:hover { background:oklch(52% 0.27 292.717); }
+.pd-send:disabled { opacity:0.4; cursor:not-allowed; }
 
 /* attachments */
 .pd-attach-list { border:1px solid #E5E7EB; border-radius:8px; overflow:hidden; }
@@ -1113,6 +1150,7 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
 .pd-dropzone-hint { font-size:11px; color:#9CA3AF; }
 .pd-file-input { position:absolute; left:-9999px; opacity:0; width:1px; height:1px; }
 .pd-attach-error { font-size:12px; color:#EF4444; background:#FEF2F2; border:1px solid #FECACA; border-radius:8px; padding:8px 10px; }
+.pd-attach-note { font-size:11px; color:#6B7280; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:8px 10px; display:flex; align-items:center; gap:6px; margin-top:10px; }
 
 /* empty state */
 .pd-empty { font-size:13px; color:#9CA3AF; padding:12px 0; }

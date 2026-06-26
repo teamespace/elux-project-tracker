@@ -1,8 +1,12 @@
-import { useDB } from '../../utils/db'
-import { projects } from '../../database/schema'
+import { useDB, eq } from '../../utils/db'
+import { projects, projectMembers, users } from '../../database/schema'
 import { requireRole } from '../../utils/permissions'
 import { logActivity } from '../../utils/activity'
 import { createProjectSchema } from '../../utils/validation'
+
+const BG_MAP: Record<string, string> = {
+  Rasya: 'b6e3f4', Maya: 'ffd5dc', Dito: 'c0aede', Rara: 'f9a8d4',
+}
 
 export default defineEventHandler(async (event) => {
   requireRole(event, 'admin', 'manager')
@@ -38,6 +42,20 @@ export default defineEventHandler(async (event) => {
     riskLevel: body.riskLevel ?? 'low',
     riskReason: body.riskReason ?? '',
   })
+
+  if (body.assignees && body.assignees.length > 0) {
+    for (const name of body.assignees) {
+      const user = await db.select().from(users).where(eq(users.name, name)).get()
+      if (user) {
+        await db.insert(projectMembers).values({
+          projectId: id,
+          userId: user.id,
+          seed: name,
+          bg: BG_MAP[name] || 'e5e7eb',
+        })
+      }
+    }
+  }
 
   await logActivity(event, 'created project', 'project', id, body.name)
 

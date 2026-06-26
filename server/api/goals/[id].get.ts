@@ -1,5 +1,5 @@
 import { useDB, eq } from '../../utils/db'
-import { goals, goalLabels, kpis, goalProjects, users, projects, activity } from '../../database/schema'
+import { goals, goalLabels, kpis, goalProjects, users, projects, activity, comments } from '../../database/schema'
 import { desc } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
@@ -44,12 +44,25 @@ export default defineEventHandler(async (event) => {
     .limit(20)
     .all()
 
+  const commentList = await db.select().from(comments)
+    .where(eq(comments.parentId, id))
+    .orderBy(desc(comments.createdAt))
+    .all()
+  const enrichedComments = await Promise.all(commentList.map(async (c) => {
+    const author = await db.select().from(users).where(eq(users.id, c.authorId)).get()
+    return {
+      ...c,
+      author: author ? { initials: author.initials, name: author.name, avatar: author.avatar } : null,
+    }
+  }))
+
   return {
     ...goal,
     owner: owner ? { initials: owner.initials, name: owner.name, avatar: owner.avatar } : null,
     labels: labels.map(l => ({ id: l.id, name: l.name, color: l.color })),
     kpis: enrichedKpis,
     linkedProjects: linkedProjectsList.filter(Boolean),
+    comments: enrichedComments,
     activity: activityList.map(a => ({
       id: a.id,
       actor: { initials: a.actorInitials, name: a.actorName, avatar: a.actorAvatar },

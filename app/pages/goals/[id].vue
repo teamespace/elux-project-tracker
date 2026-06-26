@@ -5,6 +5,8 @@ definePageMeta({ layout: false, title: 'Goal', middleware: 'auth' })
 const route = useRoute()
 const id = route.params.id as string
 const activeTab = ref<'overview' | 'comments' | 'activity'>('overview')
+const newCommentText = ref('')
+const commentPending = ref(false)
 
 interface GKpi { id: number; name: string; current: number; target: number; unit: string; status: string; statusClass: string; statusLabel?: string; owner: string; oInit: string; oBg: string; oColor: string; dueDate: string }
 interface GProject { id: string; name: string; key: string; status: string; statusClass: string; progress: number; tasks: number }
@@ -69,15 +71,26 @@ function mapGoal(g: any): GGoal {
       progress: p.progress ?? 0,
       tasks: p.taskCount ?? 0,
     })),
-    comments: [],
+    comments: (g?.comments ?? []).map((c: any) => {
+      const ca = c.author || {}
+      const aname = typeof ca === 'string' ? ca : ca?.name || ''
+      return {
+        author: aname,
+        aInit: ca?.initials || aname.charAt(0) || '?',
+        aBg: '#DBEAFE',
+        aColor: '#2563EB',
+        time: c.createdAt || '',
+        text: c.text || '',
+      }
+    }),
     activity: (g?.activity ?? []).map((a: any) => ({
       id: Number(a.id ?? Date.now()),
-      author: a.owner?.name ?? a.author ?? '',
-      aInit: a.owner?.initials ?? a.aInit ?? '',
+      author: a.actor?.name ?? a.author ?? '',
+      aInit: a.actor?.initials ?? a.aInit ?? '',
       aBg: '#DBEAFE',
       aColor: '#2563EB',
-      time: a.createdAt ?? a.time ?? '',
-      text: a.text ?? '',
+      time: a.time ?? a.createdAt ?? '',
+      text: a.action ?? a.text ?? '',
       target: a.target ?? '',
     })),
   }
@@ -157,6 +170,31 @@ function linkProject(project: import('~/shared/projects').Project) {
     text: 'Linked project',
     target: project.name,
   })
+}
+
+async function addComment() {
+  const text = newCommentText.value.trim()
+  if (!text) return
+  commentPending.value = true
+  try {
+    await $fetch('/api/comments', {
+      method: 'POST',
+      body: { parentType: 'goal', parentId: goal.value.id, text },
+    })
+    goal.value.comments.push({
+      author: 'You',
+      aInit: 'Y',
+      aBg: '#DBEAFE',
+      aColor: '#2563EB',
+      time: 'Just now',
+      text,
+    })
+    newCommentText.value = ''
+  } catch (e) {
+    console.error('Failed to post comment:', e)
+  } finally {
+    commentPending.value = false
+  }
 }
 </script>
 
@@ -336,9 +374,9 @@ function linkProject(project: import('~/shared/projects').Project) {
               </div>
               <div v-if="goal.comments.length === 0" class="gd-empty-txt">No comments yet.</div>
               <div class="gd-cinput-row">
-                <div class="gd-cav" style="background:#DBEAFE;color:#2563EB">RA</div>
-                <div class="gd-cinput">Add a comment...</div>
-                <button class="gd-send">
+                <div class="gd-cav" style="background:#DBEAFE;color:#2563EB">Y</div>
+                <input v-model="newCommentText" class="gd-cinput-real" placeholder="Add a comment…" @keydown.enter.prevent="addComment" :disabled="commentPending">
+                <button class="gd-send" @click="addComment" :disabled="commentPending || !newCommentText.trim()">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-6-5 12-2-5-5-1z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
@@ -560,8 +598,13 @@ function linkProject(project: import('~/shared/projects').Project) {
 .gd-cinput-row { display:flex; gap:10px; align-items:flex-start; margin-top:16px; }
 .gd-cinput { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:9px 14px; font-size:13px; color:#9CA3AF; cursor:text; min-height:40px; }
 .gd-cinput:hover { border-color:#D1D5DB; }
+.gd-cinput-real { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:9px 14px; font-size:13px; color:#111827; font-family:inherit; outline:none; background:transparent; min-height:40px; }
+.gd-cinput-real::placeholder { color:#9CA3AF; }
+.gd-cinput-real:hover { border-color:#D1D5DB; }
+.gd-cinput-real:focus { border-color:oklch(60.6% 0.25 292.717); }
 .gd-send { width:32px; height:32px; background:oklch(60.6% 0.25 292.717); border:none; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; margin-top:1px; padding:0; }
 .gd-send:hover { background:oklch(52% 0.27 292.717); }
+.gd-send:disabled { opacity:0.4; cursor:not-allowed; }
 
 /* activity */
 .gd-act-list { display:flex; flex-direction:column; gap:14px; }

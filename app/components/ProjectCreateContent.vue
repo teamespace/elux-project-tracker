@@ -109,6 +109,7 @@ function submit() {
         dueDate: form.due,
         category: form.category,
         labels: form.labels,
+        assignees: form.assignees,
       },
     }).then(() => {
       refreshNuxtData('projects')
@@ -123,7 +124,7 @@ function submit() {
   }
   else {
     $fetch('/api/projects', {
-      method: 'POST',
+        method: 'POST',
       body: {
         name: form.name,
         description: form.description,
@@ -136,6 +137,7 @@ function submit() {
         color: 'bg-blue-500',
         category: form.category,
         labels: form.labels,
+        assignees: form.assignees,
       },
     }).then(() => {
       refreshNuxtData('projects')

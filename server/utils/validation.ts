@@ -25,6 +25,7 @@ export const createProjectSchema = z.object({
   category: z.string().optional(),
   riskLevel: z.enum(['low', 'medium', 'high']).optional(),
   riskReason: z.string().optional(),
+  assignees: z.array(z.string().min(1)).optional(),
 })
 
 export const updateProjectSchema = createProjectSchema.partial()
