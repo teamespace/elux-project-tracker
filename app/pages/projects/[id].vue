@@ -267,6 +267,12 @@ const newLinkUrl = ref('')
 const editingInline = ref<string | null>(null)
 const inlineValue = ref('')
 
+const newAttachmentUrl = ref('')
+const attachmentError = ref('')
+const showAttachmentForm = ref(false)
+const isDragging = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
+
 const editState = reactive({
   status: proj.value!.statusLabel,
   statusClass: proj.value!.statusClass,
@@ -379,6 +385,80 @@ function addAssignee(u: typeof userOptions[0]) {
 function removeAssignee(name: string) {
   const idx = editState.assignees.findIndex(a => a.name === name)
   if (idx !== -1) editState.assignees.splice(idx, 1)
+}
+
+function isValidUrl(str: string) {
+  try {
+    new URL(str)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+function addAttachmentUrl() {
+  const url = newAttachmentUrl.value.trim()
+  if (!url) return
+  if (!isValidUrl(url)) {
+    attachmentError.value = 'Please enter a valid URL'
+    return
+  }
+  proj.value.attachments.push({
+    id: proj.value.attachments.length + 1,
+    name: url,
+    size: 'Link',
+    type: 'file',
+  })
+  newAttachmentUrl.value = ''
+  attachmentError.value = ''
+}
+
+function formatBytes(bytes: number) {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
+}
+
+function handleFiles(files: FileList | null) {
+  if (!files) return
+  attachmentError.value = ''
+  const maxSize = 10 * 1024 * 1024
+  for (const file of Array.from(files)) {
+    if (file.size > maxSize) {
+      attachmentError.value = `File "${file.name}" exceeds 10 MB limit`
+      continue
+    }
+    proj.value.attachments.push({
+      id: proj.value.attachments.length + 1,
+      name: file.name,
+      size: formatBytes(file.size),
+      type: 'file',
+    })
+  }
+}
+
+function onFileChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  handleFiles(target.files)
+  if (target) target.value = ''
+}
+
+function onDrop(e: DragEvent) {
+  e.preventDefault()
+  isDragging.value = false
+  handleFiles(e.dataTransfer?.files ?? null)
+}
+
+function triggerFileUpload() {
+  fileInput.value?.click()
+}
+
+function removeAttachment(id: number) {
+  const idx = proj.value.attachments.findIndex(a => a.id === id)
+  if (idx !== -1) proj.value.attachments.splice(idx, 1)
 }
 
 function submitLink() {
@@ -788,7 +868,7 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
               <button v-if="availableAssignees.length" class="pd-panel-btn" @click.stop="showAddAssignee = !showAddAssignee; showAddLink = false">
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
               </button>
-              <div v-if="showAddAssignee" class="pd-float-dd pd-float-dd--left" @click.stop>
+              <div v-if="showAddAssignee" class="pd-float-dd" @click.stop>
                 <button v-for="u in availableAssignees" :key="u.name" class="pd-dd-item" @click="addAssignee(u)">
                   <img :src="avatarUrl(u.seed, u.bg)" :alt="u.name" class="pd-owner-avatar"> {{ u.name }}
                 </button>

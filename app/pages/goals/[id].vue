@@ -184,11 +184,11 @@ function linkProject(project: import('~/shared/projects').Project) {
     <template #header>
       <AppHeader>
         <template #breadcrumb>
-          <div class="gdh-crumb">
-            <NuxtLink to="/goals" class="gdh-crumb-link">Goals</NuxtLink>
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="gdh-crumb-cur">{{ goal.title }}</span>
-          </div>
+        <div class="pdh-crumb">
+          <NuxtLink to="/goals" class="pdh-crumb-link">Goals</NuxtLink>
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="pdh-crumb-cur">{{ goal.title }}</span>
+        </div>
         </template>
       </AppHeader>
     </template>
@@ -459,10 +459,10 @@ function linkProject(project: import('~/shared/projects').Project) {
 <style scoped>
 /* ── HEADER ── */
 .gdh { background:#fff; border-bottom:1px solid #E5E7EB; padding:20px 32px 0; flex-shrink:0; }
-.gdh-crumb { display:flex; align-items:center; gap:6px; font-size:12px; color:#9CA3AF; margin-bottom:8px; }
-.gdh-crumb-link { color:#6B7280; text-decoration:none; }
-.gdh-crumb-link:hover { color:#111827; }
-.gdh-crumb-cur { color:#111827; font-weight:500; }
+.pdh-crumb { display:flex; align-items:center; gap:6px; font-size:12px; color:#9CA3AF; }
+.pdh-crumb-link { color:#6B7280; text-decoration:none; }
+.pdh-crumb-link:hover { color:#111827; }
+.pdh-crumb-cur { color:#111827; font-weight:500; }
 .gdh-title-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
 .gdh-title-row2 { display:flex; align-items:center; gap:10px; }
 .gdh-cat-icon { width:28px; height:28px; border-radius:8px; background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
