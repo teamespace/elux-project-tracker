@@ -15,7 +15,6 @@ const props = defineProps<{
   issues: CriticalIssue[]
 }>()
 
-const slideOver = useTaskSlideOver()
 const ciSlideOver = useCriticalIssuesSlideOver()
 
 const highIssues = computed(() => props.issues.filter(i => i.riskLevel === 'HIGH'))
@@ -50,7 +49,7 @@ const mediumIssues = computed(() => props.issues.filter(i => i.riskLevel !== 'HI
             v-for="issue in highIssues"
             :key="issue.id"
             class="ci-kanban-item"
-            @click="slideOver.openEdit(issue.id)"
+            @click="navigateTo('/tasks/' + issue.id)"
           >
             <div class="ci-kanban-title">{{ issue.title }}</div>
             <div class="ci-kanban-footer">
@@ -73,7 +72,7 @@ const mediumIssues = computed(() => props.issues.filter(i => i.riskLevel !== 'HI
             v-for="issue in mediumIssues"
             :key="issue.id"
             class="ci-kanban-item"
-            @click="slideOver.openEdit(issue.id)"
+            @click="navigateTo('/tasks/' + issue.id)"
           >
             <div class="ci-kanban-title">{{ issue.title }}</div>
             <div class="ci-kanban-footer">

@@ -165,9 +165,9 @@ function deleteProject(id: string) {
 }
 
 const criticalIssues: CriticalIssue[] = [
-  { id: 'ci-1', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'Auth redesign implementation', project: 'Alpha Project', assignee: 'Dito', status: 'overdue', statusLabel: 'Overdue' },
-  { id: 'ci-2', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'API rate limit specification', project: 'Beta Launch', assignee: null, status: 'at-risk', statusLabel: 'At Risk' },
-  { id: 'ci-3', riskLevel: 'MEDIUM', riskLabel: 'MED', title: 'Onboarding copy finalization', project: 'Internal Tools', assignee: 'Rara', status: 'not-started', statusLabel: 'Not Started' },
+  { id: 't1', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'Auth redesign implementation', project: 'Alpha Project', assignee: 'Dito', status: 'overdue', statusLabel: 'Overdue' },
+  { id: 't5', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'API rate limit specification', project: 'Beta Launch', assignee: null, status: 'at-risk', statusLabel: 'At Risk' },
+  { id: 't10', riskLevel: 'MEDIUM', riskLabel: 'MED', title: 'Onboarding copy finalization', project: 'Beta Launch', assignee: 'Rara', status: 'not-started', statusLabel: 'Not Started' },
 ]
 
 const activity: ActivityItem[] = [
