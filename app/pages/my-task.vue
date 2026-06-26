@@ -494,7 +494,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
 
     <!-- TABLE VIEW -->
     <div v-else class="mw-tbl-view" style="display:flex;flex:1;overflow-y:auto;">
-      <div class="overflow-hidden rounded-lg border border-gray-200 bg-white" style="flex:1;">
+      <div class="overflow-y-auto rounded-lg border border-gray-200 bg-white" style="flex:1;">
         <div class="overflow-x-auto">
           <table class="w-full min-w-[900px] border-collapse">
             <thead>
@@ -642,51 +642,51 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
               </tr>
             </tbody>
           </table>
-        </div>
 
-        <!-- Pagination -->
-        <div v-if="allFilteredTasks.length > pageSize" class="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-          <span class="text-[12px] text-gray-500">
-            Showing {{ ((tablePage - 1) * pageSize) + 1 }}–{{ Math.min(tablePage * pageSize, allFilteredTasks.length) }} of {{ allFilteredTasks.length }} tasks
-          </span>
-          <div class="flex items-center gap-1">
-            <button
-              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
-              :disabled="tablePage <= 1"
-              @click="goToPage(1)"
-            >
-              First
-            </button>
-            <button
-              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
-              :disabled="tablePage <= 1"
-              @click="goToPage(tablePage - 1)"
-            >
-              Prev
-            </button>
-            <button
-              v-for="p in totalPages"
-              :key="p"
-              class="mx-0.5 flex h-7 w-7 items-center justify-center rounded text-[12px] font-medium transition-colors"
-              :class="p === tablePage ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-200'"
-              @click="goToPage(p)"
-            >
-              {{ p }}
-            </button>
-            <button
-              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
-              :disabled="tablePage >= totalPages"
-              @click="goToPage(tablePage + 1)"
-            >
-              Next
-            </button>
-            <button
-              class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
-              :disabled="tablePage >= totalPages"
-              @click="goToPage(totalPages)"
-            >
-              Last
-            </button>
+          <!-- Pagination -->
+          <div v-if="allFilteredTasks.length > pageSize" class="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
+            <span class="text-[12px] text-gray-500">
+              Showing {{ ((tablePage - 1) * pageSize) + 1 }}–{{ Math.min(tablePage * pageSize, allFilteredTasks.length) }} of {{ allFilteredTasks.length }} tasks
+            </span>
+            <div class="flex items-center gap-1">
+              <button
+                class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="tablePage <= 1"
+                @click="goToPage(1)"
+              >
+                First
+              </button>
+              <button
+                class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="tablePage <= 1"
+                @click="goToPage(tablePage - 1)"
+              >
+                Prev
+              </button>
+              <button
+                v-for="p in totalPages"
+                :key="p"
+                class="mx-0.5 flex h-7 w-7 items-center justify-center rounded text-[12px] font-medium transition-colors"
+                :class="p === tablePage ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-200'"
+                @click="goToPage(p)"
+              >
+                {{ p }}
+              </button>
+              <button
+                class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="tablePage >= totalPages"
+                @click="goToPage(tablePage + 1)"
+              >
+                Next
+              </button>
+              <button
+                class="px-2 py-1.5 text-[12px] font-medium text-gray-600 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-300"
+                :disabled="tablePage >= totalPages"
+                @click="goToPage(totalPages)"
+              >
+                Last
+              </button>
+            </div>
           </div>
         </div>
       </div>
