@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Kpi, Label, Owner } from '~/shared/goals'
+
 definePageMeta({ layout: 'default', title: 'Goals', middleware: 'auth' })
 
 const openDd = ref('')
@@ -35,6 +37,9 @@ interface GoalData {
   projects: { key: string; name: string }[]
   members: { seed: string; bg: string }[]
   memberCount: number
+  owner: Owner
+  kpis: Kpi[]
+  labels: Label[]
 }
 
 const goalData = ref<GoalData[]>([
@@ -45,6 +50,16 @@ const goalData = ref<GoalData[]>([
     progressHint: '90% · 100 tasks remaining', barColor: 'green',
     projects: [{ key: 'DRIB', name: 'Dribbble Shot' }],
     members: [{ seed: 'Rasya', bg: 'b6e3f4' }, { seed: 'Maya', bg: 'ffd5dc' }], memberCount: 5,
+    owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
+    kpis: [
+      { id: 'kpi-g1-1', name: 'Total shots published', current: '900', target: '1000', progress: 90, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, dueDate: 'Dec 31' },
+      { id: 'kpi-g1-2', name: 'Avg likes per shot', current: '320', target: '500', progress: 64, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Dec 31' },
+      { id: 'kpi-g1-3', name: 'Featured shots', current: '12', target: '20', progress: 60, status: 'at-risk', statusLabel: 'At Risk', owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, dueDate: 'Dec 15' },
+    ],
+    labels: [
+      { id: 'l-g1-1', name: 'Design', color: 'bg-purple-50 text-purple-600 border-purple-200' },
+      { id: 'l-g1-2', name: 'Q4', color: 'bg-blue-50 text-blue-600 border-blue-200' },
+    ],
   },
   {
     id: 'goal-2', title: '50 Blog Posts Published', description: 'Publish 50 technical blog posts across product & engineering',
@@ -53,6 +68,16 @@ const goalData = ref<GoalData[]>([
     progressHint: '46% · deadline Sep 30', barColor: 'amber',
     projects: [{ key: 'BLOG', name: 'Blog Series' }, { key: 'DS2', name: 'Design System v2' }],
     members: [{ seed: 'Dito', bg: 'c0aede' }, { seed: 'Aldo', bg: 'd1f0c2' }], memberCount: 3,
+    owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' },
+    kpis: [
+      { id: 'kpi-g2-1', name: 'Posts published', current: '23', target: '50', progress: 46, status: 'at-risk', statusLabel: 'At Risk', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Sep 30' },
+      { id: 'kpi-g2-2', name: 'Avg read time (min)', current: '4.2', target: '5', progress: 84, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'A', name: 'Aldo', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Aldo' }, dueDate: 'Sep 30' },
+      { id: 'kpi-g2-3', name: 'Newsletter subscribers', current: '1200', target: '2000', progress: 60, status: 'at-risk', statusLabel: 'At Risk', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Sep 30' },
+    ],
+    labels: [
+      { id: 'l-g2-1', name: 'Content', color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+      { id: 'l-g2-2', name: 'Q3', color: 'bg-amber-50 text-amber-600 border-amber-200' },
+    ],
   },
   {
     id: 'goal-3', title: '100 API Endpoints Documented', description: 'Document all public API endpoints with examples and schemas',
@@ -61,6 +86,16 @@ const goalData = ref<GoalData[]>([
     progressHint: '67% · 33 tasks remaining', barColor: 'blue',
     projects: [{ key: 'API', name: 'API Gateway v2' }],
     members: [{ seed: 'Rasya', bg: 'b6e3f4' }, { seed: 'Dito', bg: 'c0aede' }, { seed: 'Lintang', bg: 'a5f3fc' }], memberCount: 3,
+    owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' },
+    kpis: [
+      { id: 'kpi-g3-1', name: 'Endpoints documented', current: '67', target: '100', progress: 67, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'R', name: 'Rasya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rasya' }, dueDate: 'Oct 31' },
+      { id: 'kpi-g3-2', name: 'Schema coverage', current: '85%', target: '100%', progress: 85, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'L', name: 'Lintang', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Lintang' }, dueDate: 'Oct 31' },
+      { id: 'kpi-g3-3', name: 'Example requests', current: '40', target: '60', progress: 67, status: 'on-track', statusLabel: 'On Track', owner: { initials: 'D', name: 'Dito', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Dito' }, dueDate: 'Oct 15' },
+    ],
+    labels: [
+      { id: 'l-g3-1', name: 'Engineering', color: 'bg-blue-50 text-blue-600 border-blue-200' },
+      { id: 'l-g3-2', name: 'API', color: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+    ],
   },
   {
     id: 'goal-4', title: 'Beta Launch Checklist', description: 'Complete all pre-launch tasks for Beta product release',
@@ -69,6 +104,16 @@ const goalData = ref<GoalData[]>([
     progressHint: '100% · Completed Jun 28, 2025', barColor: 'complete',
     projects: [{ key: 'BETA', name: 'Beta Launch' }, { key: 'CUS', name: 'Customer Portal' }],
     members: [{ seed: 'Maya', bg: 'ffd5dc' }, { seed: 'Rara', bg: 'f9a8d4' }], memberCount: 4,
+    owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' },
+    kpis: [
+      { id: 'kpi-g4-1', name: 'Pre-launch tasks', current: '48', target: '48', progress: 100, status: 'completed', statusLabel: 'Completed', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Jun 30' },
+      { id: 'kpi-g4-2', name: 'Beta signups', current: '120', target: '100', progress: 100, status: 'completed', statusLabel: 'Completed', owner: { initials: 'R', name: 'Rara', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Rara' }, dueDate: 'Jun 30' },
+      { id: 'kpi-g4-3', name: 'NPS score', current: '52', target: '45', progress: 100, status: 'completed', statusLabel: 'Completed', owner: { initials: 'M', name: 'Maya', avatar: 'https://api.dicebear.com/9.x/micah/svg?seed=Maya' }, dueDate: 'Jun 30' },
+    ],
+    labels: [
+      { id: 'l-g4-1', name: 'Product', color: 'bg-rose-50 text-rose-600 border-rose-200' },
+      { id: 'l-g4-2', name: 'Beta', color: 'bg-amber-50 text-amber-600 border-amber-200' },
+    ],
   },
 ])
 
@@ -99,12 +144,12 @@ function editGoal(g: GoalData) {
     description: g.description,
     status: g.status,
     statusLabel: g.statusLabel,
-    owner: { initials: g.members[0]?.seed.slice(0, 1).toUpperCase() ?? 'R', name: g.members[0]?.seed ?? 'Rasya' },
+    owner: g.owner,
     quarter: g.period,
     dueDate: g.dueDate,
     progress: g.progress,
-    labels: [],
-    kpis: [],
+    labels: g.labels,
+    kpis: g.kpis,
     linkedProjects: g.projects.map(p => ({ id: p.key, title: p.name, project: p.name, status: g.status, statusLabel: g.statusLabel, progress: g.progress, taskCount: 0 })),
     activity: [],
   })
