@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import { useTaskSlideOver } from '~/composables/useTaskSlideOver'
+
 definePageMeta({ layout: false, title: 'Project' })
 
 const route = useRoute()
 const id = route.params.id as string
 const activeTab = ref<'overview' | 'tasks' | 'activity' | 'comments' | 'attachments'>('overview')
 const editingField = ref<string | null>(null)
+const taskSlideOver = useTaskSlideOver()
 
 interface PAssignee { seed: string; bg: string; name: string }
-interface PTask { id: number; title: string; done: boolean; date: string; late?: boolean; assignee: string; aInit: string; aBg: string; aColor: string }
+interface PTask {
+  id: number; title: string; done: boolean; date: string; late?: boolean; assignee: string; aInit: string; aBg: string; aColor: string
+  description?: string
+  status: 'todo' | 'in-progress' | 'in-review' | 'done'
+  priority: 'high' | 'medium' | 'low'
+  progress: number
+}
 interface PComment { author: string; aInit: string; aBg: string; aColor: string; time: string; text: string }
 interface PAttachment { id: number; name: string; size: string; type: 'figma' | 'notion' | 'file' }
 interface PActivity { id: number; author: string; aInit: string; aBg: string; aColor: string; time: string; text: string; target?: string }
@@ -48,10 +57,10 @@ const db: PProject[] = [
       { label: 'Notion brief', url: 'https://notion.so/alpha-brief', icon: 'notion' },
     ],
     tasks: [
-      { id: 1, title: 'Finalize user research synthesis', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB' },
-      { id: 2, title: 'Draft information architecture', done: true, date: 'Jun 15', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626' },
-      { id: 3, title: 'Produce high-fidelity mockups', done: false, date: 'Jul 1 · overdue', late: true, assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669' },
-      { id: 4, title: 'Handoff to engineering', done: false, date: 'Jul 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB' },
+      { id: 1, title: 'Finalize user research synthesis', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Synthesize user research findings into actionable insights for the redesign.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Draft information architecture', done: true, date: 'Jun 15', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Map out the core information architecture for the new product experience.', status: 'done', priority: 'high', progress: 100 },
+      { id: 3, title: 'Produce high-fidelity mockups', done: false, date: 'Jul 1 · overdue', late: true, assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Create high-fidelity mockups for key user flows and interactions.', status: 'in-progress', priority: 'high', progress: 45 },
+      { id: 4, title: 'Handoff to engineering', done: false, date: 'Jul 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Prepare the design handoff package and specs for engineering.', status: 'todo', priority: 'medium', progress: 0 },
     ],
     comments: [
       { author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 17 · 10:30am', text: "Let's keep scope tight for v1 and ship a research-backed MVP." },
@@ -82,8 +91,8 @@ const db: PProject[] = [
     assignees: [{ seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }, { seed: 'Dito', bg: 'c0aede', name: 'Dito' }],
     quickLinks: [{ label: 'Notion brief', url: 'https://notion.so/beta-launch', icon: 'notion' }],
     tasks: [
-      { id: 1, title: 'Publish press kit', done: true, date: 'Jun 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669' },
-      { id: 2, title: 'Finalize onboarding flow', done: false, date: 'Jul 5', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626' },
+      { id: 1, title: 'Publish press kit', done: true, date: 'Jun 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Finalize and publish the launch press kit and media assets.', status: 'done', priority: 'medium', progress: 100 },
+      { id: 2, title: 'Finalize onboarding flow', done: false, date: 'Jul 5', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Complete the new user onboarding experience for the public launch.', status: 'in-progress', priority: 'high', progress: 60 },
     ],
     comments: [{ author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 17 · 9:00am', text: 'Press kit is ready for review.' }],
     attachments: [],
@@ -107,10 +116,10 @@ const db: PProject[] = [
     ],
     quickLinks: [],
     tasks: [
-      { id: 1, title: 'Set up React Native repo', done: true, date: 'Jun 5', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB' },
-      { id: 2, title: 'Auth screens', done: true, date: 'Jun 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB' },
-      { id: 3, title: 'Task list & detail screens', done: false, date: 'Jul 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
-      { id: 4, title: 'Offline sync', done: false, date: 'Aug 15', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
+      { id: 1, title: 'Set up React Native repo', done: true, date: 'Jun 5', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Initialize the React Native repo, CI pipeline, and project structure.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Auth screens', done: true, date: 'Jun 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Build login, signup, and password reset screens.', status: 'done', priority: 'high', progress: 100 },
+      { id: 3, title: 'Task list & detail screens', done: false, date: 'Jul 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Implement task list and detail views for iOS and Android.', status: 'in-progress', priority: 'medium', progress: 50 },
+      { id: 4, title: 'Offline sync', done: false, date: 'Aug 15', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Design and implement offline data synchronization strategy.', status: 'todo', priority: 'high', progress: 0 },
     ],
     comments: [],
     attachments: [],
@@ -131,8 +140,8 @@ const db: PProject[] = [
     assignees: [{ seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }, { seed: 'Dito', bg: 'c0aede', name: 'Dito' }],
     quickLinks: [],
     tasks: [
-      { id: 1, title: 'Define KPI schema', done: true, date: 'May 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669' },
-      { id: 2, title: 'Build chart components', done: false, date: 'Jun 30 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626' },
+      { id: 1, title: 'Define KPI schema', done: true, date: 'May 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Define metrics, dimensions, and schema for the analytics dashboards.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Build chart components', done: false, date: 'Jun 30 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Build reusable chart components for the analytics suite.', status: 'in-progress', priority: 'high', progress: 35 },
     ],
     comments: [],
     attachments: [],
@@ -153,9 +162,9 @@ const db: PProject[] = [
     assignees: [{ seed: 'Rara', bg: 'f9a8d4', name: 'Rara' }],
     quickLinks: [],
     tasks: [
-      { id: 1, title: 'Billing integration', done: true, date: 'Jun 1', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
-      { id: 2, title: 'Profile management', done: true, date: 'Jun 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
-      { id: 3, title: 'Final QA pass', done: false, date: 'Jul 25', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
+      { id: 1, title: 'Billing integration', done: true, date: 'Jun 1', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Integrate billing provider and payment flows into the portal.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Profile management', done: true, date: 'Jun 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Build profile editing and account management settings.', status: 'done', priority: 'medium', progress: 100 },
+      { id: 3, title: 'Final QA pass', done: false, date: 'Jul 25', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Run final QA pass across all portal features before release.', status: 'in-review', priority: 'medium', progress: 90 },
     ],
     comments: [],
     attachments: [],
@@ -174,8 +183,8 @@ const db: PProject[] = [
     assignees: [{ seed: 'Dito', bg: 'c0aede', name: 'Dito' }, { seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }],
     quickLinks: [],
     tasks: [
-      { id: 1, title: 'Auth middleware spike', done: true, date: 'May 25', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626' },
-      { id: 2, title: 'Rate limiting impl', done: false, date: 'Jun 15 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626' },
+      { id: 1, title: 'Auth middleware spike', done: true, date: 'May 25', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Spike and validate the new auth middleware approach.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Rate limiting impl', done: false, date: 'Jun 15 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Implement rate limiting across public API routes.', status: 'in-progress', priority: 'high', progress: 25 },
     ],
     comments: [],
     attachments: [],
@@ -197,8 +206,8 @@ const db: PProject[] = [
     ],
     quickLinks: [],
     tasks: [
-      { id: 1, title: 'Token system setup', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB' },
-      { id: 2, title: 'Core component library', done: false, date: 'Jul 30', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777' },
+      { id: 1, title: 'Token system setup', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Set up design tokens and the token delivery pipeline.', status: 'done', priority: 'high', progress: 100 },
+      { id: 2, title: 'Core component library', done: false, date: 'Jul 30', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Build core components for the new design system library.', status: 'in-progress', priority: 'medium', progress: 40 },
     ],
     comments: [],
     attachments: [],
@@ -226,6 +235,16 @@ const db: PProject[] = [
 const proj = computed(() => db.find(p => p.id === id) ?? db[0])
 const doneTasks = computed(() => proj.value.tasks.filter(t => t.done).length)
 const leftTasks = computed(() => proj.value.totalT - proj.value.doneT)
+const projectTasks = computed(() => proj.value.tasks.map(t => ({
+  id: t.id,
+  title: t.title,
+  description: t.description,
+  status: t.status,
+  priority: t.priority,
+  date: t.date,
+  progress: t.progress,
+  assignee: { name: t.assignee, initials: t.aInit, bg: t.aBg, color: t.aColor },
+})))
 const recentActivity = computed(() => proj.value.activity.slice(0, 2))
 const avatarUrl = (seed: string, bg: string) =>
   `https://api.dicebear.com/9.x/open-peeps/svg?seed=${seed}&backgroundColor=${bg}&backgroundType=solid`
@@ -540,23 +559,9 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
                 <span class="pd-tp-txt">{{ proj.doneT }} / {{ proj.totalT }} done</span>
               </div>
             </div>
-            <div class="pd-tasklist" v-if="proj.tasks.length">
-              <div v-for="t in proj.tasks" :key="t.id" class="pd-task" :class="{ done: t.done }">
-                <div class="pd-check" :class="{ checked: t.done }">
-                  <svg v-if="t.done" width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <span class="pd-tname">{{ t.title }}</span>
-                <div class="pd-tmeta">
-                  <span class="pd-tdate" :class="{ late: t.late }">{{ t.date }}</span>
-                  <div class="pd-tassignee">
-                    <div class="pd-tav" :style="{ background: t.aBg, color: t.aColor }">{{ t.aInit }}</div>
-                    {{ t.assignee }}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProjectTasksTable v-if="projectTasks.length" :tasks="projectTasks" :project-name="proj.name" :project-category="proj.category" />
             <div v-else class="pd-empty">No tasks yet.</div>
-            <div class="pd-add-task">
+            <div class="pd-add-task" @click="taskSlideOver.openCreate({ projectName: proj.name, epicName: proj.name })">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Add task
             </div>
