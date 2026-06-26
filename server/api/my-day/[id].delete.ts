@@ -1,5 +1,6 @@
 import { useDB, eq } from '../../utils/db'
 import { myDay } from '../../database/schema'
+import { logActivity } from '../../utils/activity'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -15,5 +16,6 @@ export default defineEventHandler(async (event) => {
   }
 
   await db.delete(myDay).where(eq(myDay.id, id))
+  await logActivity(event, 'removed from my day', 'task', entry.taskId)
   return { ok: true }
 })

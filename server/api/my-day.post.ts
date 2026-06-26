@@ -1,6 +1,7 @@
 import { useDB, eq, and } from '../utils/db'
 import { myDay } from '../database/schema'
 import { addMyDaySchema } from '../utils/validation'
+import { logActivity } from '../utils/activity'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
 
   const id = `md-${Date.now()}`
   await db.insert(myDay).values({ id, userId, taskId, date })
+  await logActivity(event, 'added to my day', 'task', taskId)
 
   return { id, ok: true }
 })

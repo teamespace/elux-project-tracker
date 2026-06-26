@@ -19,98 +19,69 @@ interface GGoal {
   kpis: GKpi[]; linkedProjects: GProject[]; comments: GComment[]; activity: GActivity[]
 }
 
-const db: GGoal[] = [
-  {
-    id: 'goal-1', title: '1000 Dribbble Shots', description: 'Publish 1000 design shots to Dribbble by end of year to grow brand presence and showcase design work.',
-    category: 'Design', categoryIcon: 'clock',
-    owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB',
-    dueDate: 'Dec 31, 2026', createdDate: 'Jan 1, 2026',
-    status: 'on-track', statusClass: 'gs-track', statusLabel: 'On Track',
-    current: 900, target: 1000, unit: 'shots', progress: 90,
-    kpis: [
-      { id: 1, name: 'Monthly shots published', current: 80, target: 90, unit: 'shots/mo', status: 'on-track', statusClass: 'gs-track', owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB', dueDate: 'Monthly' },
-      { id: 2, name: 'Follower growth', current: 4200, target: 5000, unit: 'followers', status: 'at-risk', statusClass: 'gs-risk', owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB', dueDate: 'Dec 2026' },
-    ],
-    linkedProjects: [
-      { id: 'p7', name: 'Design System v2', key: 'DS2', status: 'on-track', statusClass: 'gs-track', progress: 55, tasks: 11 },
-    ],
-    comments: [
-      { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 10 · 9:00am', text: '900 shots down, 100 to go! On track for year-end.' },
-    ],
-    activity: [
-      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Today · 10:15 AM', text: 'Updated progress to', target: '90%' },
-      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 10 · 9:00am', text: 'Commented on goal' },
-      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jan 1 · 8:30am', text: 'Created goal', target: '1000 Dribbble Shots' },
-    ],
-  },
-  {
-    id: 'goal-2', title: '50 Blog Posts Published', description: 'Publish 50 technical and product blog posts across engineering and design channels.',
-    category: 'Content', categoryIcon: 'file',
-    owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB',
-    dueDate: 'Dec 31, 2026', createdDate: 'Jan 1, 2026',
-    status: 'at-risk', statusClass: 'gs-risk', statusLabel: 'At Risk',
-    current: 23, target: 50, unit: 'posts', progress: 46,
-    kpis: [
-      { id: 1, name: 'Posts this quarter', current: 8, target: 13, unit: 'posts', status: 'at-risk', statusClass: 'gs-risk', owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB', dueDate: 'Sep 2026' },
-    ],
-    linkedProjects: [],
-    comments: [
-      { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 15 · 11:30am', text: 'Falling behind on Q2 targets. Need to write 3 posts this week.' },
-    ],
-    activity: [
-      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Yesterday · 3:20 PM', text: 'Flagged goal as', target: 'At Risk' },
-      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 15 · 11:30am', text: 'Commented on goal' },
-      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jan 1 · 8:45am', text: 'Created goal', target: '50 Blog Posts Published' },
-    ],
-  },
-  {
-    id: 'goal-3', title: '100 API Endpoints Documented', description: 'Document all 100 public API endpoints with full examples, schemas, and error codes.',
-    category: 'Engineering', categoryIcon: 'code',
-    owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626',
-    dueDate: 'Sep 30, 2026', createdDate: 'Mar 1, 2026',
-    status: 'on-track', statusClass: 'gs-track', statusLabel: 'On Track',
-    current: 67, target: 100, unit: 'endpoints', progress: 67,
-    kpis: [
-      { id: 1, name: 'Endpoints documented', current: 67, target: 100, unit: 'endpoints', status: 'on-track', statusClass: 'gs-track', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
-      { id: 2, name: 'Coverage score', current: 72, target: 95, unit: '%', status: 'at-risk', statusClass: 'gs-risk', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
-    ],
-    linkedProjects: [
-      { id: 'p6', name: 'API Gateway v2', key: 'API', status: 'delayed', statusClass: 'gs-delayed', progress: 15, tasks: 12 },
-    ],
-    comments: [
-      { author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 20 · 3:00pm', text: 'Core endpoints done. Working on error code schemas now.' },
-    ],
-    activity: [
-      { id: 1, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 20 · 3:00pm', text: 'Commented on goal' },
-      { id: 2, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 18 · 11:00 AM', text: 'Linked project', target: 'API Gateway v2' },
-      { id: 3, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Mar 1 · 9:15am', text: 'Created goal', target: '100 API Endpoints Documented' },
-    ],
-  },
-  {
-    id: 'goal-4', title: 'Beta Launch Checklist', description: 'Complete all pre-launch tasks including QA, marketing assets, and onboarding flow.',
-    category: 'Product', categoryIcon: 'bolt',
-    owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB',
-    dueDate: 'Jul 15, 2026', createdDate: 'Apr 1, 2026',
-    status: 'completed', statusClass: 'gs-done', statusLabel: 'Completed',
-    current: 48, target: 48, unit: 'items', progress: 100,
-    kpis: [
-      { id: 1, name: 'Checklist items done', current: 48, target: 48, unit: 'items', status: 'on-track', statusClass: 'gs-track', owner: 'Rasya', oInit: 'RA', oBg: '#DBEAFE', oColor: '#2563EB', dueDate: 'Jul 2026' },
-    ],
-    linkedProjects: [
-      { id: 'p2', name: 'Beta Launch', key: 'BETA', status: 'on-track', statusClass: 'gs-track', progress: 78, tasks: 9 },
-    ],
-    comments: [
-      { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 5 · 10:00am', text: 'All 48 items checked off. Beta is ready to ship!' },
-    ],
-    activity: [
-      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 5 · 10:00am', text: 'Marked goal as', target: 'Completed' },
-      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 1 · 4:30 PM', text: 'Updated progress to', target: '100%' },
-      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Apr 1 · 9:00am', text: 'Created goal', target: 'Beta Launch Checklist' },
-    ],
-  },
-]
+const { data: fetchedGoal, pending } = await useAsyncData(`goal-${route.params.id}`, () =>
+  $fetch(`/api/goals/${route.params.id}`)
+)
 
-const goal = computed(() => db.find(g => g.id === id) ?? db[0]!)
+const goal = ref<GGoal>(mapGoal(fetchedGoal.value as any))
+
+function mapGoal(g: any): GGoal {
+  return {
+    id: g?.id ?? '',
+    title: g?.title ?? '',
+    description: g?.description ?? '',
+    category: g?.category ?? '',
+    categoryIcon: g?.categoryIcon ?? 'clock',
+    owner: g?.owner?.name ?? '',
+    oInit: g?.owner?.initials ?? '',
+    oBg: '#DBEAFE',
+    oColor: '#2563EB',
+    dueDate: g?.dueDate ?? '',
+    createdDate: g?.createdAt ?? '',
+    status: g?.status ?? 'on-track',
+    statusClass: g?.status === 'completed' ? 'gs-done' : g?.status === 'at-risk' ? 'gs-risk' : 'gs-track',
+    statusLabel: g?.statusLabel ?? '',
+    current: g?.progress ?? 0,
+    target: 100,
+    unit: '',
+    progress: g?.progress ?? 0,
+    kpis: (g?.kpis ?? []).map((k: any) => ({
+      id: Number(k.id),
+      name: k.name ?? '',
+      current: Number(k.currentValue ?? 0),
+      target: Number(k.targetValue ?? 0),
+      unit: '',
+      status: k.status ?? 'on-track',
+      statusClass: k.status === 'completed' ? 'gs-done' : k.status === 'at-risk' ? 'gs-risk' : 'gs-track',
+      statusLabel: k.statusLabel ?? '',
+      owner: k.owner?.name ?? '',
+      oInit: k.owner?.initials ?? '',
+      oBg: '#DBEAFE',
+      oColor: '#2563EB',
+      dueDate: k.dueDate ?? '',
+    })),
+    linkedProjects: (g?.linkedProjects ?? []).map((p: any) => ({
+      id: String(p.id),
+      name: p.project ?? p.title ?? '',
+      key: (p.project ?? p.title ?? '').substring(0, 4).toUpperCase(),
+      status: p.status ?? 'on-track',
+      statusClass: p.status === 'completed' ? 'gs-done' : p.status === 'at-risk' ? 'gs-risk' : p.status === 'delayed' ? 'gs-delayed' : 'gs-track',
+      progress: p.progress ?? 0,
+      tasks: p.taskCount ?? 0,
+    })),
+    comments: [],
+    activity: (g?.activity ?? []).map((a: any) => ({
+      id: Number(a.id ?? Date.now()),
+      author: a.owner?.name ?? a.author ?? '',
+      aInit: a.owner?.initials ?? a.aInit ?? '',
+      aBg: '#DBEAFE',
+      aColor: '#2563EB',
+      time: a.createdAt ?? a.time ?? '',
+      text: a.text ?? '',
+      target: a.target ?? '',
+    })),
+  }
+}
 const kpiDonePct = (kpi: GKpi) => Math.round((kpi.current / kpi.target) * 100)
 const showSide = ref(true)
 

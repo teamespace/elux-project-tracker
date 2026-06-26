@@ -36,203 +36,111 @@ interface PProject {
   activity: PActivity[]
 }
 
-const db: PProject[] = [
-  {
-    id: 'p1', key: 'ALPHA', icon: '🎨', name: 'Alpha Project',
-    subtitle: 'UX Redesign · Core product',
-    description: 'Redesigning core product UX to improve activation, retention, and time-to-value across the entire product surface.',
-    owner: 'Rasya', oInit: 'R', oSeed: 'Rasya', oBg: 'b6e3f4',
-    startDate: 'Jan 6, 2026', endDate: 'Aug 30, 2025', endDateRed: true,
-    statusLabel: 'At Risk', statusClass: 'cs-risk',
-    priority: 'High', priorityColor: '#D97706',
-    progress: 62, doneT: 9, totalT: 14, daysOverdue: 22,
-    category: 'Core product', labels: ['UX', 'Q3'],
-    assignees: [
-      { seed: 'Rasya', bg: 'b6e3f4', name: 'Rasya' },
-      { seed: 'Maya', bg: 'ffd5dc', name: 'Maya' },
-      { seed: 'Dito', bg: 'c0aede', name: 'Dito' },
-    ],
-    quickLinks: [
-      { label: 'Figma mockups', url: 'https://figma.com/alpha', icon: 'figma' },
-      { label: 'Notion brief', url: 'https://notion.so/alpha-brief', icon: 'notion' },
-    ],
-    tasks: [
-      { id: 1, title: 'Finalize user research synthesis', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Synthesize user research findings into actionable insights for the redesign.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Draft information architecture', done: true, date: 'Jun 15', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Map out the core information architecture for the new product experience.', status: 'done', priority: 'high', progress: 100 },
-      { id: 3, title: 'Produce high-fidelity mockups', done: false, date: 'Jul 1 · overdue', late: true, assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Create high-fidelity mockups for key user flows and interactions.', status: 'in-progress', priority: 'high', progress: 45 },
-      { id: 4, title: 'Handoff to engineering', done: false, date: 'Jul 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Prepare the design handoff package and specs for engineering.', status: 'todo', priority: 'medium', progress: 0 },
-    ],
-    comments: [
-      { author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 17 · 10:30am', text: "Let's keep scope tight for v1 and ship a research-backed MVP." },
-      { author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 17 · 11:05am', text: "Agreed. I'll update the IA doc by EOD." },
-    ],
-    attachments: [
-      { id: 1, name: 'Alpha Project Brief.pdf', size: '2.4 MB', type: 'file' },
-      { id: 2, name: 'User Research Synthesis.pdf', size: '5.1 MB', type: 'file' },
-      { id: 3, name: 'High-Fi Mockups', size: 'Figma', type: 'figma' },
-    ],
-    activity: [
-      { id: 1, author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Today · 10:32 AM', text: 'Moved status to', target: 'At Risk' },
-      { id: 2, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Yesterday · 4:15 PM', text: 'Completed', target: 'Draft information architecture' },
-      { id: 3, author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 20 · 2:00 PM', text: 'Added task', target: 'Produce high-fidelity mockups' },
-      { id: 4, author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 17 · 9:00 AM', text: 'Created project', target: 'Alpha Project' },
-    ],
-  },
-  {
-    id: 'p2', key: 'BETA', icon: '🚀', name: 'Beta Launch',
-    subtitle: 'Q3 Milestone · Launch',
-    description: 'Public launch milestone for Q3, including marketing site, press kit, and early-access onboarding.',
-    owner: 'Maya', oInit: 'M', oSeed: 'Maya', oBg: 'ffd5dc',
-    startDate: 'May 20, 2026', endDate: 'Jul 15, 2026',
-    statusLabel: 'On Track', statusClass: 'cs-track',
-    priority: 'Medium', priorityColor: 'oklch(60.6% 0.25 292.717)',
-    progress: 78, doneT: 7, totalT: 9,
-    category: 'Launch', labels: ['Launch', 'Q3'],
-    assignees: [{ seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }, { seed: 'Dito', bg: 'c0aede', name: 'Dito' }],
-    quickLinks: [{ label: 'Notion brief', url: 'https://notion.so/beta-launch', icon: 'notion' }],
-    tasks: [
-      { id: 1, title: 'Publish press kit', done: true, date: 'Jun 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Finalize and publish the launch press kit and media assets.', status: 'done', priority: 'medium', progress: 100 },
-      { id: 2, title: 'Finalize onboarding flow', done: false, date: 'Jul 5', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Complete the new user onboarding experience for the public launch.', status: 'in-progress', priority: 'high', progress: 60 },
-    ],
-    comments: [{ author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 17 · 9:00am', text: 'Press kit is ready for review.' }],
-    attachments: [],
-    activity: [
-      { id: 1, author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 20 · 3:00 PM', text: 'Completed', target: 'Publish press kit' },
-    ],
-  },
-  {
-    id: 'p3', key: 'MOB', icon: '📱', name: 'Mobile App MVP',
-    subtitle: 'Product · Mobile',
-    description: 'iOS + Android MVP covering core task management flows, notifications, and offline sync.',
-    owner: 'Rasya', oInit: 'R', oSeed: 'Rasya', oBg: 'b6e3f4',
-    startDate: 'Jun 1, 2026', endDate: 'Oct 1, 2026',
-    statusLabel: 'On Track', statusClass: 'cs-track',
-    priority: 'High', priorityColor: '#D97706',
-    progress: 45, doneT: 9, totalT: 20,
-    category: 'Mobile', labels: ['iOS', 'Android', 'Q4'],
-    assignees: [
-      { seed: 'Rasya', bg: 'b6e3f4', name: 'Rasya' },
-      { seed: 'Rara', bg: 'f9a8d4', name: 'Rara' },
-    ],
-    quickLinks: [],
-    tasks: [
-      { id: 1, title: 'Set up React Native repo', done: true, date: 'Jun 5', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Initialize the React Native repo, CI pipeline, and project structure.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Auth screens', done: true, date: 'Jun 15', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Build login, signup, and password reset screens.', status: 'done', priority: 'high', progress: 100 },
-      { id: 3, title: 'Task list & detail screens', done: false, date: 'Jul 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Implement task list and detail views for iOS and Android.', status: 'in-progress', priority: 'medium', progress: 50 },
-      { id: 4, title: 'Offline sync', done: false, date: 'Aug 15', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Design and implement offline data synchronization strategy.', status: 'todo', priority: 'high', progress: 0 },
-    ],
-    comments: [],
-    attachments: [],
-    activity: [
-      { id: 1, author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 15 · 2:15 PM', text: 'Completed', target: 'Auth screens' },
-    ],
-  },
-  {
-    id: 'p4', key: 'ANL', icon: '📊', name: 'Analytics Dashboard',
-    subtitle: 'Data & Reporting · Q3',
-    description: 'Data & reporting suite for internal and external use, covering KPIs, charts, and export.',
-    owner: 'Maya', oInit: 'M', oSeed: 'Maya', oBg: 'ffd5dc',
-    startDate: 'May 1, 2026', endDate: 'Jul 5, 2025', endDateRed: true,
-    statusLabel: 'At Risk', statusClass: 'cs-risk',
-    priority: 'High', priorityColor: '#D97706',
-    progress: 30, doneT: 4, totalT: 13, daysOverdue: 5,
-    category: 'Data & Reporting', labels: ['Data', 'Q3'],
-    assignees: [{ seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }, { seed: 'Dito', bg: 'c0aede', name: 'Dito' }],
-    quickLinks: [],
-    tasks: [
-      { id: 1, title: 'Define KPI schema', done: true, date: 'May 20', assignee: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', description: 'Define metrics, dimensions, and schema for the analytics dashboards.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Build chart components', done: false, date: 'Jun 30 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Build reusable chart components for the analytics suite.', status: 'in-progress', priority: 'high', progress: 35 },
-    ],
-    comments: [],
-    attachments: [],
-    activity: [
-      { id: 1, author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 18 · 10:00 AM', text: 'Flagged as', target: 'At Risk' },
-    ],
-  },
-  {
-    id: 'p5', key: 'CUS', icon: '🏠', name: 'Customer Portal',
-    subtitle: 'Self-serve · Portal',
-    description: 'Self-serve billing, profile, and account management portal for end customers.',
-    owner: 'Rara', oInit: 'RR', oSeed: 'Rara', oBg: 'f9a8d4',
-    startDate: 'Apr 1, 2026', endDate: 'Aug 1, 2026',
-    statusLabel: 'On Track', statusClass: 'cs-track',
-    priority: 'Low', priorityColor: '#16A34A',
-    progress: 90, doneT: 18, totalT: 20,
-    category: 'Self-serve', labels: ['Portal', 'Q3'],
-    assignees: [{ seed: 'Rara', bg: 'f9a8d4', name: 'Rara' }],
-    quickLinks: [],
-    tasks: [
-      { id: 1, title: 'Billing integration', done: true, date: 'Jun 1', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Integrate billing provider and payment flows into the portal.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Profile management', done: true, date: 'Jun 10', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Build profile editing and account management settings.', status: 'done', priority: 'medium', progress: 100 },
-      { id: 3, title: 'Final QA pass', done: false, date: 'Jul 25', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Run final QA pass across all portal features before release.', status: 'in-review', priority: 'medium', progress: 90 },
-    ],
-    comments: [],
-    attachments: [],
-    activity: [{ id: 1, author: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', time: 'Jun 10 · 3:00 PM', text: 'Completed', target: 'Profile management' }],
-  },
-  {
-    id: 'p6', key: 'API', icon: '⚙️', name: 'API Gateway v2',
-    subtitle: 'Infrastructure · Backend',
-    description: 'Rate limiting, auth middleware, and routing redesign for the public API layer.',
-    owner: 'Dito', oInit: 'D', oSeed: 'Dito', oBg: 'c0aede',
-    startDate: 'May 1, 2026', endDate: 'Jun 30, 2025', endDateRed: true,
-    statusLabel: 'Delayed', statusClass: 'cs-delayed',
-    priority: 'High', priorityColor: '#D97706',
-    progress: 15, doneT: 2, totalT: 12, daysOverdue: 10,
-    category: 'Infrastructure', labels: ['API', 'Backend'],
-    assignees: [{ seed: 'Dito', bg: 'c0aede', name: 'Dito' }, { seed: 'Maya', bg: 'ffd5dc', name: 'Maya' }],
-    quickLinks: [],
-    tasks: [
-      { id: 1, title: 'Auth middleware spike', done: true, date: 'May 25', assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Spike and validate the new auth middleware approach.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Rate limiting impl', done: false, date: 'Jun 15 · overdue', late: true, assignee: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', description: 'Implement rate limiting across public API routes.', status: 'in-progress', priority: 'high', progress: 25 },
-    ],
-    comments: [],
-    attachments: [],
-    activity: [{ id: 1, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 22 · 9:00 AM', text: 'Marked project as', target: 'Delayed' }],
-  },
-  {
-    id: 'p7', key: 'DS2', icon: '🎯', name: 'Design System v2',
-    subtitle: 'Design · Q3',
-    description: 'Component library, tokens, and documentation rollout for the full design system.',
-    owner: 'Rasya', oInit: 'R', oSeed: 'Rasya', oBg: 'b6e3f4',
-    startDate: 'Jun 1, 2026', endDate: 'Sep 15, 2026',
-    statusLabel: 'On Track', statusClass: 'cs-track',
-    priority: 'Medium', priorityColor: 'oklch(60.6% 0.25 292.717)',
-    progress: 55, doneT: 6, totalT: 11,
-    category: 'Design', labels: ['Design', 'Q4'],
-    assignees: [
-      { seed: 'Rasya', bg: 'b6e3f4', name: 'Rasya' },
-      { seed: 'Rara', bg: 'f9a8d4', name: 'Rara' },
-    ],
-    quickLinks: [],
-    tasks: [
-      { id: 1, title: 'Token system setup', done: true, date: 'Jun 10', assignee: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', description: 'Set up design tokens and the token delivery pipeline.', status: 'done', priority: 'high', progress: 100 },
-      { id: 2, title: 'Core component library', done: false, date: 'Jul 30', assignee: 'Rara', aInit: 'RR', aBg: '#f9a8d4', aColor: '#DB2777', description: 'Build core components for the new design system library.', status: 'in-progress', priority: 'medium', progress: 40 },
-    ],
-    comments: [],
-    attachments: [],
-    activity: [{ id: 1, author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 10 · 11:00 AM', text: 'Completed', target: 'Token system setup' }],
-  },
-  {
-    id: 'p8', key: 'INT', icon: '🔧', name: 'Internal Tools',
-    subtitle: 'Operations · Design System',
-    description: 'Tracker revamp and design system rollout for the internal product team.',
-    owner: 'Rasya', oInit: 'R', oSeed: 'Rasya', oBg: 'b6e3f4',
-    startDate: 'Jun 20, 2026', endDate: 'Sep 10, 2026',
-    statusLabel: 'Not Started', statusClass: 'cs-new',
-    priority: 'Low', priorityColor: '#16A34A',
-    progress: 0, doneT: 0, totalT: 0,
-    category: 'Operations', labels: [],
-    assignees: [{ seed: 'Rasya', bg: 'b6e3f4', name: 'Rasya' }],
-    quickLinks: [],
-    tasks: [],
-    comments: [],
-    attachments: [],
-    activity: [{ id: 1, author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 20 · 9:00 AM', text: 'Created project', target: 'Internal Tools' }],
-  },
-]
+function statusClass(s: string) {
+  if (s === 'on-track') return 'cs-track'
+  if (s === 'at-risk') return 'cs-risk'
+  if (s === 'delayed') return 'cs-delayed'
+  return 'cs-new'
+}
 
-const proj = computed(() => db.find(p => p.id === id) ?? db[0])
+function priorityColor(pri: string) {
+  if (pri === 'high') return '#D97706'
+  if (pri === 'low') return '#16A34A'
+  return 'oklch(60.6% 0.25 292.717)'
+}
+
+function fmtOwner(o: any) {
+  const name = typeof o === 'string' ? o : o?.name ?? ''
+  return { name, init: name.charAt(0), seed: name, bg: 'b6e3f4' }
+}
+
+const { data: _projectData, pending } = await useAsyncData(`project-${route.params.id}`, () =>
+  $fetch(`/api/projects/${route.params.id}`)
+)
+
+const proj = ref<PProject>(emptyProj())
+
+function mapProject(p: any): PProject {
+  const own = fmtOwner(p.owner)
+  const assignees: PAssignee[] = (p.assignees || []).map((a: any) => ({
+    seed: a.seed || a.name || '',
+    bg: a.bg || 'b6e3f4',
+    name: a.name || '',
+  }))
+  return {
+    id: p.id, key: p.key || '', icon: p.icon || '📋', name: p.name, subtitle: p.subtitle || p.category || '',
+    description: p.description || '',
+    owner: own.name, oInit: own.init, oSeed: own.seed, oBg: own.bg,
+    startDate: p.startDate || '', endDate: p.dueDate || p.endDate || '',
+    endDateRed: false,
+    statusLabel: p.statusLabel,
+    statusClass: statusClass(p.status),
+    priority: p.priorityLabel || p.priority,
+    priorityColor: priorityColor(p.priority),
+    progress: p.progress, doneT: p.doneT, totalT: p.totalT,
+    category: p.category || '', labels: p.labels || [],
+    assignees,
+    quickLinks: p.quickLinks || [],
+    tasks: (p.childTasks || []).map((t: any) => {
+      const ta = assignees.find((a: PAssignee) => a.name === t.assigneeId)
+      return {
+        id: t.id, title: t.title, done: t.done, date: t.dueDate || '',
+        late: false,
+        assignee: ta?.name || '',
+        aInit: ta?.name?.charAt(0) || '?',
+        aBg: ta?.bg || '#F3F4F6',
+        aColor: '#374151',
+        description: t.description,
+        status: t.status || 'todo',
+        priority: t.priority || 'medium',
+        progress: t.progress || (t.done ? 100 : 0),
+      }
+    }),
+    comments: (p.comments || []).map((c: any) => {
+      const ca = c.author || {}
+      const aname = typeof ca === 'string' ? ca : ca?.name || ''
+      return {
+        author: aname,
+        aInit: aname.charAt(0) || '?',
+        aBg: ca?.bg || '#F3F4F6',
+        aColor: ca?.color || '#374151',
+        time: c.createdAt || '',
+        text: c.text || '',
+      }
+    }),
+    attachments: p.attachments || [],
+    activity: (p.activities || []).map((a: any) => {
+      const aa = a.author || {}
+      const aname = typeof aa === 'string' ? aa : aa?.name || ''
+      return {
+        id: a.id,
+        author: aname,
+        aInit: aname.charAt(0) || '?',
+        aBg: aa?.bg || '#F3F4F6',
+        aColor: aa?.color || '#374151',
+        time: a.createdAt || a.time || '',
+        text: a.text || '',
+        target: a.target,
+      }
+    }),
+  }
+}
+
+function emptyProj(): PProject {
+  return {
+    id: '', key: '', icon: '', name: '', subtitle: '', description: '',
+    owner: '', oInit: '', oSeed: '', oBg: '',
+    startDate: '', endDate: '', statusLabel: '', statusClass: '',
+    priority: '', priorityColor: '', progress: 0, doneT: 0, totalT: 0,
+    category: '', labels: [], assignees: [], quickLinks: [],
+    tasks: [], comments: [], attachments: [], activity: [],
+  }
+}
+
+watch(_projectData, (val) => {
+  if (val) proj.value = mapProject(val)
+}, { immediate: true })
+
 const doneTasks = computed(() => proj.value.tasks.filter(t => t.done).length)
 const leftTasks = computed(() => proj.value.totalT - proj.value.doneT)
 const projectTasks = computed(() => proj.value.tasks.map(t => ({
@@ -274,18 +182,33 @@ const isDragging = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const editState = reactive({
-  status: proj.value!.statusLabel,
-  statusClass: proj.value!.statusClass,
-  priority: proj.value!.priority,
-  priorityColor: proj.value!.priorityColor,
-  owner: proj.value!.owner,
-  startDate: proj.value!.startDate,
-  endDate: proj.value!.endDate,
-  category: proj.value!.category,
-  labels: [...proj.value!.labels],
-  assignees: proj.value!.assignees.map(a => ({ ...a })),
-  quickLinks: proj.value!.quickLinks.map(l => ({ ...l })),
+  status: '',
+  statusClass: '',
+  priority: '',
+  priorityColor: '',
+  owner: '',
+  startDate: '',
+  endDate: '',
+  category: '',
+  labels: [] as string[],
+  assignees: [] as PAssignee[],
+  quickLinks: [] as { label: string; url: string; icon: 'figma' | 'notion' | 'file' }[],
 })
+
+watch(proj, (p) => {
+  if (!p.id) return
+  editState.status = p.statusLabel
+  editState.statusClass = p.statusClass
+  editState.priority = p.priority
+  editState.priorityColor = p.priorityColor
+  editState.owner = p.owner
+  editState.startDate = p.startDate
+  editState.endDate = p.endDate
+  editState.category = p.category
+  editState.labels = [...p.labels]
+  editState.assignees = p.assignees.map(a => ({ ...a }))
+  editState.quickLinks = p.quickLinks.map(l => ({ ...l }))
+}, { immediate: true })
 
 const statusOptions = [
   { label: 'On Track',    cls: 'cs-track',   color: '#059669' },

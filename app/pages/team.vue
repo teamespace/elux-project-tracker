@@ -9,13 +9,9 @@ interface Member {
   statusLabel: string
 }
 
-const members: Member[] = [
-  { name: 'Rasya Ardiansyah', role: 'Product Designer', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Rasya&backgroundColor=b6e3f4&backgroundType=solid', capacity: 12, assigned: 8, todo: 3, inProgress: 5, done: 4, status: 'capacity', statusLabel: 'AT CAPACITY' },
-  { name: 'Maya Putri', role: 'Frontend Engineer', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Maya&backgroundColor=ffd5dc&backgroundType=solid', capacity: 12, assigned: 4, todo: 2, inProgress: 2, done: 6, status: 'balanced', statusLabel: 'BALANCED' },
-  { name: 'Dito Santoso', role: 'Full Stack Engineer', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Dito&backgroundColor=c0aede&backgroundType=solid', capacity: 12, assigned: 12, todo: 4, inProgress: 8, done: 2, status: 'overloaded', statusLabel: 'OVERLOADED' },
-  { name: 'Rara Wijaya', role: 'QA Engineer', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Rara&backgroundColor=f9a8d4&backgroundType=solid', capacity: 12, assigned: 3, todo: 1, inProgress: 2, done: 8, status: 'available', statusLabel: 'AVAILABLE' },
-  { name: 'Lintang Dewi', role: 'Mobile Developer', avatar: 'https://api.dicebear.com/9.x/open-peeps/svg?seed=Lintang&backgroundColor=a5f3fc&backgroundType=solid', capacity: 12, assigned: 0, todo: 0, inProgress: 0, done: 3, status: 'available', statusLabel: 'AVAILABLE' },
-]
+const { data: team } = await useAsyncData('team', () => $fetch('/api/team'))
+
+const members = computed<Member[]>(() => team.value ?? [])
 
 function barPct(m: Member) {
   return Math.min(100, Math.round((m.assigned / m.capacity) * 100))

@@ -154,6 +154,7 @@ export const comments = sqliteTable('comments', {
   authorId: text('author_id').notNull().references(() => users.id),
   text: text('text').notNull(),
   createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
+  updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
 })
 
 // ─── Activity ─────────────────────────────────────────────────────────────────

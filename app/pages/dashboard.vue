@@ -63,121 +63,77 @@ interface ActivityItem {
   time: string
 }
 
-const stats: StatCard[] = [
-  {
-    label: 'Open Tasks',
-    value: 42,
-    sub: '12% vs last week',
-    icon: 'ph:check-square',
-    trend: 'up',
-    iconColor: 'blue',
-    progress: { pct: 68, color: 'bg-green-500', caption: '68% of weekly target complete' },
-  },
-  {
-    label: 'At Risk',
-    value: 7,
-    sub: '3 fewer this week',
-    icon: 'ph:warning',
-    trend: 'down',
-    iconColor: 'red',
-    miniBars: [
-      { label: 'Overdue', value: 5, pct: 71, color: 'bg-red-500' },
-      { label: 'Blocked', value: 2, pct: 29, color: 'bg-amber-500' },
-    ],
-  },
-  {
-    label: 'Due This Week',
-    value: 11,
-    sub: '5% vs last month',
-    icon: 'ph:calendar',
-    trend: 'up',
-    iconColor: 'amber',
-    chartType: 'line',
-    chartData: [2, 4, 6, 9, 11, 10, 8, 6, 4, 7, 11, 9, 5],
-    chartColor: '#22C55E',
-    fullWidthChart: true,
-  },
-  {
-    label: 'Completion Rate',
-    percent: 72,
-    sub: '8% this week',
-    icon: 'ph:activity',
-    trend: 'up',
-    iconColor: 'green',
-    stacked: [
-      { label: 'Done', value: 28, color: 'bg-green-500', textColor: 'text-green-600' },
-      { label: 'Active', value: 9, color: 'bg-blue-500', textColor: 'text-blue-600' },
-      { label: 'At Risk', value: 5, color: 'bg-amber-500', textColor: 'text-amber-600' },
-    ],
-  },
-]
+const { data: dash, pending: loading } = await useAsyncData('dashboard', () => $fetch('/api/dashboard'))
 
-const projects = ref<Project[]>([
-  {
-    id: 'proj-1', name: 'Alpha Project', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', priorityLabel: 'High',
-    description: 'Redesigning core product UX', progress: 38, openTasks: 14, atRiskTasks: 2,
-    dueDate: 'Aug 30, 2026', assignees: [
-      { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
-      { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
-      { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
-      { initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
-      { initials: 'L', name: 'Lintang', avatar: getAvatar('Lintang') },
-    ],
-  },
-  {
-    id: 'proj-2', name: 'Beta Launch', status: 'on-track', statusLabel: 'On Track', priority: 'medium', priorityLabel: 'Medium',
-    description: 'Public launch milestone Q3', progress: 65, openTasks: 9, atRiskTasks: 0,
-    dueDate: 'Jul 15, 2026', assignees: [
-      { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
-      { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
-      { initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
-      { initials: 'L', name: 'Lintang', avatar: getAvatar('Lintang') },
-    ],
-  },
-  {
-    id: 'proj-3', name: 'Internal Tools', status: 'not-started', statusLabel: 'Not Started', priority: 'low', priorityLabel: 'Low',
-    description: 'Tracker revamp, design system', progress: 8, openTasks: 0, atRiskTasks: 0,
-    dueDate: 'Sep 10, 2026', createdDate: 'Jun 20, 2026', assignees: [
-      { initials: 'R', name: 'Rara', avatar: getAvatar('Rara') },
-    ],
-  },
-  {
-    id: 'proj-4', name: 'Design System v2', status: 'on-track', statusLabel: 'On Track', priority: 'medium', priorityLabel: 'Medium',
-    description: 'Updated tokens and components', progress: 52, openTasks: 6, atRiskTasks: 1,
-    dueDate: 'Jul 28, 2026', assignees: [
-      { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') },
-      { initials: 'A', name: 'Aldo', avatar: getAvatar('Aldo') },
-    ],
-  },
-  {
-    id: 'proj-5', name: 'Mobile App MVP', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', priorityLabel: 'High',
-    description: 'iOS and Android MVP launch', progress: 44, openTasks: 11, atRiskTasks: 3,
-    dueDate: 'Jun 30, 2026', assignees: [
-      { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') },
-      { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') },
-      { initials: 'L', name: 'Lintang', avatar: getAvatar('Lintang') },
-    ],
-  },
-])
+const { data: projectsData } = await useAsyncData('projects', () => $fetch('/api/projects'))
+
+const projects = ref<Project[]>([])
+watchEffect(() => {
+  if (projectsData.value) {
+    projects.value = projectsData.value as Project[]
+  }
+})
 
 function deleteProject(id: string) {
   projects.value = projects.value.filter(p => p.id !== id)
 }
 
-const criticalIssues: CriticalIssue[] = [
-  { id: 't1', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'Auth redesign implementation', project: 'Alpha Project', assignee: 'Dito', status: 'overdue', statusLabel: 'Overdue' },
-  { id: 't5', riskLevel: 'HIGH', riskLabel: 'HIGH', title: 'API rate limit specification', project: 'Beta Launch', assignee: null, status: 'at-risk', statusLabel: 'At Risk' },
-  { id: 't10', riskLevel: 'MEDIUM', riskLabel: 'MED', title: 'Onboarding copy finalization', project: 'Beta Launch', assignee: 'Rara', status: 'not-started', statusLabel: 'Not Started' },
-]
+const stats = computed<StatCard[]>(() => {
+  if (!dash.value) return []
+  const s = dash.value.stats
+  return [
+    {
+      label: 'Open Tasks',
+      value: s.total,
+      sub: `${s.done} done this week`,
+      icon: 'ph:check-square',
+      trend: 'up',
+      iconColor: 'blue',
+      progress: { pct: s.total > 0 ? Math.round((s.done / s.total) * 100) : 0, color: 'bg-green-500', caption: `${Math.round((s.done / s.total) * 100)}% of weekly target complete` },
+    },
+    {
+      label: 'At Risk',
+      value: s.atRisk,
+      sub: `${s.overdue} overdue tasks`,
+      icon: 'ph:warning',
+      trend: 'down',
+      iconColor: 'red',
+      miniBars: [
+        { label: 'Overdue', value: s.overdue, pct: s.atRisk > 0 ? Math.round((s.overdue / s.atRisk) * 100) : 0, color: 'bg-red-500' },
+        { label: 'Blocked', value: s.inProgress, pct: s.atRisk > 0 ? Math.round((s.inProgress / s.atRisk) * 100) : 0, color: 'bg-amber-500' },
+      ],
+    },
+    {
+      label: 'Due This Week',
+      value: s.total - s.done,
+      sub: `${s.totalProjects} active projects`,
+      icon: 'ph:calendar',
+      trend: 'up',
+      iconColor: 'amber',
+      chartType: 'line',
+      chartData: [2, 4, 6, 9, 11, 10, 8, 6, 4, 7, 11, 9, 5],
+      chartColor: '#22C55E',
+      fullWidthChart: true,
+    },
+    {
+      label: 'Completion Rate',
+      percent: s.total > 0 ? Math.round((s.done / s.total) * 100) : 0,
+      sub: `${Math.round((s.done / s.total) * 100)}% this week`,
+      icon: 'ph:activity',
+      trend: 'up',
+      iconColor: 'green',
+      stacked: [
+        { label: 'Done', value: s.done, color: 'bg-green-500', textColor: 'text-green-600' },
+        { label: 'Active', value: s.inProgress, color: 'bg-blue-500', textColor: 'text-blue-600' },
+        { label: 'At Risk', value: s.atRisk, color: 'bg-amber-500', textColor: 'text-amber-600' },
+      ],
+    },
+  ]
+})
 
-const activity: ActivityItem[] = [
-  { id: 'a-1', actor: { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') }, action: 'moved', target: '"Login flow" to In Review', project: 'Alpha Project', time: '10m ago' },
-  { id: 'a-2', actor: { initials: 'M', name: 'Maya', avatar: getAvatar('Maya') }, action: 'created epic', target: '"Analytics v2"', project: 'Analytics Dashboard', time: '1h ago' },
-  { id: 'a-3', actor: { initials: 'D', name: 'Dito', avatar: getAvatar('Dito') }, action: 'completed', target: '"DB schema review"', project: 'API Gateway', time: '2h ago' },
-  { id: 'a-4', actor: { initials: 'R', name: 'Rasya', avatar: getAvatar('Rasya') }, action: 'commented on', target: '"Figma export spec"', project: 'Design System v2', time: '3h ago' },
-  { id: 'a-5', actor: { initials: 'R', name: 'Rara', avatar: getAvatar('Rara') }, action: 'assigned', target: '"Onboarding copy" to herself', project: 'Internal Tools', time: '5h ago' },
-  { id: 'a-6', actor: { initials: 'L', name: 'Lintang', avatar: getAvatar('Lintang') }, action: 'created goal', target: '"Q3 Public Launch"', project: 'Beta Launch', time: 'Yesterday' },
-]
+const criticalIssues = computed<CriticalIssue[]>(() => dash.value?.criticalIssues ?? [])
+
+const activity = computed<ActivityItem[]>(() => dash.value?.activity ?? [])
 </script>
 
 <template>
