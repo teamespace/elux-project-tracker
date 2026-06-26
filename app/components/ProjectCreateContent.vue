@@ -37,6 +37,9 @@ const childTasks = reactive<{ id: string; title: string; done: boolean }[]>((pro
 const newTaskTitle = ref('')
 const showTaskInput = ref(false)
 
+const existingComments = computed(() => (props.initialData?.commentsList as unknown[] | undefined) ?? [] as { id: string; author: string; aInit: string; aBg: string; aColor: string; time: string; text: string }[])
+const existingAttachments = computed(() => (props.initialData?.attachmentsList as unknown[] | undefined) ?? [] as { id: string; name: string; size: string; type: string }[])
+
 /* ── dropdown state ── */
 const openDd = ref<string | null>(null)
 function toggleDd(field: string, e: MouseEvent) {
@@ -370,6 +373,38 @@ function submit() {
         </button>
       </div>
 
+      <!-- ── COMMENTS (existing) ── -->
+      <template v-if="isView && existingComments.length">
+        <div class="sec-hdr">Comments</div>
+        <div class="sec-list-wrap">
+          <div v-for="c in existingComments" :key="c.id" class="sec-comment-row">
+            <div class="sec-av" :style="{ background: c.aBg, color: c.aColor }">{{ c.aInit }}</div>
+            <div class="sec-comment-body">
+              <div class="sec-comment-head">
+                <span class="sec-comment-author">{{ c.author }}</span>
+                <span class="sec-comment-time">{{ c.time }}</span>
+              </div>
+              <div class="sec-comment-text">{{ c.text }}</div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- ── ATTACHMENTS (existing) ── -->
+      <template v-if="isView && existingAttachments.length">
+        <div class="sec-hdr">Attachments</div>
+        <div class="sec-list-wrap">
+          <div v-for="a in existingAttachments" :key="a.id" class="sec-attach-row">
+            <div class="sec-attach-icon">
+              <svg v-if="a.type === 'figma'" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" fill="#F24E1E"/><path d="M8 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" fill="white"/></svg>
+              <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/><path d="M9 2v4h4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="sec-attach-name">{{ a.name }}</span>
+            <span class="sec-attach-size">{{ a.size }}</span>
+          </div>
+        </div>
+      </template>
+
     </div><!-- /scroll area -->
 
     <!-- ── FOOTER ── -->
@@ -591,4 +626,19 @@ function submit() {
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s;
 }
 .btn-create:hover { background: #1F2937; }
+
+/* ── existing comments / attachments ── */
+.sec-list-wrap { padding: 8px 24px 12px; display: flex; flex-direction: column; gap: 10px; }
+.sec-comment-row { display: flex; gap: 8px; }
+.sec-av { width: 24px; height: 24px; border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sec-comment-body { flex: 1; background: #F9FAFB; border: 1px solid #F3F4F6; border-radius: 6px; padding: 8px 10px; }
+.sec-comment-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
+.sec-comment-author { font-size: 11.5px; font-weight: 600; color: #111827; }
+.sec-comment-time { font-size: 10.5px; color: #9CA3AF; }
+.sec-comment-text { font-size: 12px; color: #4B5563; line-height: 1.5; }
+.sec-attach-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; }
+.sec-attach-row:hover { background: #F9FAFB; }
+.sec-attach-icon { width: 24px; height: 24px; border-radius: 4px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sec-attach-name { flex: 1; font-size: 12px; color: #374151; }
+.sec-attach-size { font-size: 11px; color: #9CA3AF; flex-shrink: 0; }
 </style>

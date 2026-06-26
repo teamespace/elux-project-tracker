@@ -18,6 +18,10 @@ const statusHasFilter   = computed(() => selectedStatuses.value.length < 4)
 const priorityHasFilter = computed(() => selectedPriorities.value.length < 3)
 const assigneeHasFilter = computed(() => selectedAssignees.value.length < 5)
 
+interface ProjTask { id: string; title: string; done: boolean; dueDate?: string; assignee?: string }
+interface ProjComment { id: string; author: string; aInit: string; aBg: string; aColor: string; time: string; text: string }
+interface ProjAttachment { id: string; name: string; size: string; type: string }
+
 interface Proj {
   id: string; key: string; name: string; category: string; description: string
   status: 'on-track' | 'at-risk' | 'not-started' | 'delayed'; statusLabel: string
@@ -25,17 +29,55 @@ interface Proj {
   dueLabel: string; overdue?: boolean
   assignees: { seed: string; bg: string; name: string }[]
   attach: number; comments: number
+  childTasks: ProjTask[]
+  commentsList: ProjComment[]
+  attachmentsList: ProjAttachment[]
 }
 
 const allProjects = ref<Proj[]>([
-  { id: 'p1', key: 'ALPHA', name: 'Alpha Project', category: 'UX Redesign', description: 'Redesigning core product UX to improve activation…', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', doneT: 9, totalT: 14, progress: 62, barFill: 'pfill-amber', dueLabel: 'Aug 30, 2025', overdue: true, assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Maya',bg:'ffd5dc',name:'Maya'},{seed:'Dito',bg:'c0aede',name:'Dito'}], attach: 3, comments: 7 },
-  { id: 'p2', key: 'BETA', name: 'Beta Launch', category: 'Q3 Milestone', description: 'Public launch milestone for Q3, marketing site…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 7, totalT: 9, progress: 78, barFill: 'pfill-green', dueLabel: 'Jul 15, 2025', assignees: [{seed:'Leo',bg:'d1f0c2',name:'Leo'},{seed:'Ayu',bg:'fde68a',name:'Ayu'}], attach: 5, comments: 12 },
-  { id: 'p3', key: 'MOB', name: 'Mobile App MVP', category: 'Product', description: 'iOS + Android MVP, core flows and onboarding…', status: 'on-track', statusLabel: 'On Track', priority: 'high', doneT: 9, totalT: 20, progress: 45, barFill: 'pfill-blue', dueLabel: 'Oct 1, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Rara',bg:'f9a8d4',name:'Rara'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'}], attach: 8, comments: 4 },
-  { id: 'p4', key: 'ANL', name: 'Analytics Dashboard', category: 'Data & Reporting', description: 'Data & reporting suite for internal and external use…', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', doneT: 4, totalT: 13, progress: 30, barFill: 'pfill-amber', dueLabel: 'Jul 5, 2025', overdue: true, assignees: [{seed:'Maya',bg:'ffd5dc',name:'Maya'},{seed:'Ayu',bg:'fde68a',name:'Ayu'}], attach: 2, comments: 9 },
-  { id: 'p5', key: 'CUS', name: 'Customer Portal', category: 'Self-serve', description: 'Self-serve billing, profile, and account management…', status: 'on-track', statusLabel: 'On Track', priority: 'low', doneT: 18, totalT: 20, progress: 90, barFill: 'pfill-green', dueLabel: 'Aug 1, 2025', assignees: [{seed:'Lintang',bg:'a5f3fc',name:'Lintang'},{seed:'Rara',bg:'f9a8d4',name:'Rara'}], attach: 11, comments: 3 },
-  { id: 'p6', key: 'API', name: 'API Gateway v2', category: 'Infrastructure', description: 'Rate limiting, auth middleware, and routing redesign…', status: 'delayed', statusLabel: 'Delayed', priority: 'high', doneT: 2, totalT: 12, progress: 15, barFill: 'pfill-red', dueLabel: 'Jun 30, 2025', overdue: true, assignees: [{seed:'Dito',bg:'c0aede',name:'Dito'},{seed:'Maya',bg:'ffd5dc',name:'Maya'}], attach: 0, comments: 14 },
-  { id: 'p7', key: 'DS2', name: 'Design System v2', category: 'Design', description: 'Component library, tokens, and documentation rollout…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 6, totalT: 11, progress: 55, barFill: 'pfill-blue', dueLabel: 'Sep 15, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'},{seed:'Rara',bg:'f9a8d4',name:'Rara'}], attach: 6, comments: 8 },
-  { id: 'p8', key: 'INT', name: 'Internal Tools', category: 'Design System', description: 'Tracker revamp and design system rollout for internal team…', status: 'not-started', statusLabel: 'Not Started', priority: 'low', doneT: 0, totalT: 0, progress: 0, barFill: 'pfill-gray', dueLabel: 'Sep 10, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'}], attach: 0, comments: 0 },
+  { id: 'p1', key: 'ALPHA', name: 'Alpha Project', category: 'UX Redesign', description: 'Redesigning core product UX to improve activation…', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', doneT: 9, totalT: 14, progress: 62, barFill: 'pfill-amber', dueLabel: 'Aug 30, 2025', overdue: true, assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Maya',bg:'ffd5dc',name:'Maya'},{seed:'Dito',bg:'c0aede',name:'Dito'}], attach: 3, comments: 7, childTasks: [
+    { id: 'ct-1', title: 'Finalize user research synthesis', done: true, dueDate: 'Jun 10', assignee: 'Rasya' },
+    { id: 'ct-2', title: 'Draft information architecture', done: true, dueDate: 'Jun 15', assignee: 'Dito' },
+    { id: 'ct-3', title: 'Produce high-fidelity mockups', done: false, dueDate: 'Jul 1', assignee: 'Maya' },
+    { id: 'ct-4', title: 'Handoff to engineering', done: false, dueDate: 'Jul 15', assignee: 'Rasya' },
+  ], commentsList: [
+    { id: 'c-1', author: 'Rasya', aInit: 'R', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 17 · 10:30am', text: "Let's keep scope tight for v1 and ship a research-backed MVP." },
+    { id: 'c-2', author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 17 · 11:05am', text: "Agreed. I'll update the IA doc by EOD." },
+  ], attachmentsList: [
+    { id: 'a-1', name: 'Alpha Project Brief.pdf', size: '2.4 MB', type: 'file' },
+    { id: 'a-2', name: 'User Research Synthesis.pdf', size: '5.1 MB', type: 'file' },
+    { id: 'a-3', name: 'High-Fi Mockups', size: 'Figma', type: 'figma' },
+  ] },
+  { id: 'p2', key: 'BETA', name: 'Beta Launch', category: 'Q3 Milestone', description: 'Public launch milestone for Q3, marketing site…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 7, totalT: 9, progress: 78, barFill: 'pfill-green', dueLabel: 'Jul 15, 2025', assignees: [{seed:'Leo',bg:'d1f0c2',name:'Leo'},{seed:'Ayu',bg:'fde68a',name:'Ayu'}], attach: 5, comments: 12, childTasks: [
+    { id: 'ct-5', title: 'Publish press kit', done: true, dueDate: 'Jun 20', assignee: 'Maya' },
+    { id: 'ct-6', title: 'Finalize onboarding flow', done: false, dueDate: 'Jul 5', assignee: 'Dito' },
+  ], commentsList: [
+    { id: 'c-3', author: 'Maya', aInit: 'M', aBg: '#D1FAE5', aColor: '#059669', time: 'Jun 17 · 9:00am', text: 'Press kit is ready for review.' },
+  ], attachmentsList: [] },
+  { id: 'p3', key: 'MOB', name: 'Mobile App MVP', category: 'Product', description: 'iOS + Android MVP, core flows and onboarding…', status: 'on-track', statusLabel: 'On Track', priority: 'high', doneT: 9, totalT: 20, progress: 45, barFill: 'pfill-blue', dueLabel: 'Oct 1, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Rara',bg:'f9a8d4',name:'Rara'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'}], attach: 8, comments: 4, childTasks: [
+    { id: 'ct-7', title: 'Set up React Native repo', done: true, dueDate: 'Jun 5', assignee: 'Rasya' },
+    { id: 'ct-8', title: 'Auth screens', done: true, dueDate: 'Jun 15', assignee: 'Rasya' },
+    { id: 'ct-9', title: 'Task list & detail screens', done: false, dueDate: 'Jul 10', assignee: 'Rara' },
+    { id: 'ct-10', title: 'Offline sync', done: false, dueDate: 'Aug 15', assignee: 'Rara' },
+  ], commentsList: [], attachmentsList: [] },
+  { id: 'p4', key: 'ANL', name: 'Analytics Dashboard', category: 'Data & Reporting', description: 'Data & reporting suite for internal and external use…', status: 'at-risk', statusLabel: 'At Risk', priority: 'high', doneT: 4, totalT: 13, progress: 30, barFill: 'pfill-amber', dueLabel: 'Jul 5, 2025', overdue: true, assignees: [{seed:'Maya',bg:'ffd5dc',name:'Maya'},{seed:'Ayu',bg:'fde68a',name:'Ayu'}], attach: 2, comments: 9, childTasks: [
+    { id: 'ct-11', title: 'Define KPI schema', done: true, dueDate: 'May 20', assignee: 'Maya' },
+    { id: 'ct-12', title: 'Build chart components', done: false, dueDate: 'Jun 30', assignee: 'Dito' },
+  ], commentsList: [], attachmentsList: [] },
+  { id: 'p5', key: 'CUS', name: 'Customer Portal', category: 'Self-serve', description: 'Self-serve billing, profile, and account management…', status: 'on-track', statusLabel: 'On Track', priority: 'low', doneT: 18, totalT: 20, progress: 90, barFill: 'pfill-green', dueLabel: 'Aug 1, 2025', assignees: [{seed:'Lintang',bg:'a5f3fc',name:'Lintang'},{seed:'Rara',bg:'f9a8d4',name:'Rara'}], attach: 11, comments: 3, childTasks: [
+    { id: 'ct-13', title: 'Billing integration', done: true, dueDate: 'Jun 1', assignee: 'Rara' },
+    { id: 'ct-14', title: 'Profile management', done: true, dueDate: 'Jun 10', assignee: 'Rara' },
+    { id: 'ct-15', title: 'Final QA pass', done: false, dueDate: 'Jul 25', assignee: 'Rara' },
+  ], commentsList: [], attachmentsList: [] },
+  { id: 'p6', key: 'API', name: 'API Gateway v2', category: 'Infrastructure', description: 'Rate limiting, auth middleware, and routing redesign…', status: 'delayed', statusLabel: 'Delayed', priority: 'high', doneT: 2, totalT: 12, progress: 15, barFill: 'pfill-red', dueLabel: 'Jun 30, 2025', overdue: true, assignees: [{seed:'Dito',bg:'c0aede',name:'Dito'},{seed:'Maya',bg:'ffd5dc',name:'Maya'}], attach: 0, comments: 14, childTasks: [
+    { id: 'ct-16', title: 'Auth middleware spike', done: true, dueDate: 'May 25', assignee: 'Dito' },
+    { id: 'ct-17', title: 'Rate limiting impl', done: false, dueDate: 'Jun 15', assignee: 'Dito' },
+  ], commentsList: [], attachmentsList: [] },
+  { id: 'p7', key: 'DS2', name: 'Design System v2', category: 'Design', description: 'Component library, tokens, and documentation rollout…', status: 'on-track', statusLabel: 'On Track', priority: 'medium', doneT: 6, totalT: 11, progress: 55, barFill: 'pfill-blue', dueLabel: 'Sep 15, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'},{seed:'Lintang',bg:'a5f3fc',name:'Lintang'},{seed:'Rara',bg:'f9a8d4',name:'Rara'}], attach: 6, comments: 8, childTasks: [
+    { id: 'ct-18', title: 'Token system setup', done: true, dueDate: 'Jun 10', assignee: 'Rasya' },
+    { id: 'ct-19', title: 'Core component library', done: false, dueDate: 'Jul 30', assignee: 'Rara' },
+  ], commentsList: [], attachmentsList: [] },
+  { id: 'p8', key: 'INT', name: 'Internal Tools', category: 'Design System', description: 'Tracker revamp and design system rollout for internal team…', status: 'not-started', statusLabel: 'Not Started', priority: 'low', doneT: 0, totalT: 0, progress: 0, barFill: 'pfill-gray', dueLabel: 'Sep 10, 2025', assignees: [{seed:'Rasya',bg:'b6e3f4',name:'Rasya'}], attach: 0, comments: 0, childTasks: [], commentsList: [], attachmentsList: [] },
 ])
 
 const filteredProjects = computed(() =>
@@ -66,6 +108,9 @@ function viewProject(p: Proj) {
     category: p.category,
     dueLabel: p.dueLabel,
     assignees: p.assignees.map(a => ({ name: a.name, initials: a.name.charAt(0), avatar: avatarUrl(a.seed, a.bg) })),
+    childTasks: p.childTasks,
+    commentsList: p.commentsList,
+    attachmentsList: p.attachmentsList,
   })
 }
 
@@ -84,6 +129,9 @@ function editProject(p: Proj) {
     figma: '',
     notion: '',
     assignees: p.assignees.map(a => ({ name: a.name, initials: a.seed.charAt(0), avatar: avatarUrl(a.seed, a.bg) })),
+    childTasks: p.childTasks,
+    commentsList: p.commentsList,
+    attachmentsList: p.attachmentsList,
   })
 }
 
