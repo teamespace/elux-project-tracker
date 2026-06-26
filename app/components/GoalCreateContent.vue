@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { addGoal, statusOptions, type Status } from '~/shared/goals'
+import { addGoal, goals, statusOptions, type Goal, type Kpi, type Label, type LinkedProject, type Owner, type Status } from '~/shared/goals'
 import { people, findPerson, avatarColor } from '~/shared/projects'
 
+const props = withDefaults(defineProps<{
+  mode?: 'create' | 'edit'
+  initialData?: Partial<Goal>
+}>(), {
+  mode: 'create',
+  initialData: () => ({}),
+})
+
 const emit = defineEmits<{ close: [] }>()
+
+const isEdit = computed(() => props.mode === 'edit')
+const defaultOwner = people[0]?.name ?? ''
 
 const form = reactive({
   title: '',
   status: 'not-started' as Status,
-  owner: people[0]?.name ?? '',
+  owner: defaultOwner,
   quarter: 'Q3 2026',
   dueDate: '',
   progress: 0,
@@ -17,6 +28,94 @@ const form = reactive({
 
 const kpis = reactive<{ id: string; name: string; current: string; target: string }[]>([])
 const linkedProjects = reactive<{ id: string; name: string }[]>([])
+
+function parseDisplayDate(value?: string): string {
+  if (!value) return ''
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return value
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+function formatGoalDate(value?: string): string {
+  if (!value) return ''
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return value
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function populate() {
+  const d = props.initialData ?? {}
+  form.title = d.title ?? ''
+  form.status = d.status ?? 'not-started'
+  form.owner = d.owner?.name ?? defaultOwner
+  form.quarter = d.quarter ?? 'Q3 2026'
+  form.dueDate = parseDisplayDate(d.dueDate)
+  form.progress = d.progress ?? 0
+  form.description = d.description ?? ''
+  form.labels = (d.labels ?? []).map(l => l.name).join(', ')
+
+  kpis.length = 0
+  if (d.kpis) {
+    kpis.push(...d.kpis.map(k => ({ id: k.id, name: k.name, current: k.current, target: k.target })))
+  }
+
+  linkedProjects.length = 0
+  if (d.linkedProjects) {
+    linkedProjects.push(...d.linkedProjects.map(p => ({ id: p.id, name: p.title })))
+  }
+}
+watch(() => props.initialData, populate, { immediate: true, deep: true })
+
+function buildLabels(input: string, existingLabels: Label[] = []): Label[] {
+  return input.split(',').map(l => l.trim()).filter(Boolean)
+    .map((name, i) => {
+      const existing = existingLabels.find(l => l.name === name)
+      return existing ?? { id: `lbl-${i}`, name, color: 'bg-blue-50 text-blue-600 border-blue-200' }
+    })
+}
+
+function mergeKpis(existingKpis: Kpi[], formKpis: typeof kpis, owner: ReturnType<typeof findPerson>): Kpi[] {
+  return formKpis.map(fk => {
+    const existing = existingKpis.find(k => k.id === fk.id)
+    if (existing) {
+      return { ...existing, name: fk.name, current: fk.current, target: fk.target }
+    }
+    return {
+      id: fk.id,
+      name: fk.name,
+      current: fk.current,
+      target: fk.target,
+      progress: 0,
+      status: 'not-started' as Status,
+      statusLabel: 'Not started',
+      owner: owner ?? people[0] ?? { initials: 'R', name: 'Rasya' },
+      dueDate: '',
+    }
+  })
+}
+
+function mergeLinkedProjects(existingProjects: LinkedProject[], formProjects: typeof linkedProjects): LinkedProject[] {
+  return formProjects.map(fp => {
+    const existing = existingProjects.find(p => p.id === fp.id)
+    if (existing) {
+      return { ...existing, title: fp.name }
+    }
+    return {
+      id: fp.id,
+      title: fp.name,
+      project: '',
+      status: 'not-started' as Status,
+      statusLabel: 'Not started',
+      progress: 0,
+      taskCount: 0,
+    }
+  })
+}
 
 const showAddKpi = ref(false)
 const newKpi = reactive({ name: '', current: '', target: '' })
@@ -59,28 +158,45 @@ function submit() {
   const title = form.title.trim()
   if (!title) return
   const owner = findPerson(form.owner) ?? people[0] ?? { initials: 'R', name: 'Rasya' }
-  const labels = form.labels.split(',').map(l => l.trim()).filter(Boolean)
-    .map((name, i) => ({ id: `lbl-${i}`, name, color: 'bg-blue-50 text-blue-600 border-blue-200' }))
+  const progress = Math.min(100, Math.max(0, Number(form.progress) || 0))
+  const statusLabel = statusOpt.value?.label ?? 'Not started'
 
-  addGoal({
-    id: `goal-${Date.now()}`,
-    title,
-    description: form.description,
-    owner,
-    quarter: form.quarter,
-    dueDate: form.dueDate,
-    status: form.status,
-    statusLabel: statusOpt.value?.label ?? 'Not started',
-    progress: Math.min(100, Math.max(0, form.progress)),
-    labels,
-    kpis: kpis.map(k => ({
-      id: k.id, name: k.name, current: k.current, target: k.target,
-      progress: 0, status: 'not-started' as Status, statusLabel: 'Not started',
-      owner, dueDate: '',
-    })),
-    linkedProjects: [],
-    activity: [{ id: `act-${Date.now()}`, actor: owner, action: 'created goal', target: title, time: 'Just now' }],
-  })
+  if (isEdit.value && props.initialData?.id) {
+    const existing = goals.value.find(g => g.id === props.initialData!.id)
+    if (existing) {
+      existing.title = title
+      existing.description = form.description
+      existing.owner = owner
+      existing.quarter = form.quarter
+      existing.dueDate = formatGoalDate(form.dueDate)
+      existing.status = form.status
+      existing.statusLabel = statusLabel
+      existing.progress = progress
+      existing.labels = buildLabels(form.labels, props.initialData?.labels)
+      existing.kpis = mergeKpis(props.initialData?.kpis ?? [], kpis, owner)
+      existing.linkedProjects = mergeLinkedProjects(props.initialData?.linkedProjects ?? [], linkedProjects)
+    }
+  } else {
+    addGoal({
+      id: `goal-${Date.now()}`,
+      title,
+      description: form.description,
+      owner,
+      quarter: form.quarter,
+      dueDate: form.dueDate,
+      status: form.status,
+      statusLabel,
+      progress,
+      labels: buildLabels(form.labels),
+      kpis: kpis.map(k => ({
+        id: k.id, name: k.name, current: k.current, target: k.target,
+        progress: 0, status: 'not-started' as Status, statusLabel: 'Not started',
+        owner, dueDate: '',
+      })),
+      linkedProjects: [],
+      activity: [{ id: `act-${Date.now()}`, actor: owner, action: 'created goal', target: title, time: 'Just now' }],
+    })
+  }
   emit('close')
 }
 </script>
@@ -272,7 +388,7 @@ function submit() {
       </div>
       <div class="footer-right">
         <button class="btn-cancel" @click="$emit('close')">Cancel</button>
-        <button class="btn-create" @click="submit">Create goal</button>
+        <button class="btn-create" @click="submit">{{ isEdit ? 'Save changes' : 'Create goal' }}</button>
       </div>
     </div>
   </div>

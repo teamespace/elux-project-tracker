@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useGoalSlideOver } from '~/composables/useGoalSlideOver'
-import { addGoal, goalById, statusClasses, statusOptions, type Goal, type Label, type Status } from '~/shared/goals'
-import { findPerson, people } from '~/shared/projects'
+import { goalById } from '~/shared/goals'
 
 const { state, close } = useGoalSlideOver()
 
@@ -38,67 +37,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousedown', onDocumentClick)
 })
 
-/* ── EDIT FORM (keep existing logic for edit mode) ── */
-interface Draft {
-  title: string
-  description: string
-  ownerName: string
-  quarter: string
-  dueDate: string
-  status: Status
-  progress: number
-  labels: string
-}
-
-const defaultOwner = people[0]?.name ?? ''
-function createDraft(): Draft {
-  return { title: '', description: '', ownerName: defaultOwner, quarter: 'Q3 2026', dueDate: '', status: 'not-started', progress: 0, labels: '' }
-}
-
-const form = ref<Draft>(createDraft())
-
-function loadDraftFromGoal(goal: Goal): Draft {
-  return {
-    title: goal.title, description: goal.description, ownerName: goal.owner.name,
-    quarter: goal.quarter, dueDate: goal.dueDate, status: goal.status,
-    progress: goal.progress, labels: goal.labels.map(l => l.name).join(', '),
-  }
-}
-
-watch(() => state.value.isOpen, (isOpen) => {
-  if (!isOpen) return
-  if (state.value.mode === 'edit' && state.value.goalId) {
-    const goal = goalById(state.value.goalId)
-    form.value = goal ? loadDraftFromGoal(goal) : createDraft()
-  } else {
-    form.value = createDraft()
-  }
-}, { immediate: true })
-
-const ownerOptions = people.map(p => ({ label: p.name, value: p.name }))
-const quarterOptions = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'].map(v => ({ label: v, value: v }))
-
-function statusLabelFor(s: Status): string {
-  return statusOptions.find(o => o.value === s)?.label.toUpperCase() ?? 'NOT STARTED'
-}
-
-function save() {
-  const title = form.value.title.trim()
-  if (!title) return
-  const owner = findPerson(form.value.ownerName) ?? people[0] ?? { initials: 'R', name: 'Rasya' }
-  const labels: Label[] = form.value.labels.split(',').map(l => l.trim()).filter(Boolean)
-    .map((name, i) => ({ id: `lbl-${i}`, name, color: 'bg-blue-50 text-blue-600 border-blue-200' }))
-  const progress = Math.min(100, Math.max(0, Number(form.value.progress) || 0))
-  const common = { title, description: form.value.description, owner, quarter: form.value.quarter, dueDate: form.value.dueDate, status: form.value.status, statusLabel: statusLabelFor(form.value.status), progress, labels }
-
-  if (state.value.mode === 'edit' && state.value.goalId) {
-    const existing = goalById(state.value.goalId)
-    if (existing) Object.assign(existing, common)
-  } else {
-    addGoal({ id: `goal-${Date.now()}`, ...common, kpis: [], linkedProjects: [], activity: [{ id: `act-${Date.now()}`, actor: owner, action: 'created goal', target: title, time: 'Just now' }] })
-  }
-  close()
-}
+const goal = computed(() => state.value.goalId ? goalById(state.value.goalId) : undefined)
 </script>
 
 <template>
@@ -142,54 +81,8 @@ function save() {
 
         <!-- Body -->
         <div class="flex-1 overflow-hidden">
-          <!-- CREATE mode → new component -->
           <GoalCreateContent v-if="state.mode === 'create'" @close="close" />
-
-          <!-- EDIT mode → existing inline form -->
-          <div v-else class="flex h-full flex-col overflow-hidden">
-            <div class="flex-1 overflow-y-auto p-6">
-              <div class="flex flex-col gap-5">
-                <div>
-                  <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Title</label>
-                  <UInput v-model="form.title" placeholder="Enter goal title" required />
-                </div>
-                <div>
-                  <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Description</label>
-                  <UTextarea v-model="form.description" :rows="4" placeholder="Add a description..." />
-                </div>
-                <div class="grid grid-cols-2 gap-5">
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Owner</label>
-                    <USelect v-model="form.ownerName" :items="ownerOptions" />
-                  </div>
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Quarter</label>
-                    <USelect v-model="form.quarter" :items="quarterOptions" />
-                  </div>
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Due date</label>
-                    <UInput v-model="form.dueDate" type="date" />
-                  </div>
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Status</label>
-                    <USelect v-model="form.status" :items="statusOptions" />
-                  </div>
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Progress</label>
-                    <UInput v-model.number="form.progress" type="number" min="0" max="100" placeholder="0-100" />
-                  </div>
-                  <div>
-                    <label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-gray-500">Labels</label>
-                    <UInput v-model="form.labels" placeholder="Product, Q3" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="flex justify-end gap-2 border-t border-gray-100 px-6 py-3">
-              <UButton variant="ghost" color="neutral" @click="close">Cancel</UButton>
-              <UButton color="primary" @click="save">Save</UButton>
-            </div>
-          </div>
+          <GoalCreateContent v-else :mode="'edit'" :initial-data="goal" @close="close" />
         </div>
       </div>
     </Transition>
