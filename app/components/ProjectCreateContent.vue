@@ -12,6 +12,7 @@ const emit = defineEmits<{ close: []; saved: [] }>()
 const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
 const isEdit = computed(() => props.mode === 'edit')
 const { user } = useUserSession()
+const canSubmit = computed(() => form.name.trim().length > 0)
 
 const initialStatus: ProjectStatus = (props.initialData?.status as ProjectStatus) ?? 'not-started'
 const initialPriority: ProjectPriority = (props.initialData?.priority as ProjectPriority) ?? 'medium'
@@ -438,8 +439,8 @@ function submit() {
       </div>
       <div class="footer-right">
         <button class="btn-cancel" @click="$emit('close')">{{ isView ? 'Close' : 'Cancel' }}</button>
-        <button v-if="!isView" class="btn-create" @click="submit">Create project</button>
-        <button v-else class="btn-create" @click="submit">Save changes</button>
+        <button v-if="!isView" class="btn-create" :disabled="!canSubmit" @click="submit">Create project</button>
+        <button v-else class="btn-create" :disabled="!canSubmit" @click="submit">Save changes</button>
       </div>
     </div>
   </div>
@@ -645,6 +646,7 @@ function submit() {
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s;
 }
 .btn-create:hover { background: #1F2937; }
+.btn-create:disabled { opacity: .4; cursor: not-allowed; }
 
 /* ── existing comments / attachments ── */
 .sec-list-wrap { padding: 8px 24px 12px; display: flex; flex-direction: column; gap: 10px; }

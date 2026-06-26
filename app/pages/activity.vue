@@ -1,11 +1,27 @@
 // styled: agent-7
 <script setup lang="ts">
-import { activityActionOptions, activityPeopleOptions, type ActivityType } from '~/shared/activity'
+import { activityActionOptions, type ActivityType } from '~/shared/activity'
 
-const { data: activityData } = await useAsyncData('activity', () =>
-  $fetch('/api/activity', { query: { limit: 50 } })
-)
-const activityItems = computed(() => activityData.value ?? [])
+const activityItems = ref<any[]>([])
+
+onMounted(async () => {
+  try {
+    const raw: any = await $fetch('/api/activity', { query: { limit: 50 } })
+    if (Array.isArray(raw)) {
+      activityItems.value = raw.map((item: any) => ({
+        id: item.id,
+        type: item.action,
+        text: `${item.action} ${item.target}`,
+        person: item.actorName,
+        project: item.entityType,
+        actor: { name: item.actorName, initials: item.actorInitials, avatar: item.actorAvatar },
+        time: item.createdAt,
+      }))
+    }
+  } catch (e) {
+    console.error('Failed to load activity:', e)
+  }
+})
 
 interface FilterState {
   open: boolean
@@ -20,11 +36,12 @@ definePageMeta({
 
 const search = ref('')
 const actionFilter = reactive<FilterState>({ open: false, selected: activityActionOptions.map((o: { value: ActivityType; label: string }) => o.value) })
-const personFilter = reactive<FilterState>({ open: false, selected: [...activityPeopleOptions] })
+const personFilter = reactive<FilterState>({ open: false, selected: ['Rasya', 'Dito', 'Maya', 'Rara'] })
+const activityPeopleOptions = ['Rasya', 'Dito', 'Maya', 'Rara']
 
 const filteredActivity = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return activityItems.filter((item) => {
+  return activityItems.value.filter((item) => {
     const text = `${item.actor.name} ${item.text} ${item.project}`.toLowerCase()
     const matchesSearch = !q || text.includes(q)
     const matchesAction = actionFilter.selected.includes(item.type)

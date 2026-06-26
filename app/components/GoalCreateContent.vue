@@ -130,6 +130,7 @@ function closeDds() { openDd.value = null }
 onMounted(() => document.addEventListener('click', closeDds))
 onUnmounted(() => document.removeEventListener('click', closeDds))
 
+const canSubmit = computed(() => form.title.trim().length > 0)
 const statusOpt = computed(() => statusOptions.find(o => o.value === form.status))
 const ownerPerson = computed(() => findPerson(form.owner) ?? people[0])
 
@@ -388,7 +389,7 @@ function submit() {
       </div>
       <div class="footer-right">
         <button class="btn-cancel" @click="$emit('close')">Cancel</button>
-        <button class="btn-create" @click="submit">{{ isEdit ? 'Save changes' : 'Create goal' }}</button>
+        <button class="btn-create" :disabled="!canSubmit" @click="submit">{{ isEdit ? 'Save changes' : 'Create goal' }}</button>
       </div>
     </div>
   </div>
@@ -567,4 +568,5 @@ function submit() {
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s;
 }
 .btn-create:hover { background: oklch(52% 0.27 292.717); }
+.btn-create:disabled { opacity: .4; cursor: not-allowed; }
 </style>

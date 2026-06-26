@@ -11,6 +11,7 @@ const emit = defineEmits<{ close: [] }>()
 
 const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
 const isEdit = computed(() => props.mode === 'edit')
+const canSubmit = computed(() => form.title.trim().length > 0)
 
 const defaultStatus: TaskStatus = props.initialData?.status ?? 'todo'
 const defaultPriority: TaskPriority = props.initialData?.priority ?? 'medium'
@@ -338,8 +339,8 @@ function submit() {
       </div>
       <div class="footer-right">
         <button class="btn-cancel" @click="$emit('close')">{{ isView && !isEdit ? 'Close' : 'Cancel' }}</button>
-        <button v-if="!isView" class="btn-create" @click="submit">{{ isEdit ? 'Save changes' : 'Create task' }}</button>
-        <button v-else class="btn-create" @click="submit">Save changes</button>
+        <button v-if="!isView" class="btn-create" :disabled="!canSubmit" @click="submit">{{ isEdit ? 'Save changes' : 'Create task' }}</button>
+        <button v-else class="btn-create" :disabled="!canSubmit" @click="submit">Save changes</button>
       </div>
     </div>
   </div>
@@ -539,4 +540,5 @@ function submit() {
   font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s;
 }
 .btn-create:hover { background: #1D4ED8; }
+.btn-create:disabled { opacity: .4; cursor: not-allowed; }
 </style>

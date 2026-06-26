@@ -1,11 +1,20 @@
 // styled: agent-7
 <script setup lang="ts">
-import { issuePriorityOptions, issueStatusOptions, type CriticalIssue } from '~/shared/criticalIssues'
+import { type CriticalIssue } from '~/shared/criticalIssues'
 
-const { data: issuesData } = await useAsyncData('critical-issues', () =>
-  $fetch('/api/critical-issues')
-)
-const criticalIssues = computed(() => issuesData.value ?? [])
+const issuePriorityOptions = ['High', 'Medium'] as const
+const issueStatusOptions = ['Overdue', 'At Risk', 'Not Started'] as const
+
+const criticalIssues = ref<any[]>([])
+
+onMounted(async () => {
+  try {
+    const raw: any = await $fetch('/api/critical-issues')
+    if (Array.isArray(raw)) criticalIssues.value = raw
+  } catch (e) {
+    console.error('Failed to load critical issues:', e)
+  }
+})
 
 interface FilterState {
   open: boolean
@@ -22,8 +31,8 @@ const search = ref('')
 const statusFilter = reactive<FilterState>({ open: false, selected: [...issueStatusOptions] })
 const priorityFilter = reactive<FilterState>({ open: false, selected: [...issuePriorityOptions] })
 
-const highCount = computed(() => criticalIssues.filter(i => i.priority === 'High').length)
-const overdueCount = computed(() => criticalIssues.filter(i => i.status === 'Overdue').length)
+const highCount = computed(() => criticalIssues.value.filter(i => i.priority === 'High').length)
+const overdueCount = computed(() => criticalIssues.value.filter(i => i.status === 'Overdue').length)
 
 const statusClass = (status: CriticalIssue['status']) => {
   switch (status) {
@@ -44,7 +53,7 @@ const priorityClass = (priority: CriticalIssue['priority']) => {
 
 const filteredIssues = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return criticalIssues.filter((issue) => {
+  return criticalIssues.value.filter((issue) => {
     const text = `${issue.title} ${issue.subtitle} ${issue.project} ${issue.assignee ?? ''}`.toLowerCase()
     const matchesSearch = !q || text.includes(q)
     const matchesStatus = statusFilter.selected.includes(issue.status)
