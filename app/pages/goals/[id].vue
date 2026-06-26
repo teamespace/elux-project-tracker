@@ -120,6 +120,16 @@ function barColorObj(pct: number): Record<string, string> {
   return { background: '#F59E0B' }
 }
 
+function kpiStatusLabel(status: string): string {
+  switch (status) {
+    case 'on-track': return 'On Track'
+    case 'at-risk': return 'At Risk'
+    case 'delayed': return 'Delayed'
+    case 'not-started': return 'Not Started'
+    default: return status
+  }
+}
+
 const { open: openKpiSlideOver } = useKpiSlideOver()
 const { open: openProjectLinkSlideOver } = useProjectLinkSlideOver()
 
@@ -195,75 +205,77 @@ function linkProject(project: import('~/shared/projects').Project) {
 
     <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
 
-      <!-- GOAL HEADER -->
-      <div class="gdh">
-        <div class="gdh-title-row">
-          <div>
-            <div class="gdh-title-row2">
-              <div class="gdh-cat-icon">
-                <!-- clock icon -->
-                <svg v-if="goal.categoryIcon === 'clock'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <!-- file icon -->
-                <svg v-else-if="goal.categoryIcon === 'file'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <!-- code icon -->
-                <svg v-else-if="goal.categoryIcon === 'code'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                <!-- bolt icon -->
-                <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              </div>
-              <div class="gdh-title">{{ goal.title }}</div>
-              <span class="gdh-status-chip" :class="goal.statusClass">
-                <svg v-if="goal.status === 'completed'" width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span v-else class="gdh-dot"/>
-                {{ goal.statusLabel }}
-              </span>
-            </div>
-          </div>
-          <div class="gdh-actions" />
-        </div>
-
-        <!-- meta row -->
-        <div class="gdh-meta">
-          <div class="gdh-meta-item">
-            <div class="gdh-av" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
-            <span>{{ goal.owner }}</span>
-          </div>
-          <div class="gdh-meta-item">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Due {{ goal.dueDate }}
-          </div>
-          <div class="gdh-meta-item">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4h4.5l-3.5 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4.5L8 2z" stroke="#9CA3AF" stroke-width="1.4" stroke-linejoin="round"/></svg>
-            {{ goal.category }}
-          </div>
-          <div class="gdh-prog-row">
-            <div class="gdh-prog-track"><div class="gdh-prog-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
-            <span class="gdh-prog-pct">{{ goal.current }}/{{ goal.target }} {{ goal.unit }}</span>
-            <span class="gdh-prog-num">{{ goal.progress }}%</span>
-          </div>
-        </div>
-
-        <!-- TABS -->
-        <div class="gdh-tabs">
-          <button class="gdh-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M5 5.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Overview
-          </button>
-          <button class="gdh-tab" :class="{ active: activeTab === 'comments' }" @click="activeTab = 'comments'">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 4l6 5 6-5M2 4h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4z" stroke="currentColor" stroke-width="1.4"/></svg>
-            Comments
-            <span class="gdh-tab-badge">{{ goal.comments.length }}</span>
-          </button>
-          <button class="gdh-tab" :class="{ active: activeTab === 'activity' }" @click="activeTab = 'activity'">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Activity
-          </button>
-        </div>
-      </div>
-
       <!-- BODY -->
       <div class="gd-body" :class="{ 'gd-body--collapsed': !showSide }">
         <!-- LEFT -->
-        <div class="gd-main">
+        <div class="gd-left-col">
+
+          <!-- GOAL HEADER -->
+          <div class="gdh">
+            <div class="gdh-title-row">
+              <div>
+                <div class="gdh-title-row2">
+                  <div class="gdh-cat-icon">
+                    <!-- clock icon -->
+                    <svg v-if="goal.categoryIcon === 'clock'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <!-- file icon -->
+                    <svg v-else-if="goal.categoryIcon === 'file'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <!-- code icon -->
+                    <svg v-else-if="goal.categoryIcon === 'code'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <!-- bolt icon -->
+                    <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  </div>
+                  <div class="gdh-title">{{ goal.title }}</div>
+                  <span class="gdh-status-chip" :class="goal.statusClass">
+                    <svg v-if="goal.status === 'completed'" width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span v-else class="gdh-dot"/>
+                    {{ goal.statusLabel }}
+                  </span>
+                </div>
+              </div>
+              <div class="gdh-actions" />
+            </div>
+
+            <!-- meta row -->
+            <div class="gdh-meta">
+              <div class="gdh-meta-item">
+                <div class="gdh-av" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
+                <span>{{ goal.owner }}</span>
+              </div>
+              <div class="gdh-meta-item">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Due {{ goal.dueDate }}
+              </div>
+              <div class="gdh-meta-item">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4h4.5l-3.5 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4.5L8 2z" stroke="#9CA3AF" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                {{ goal.category }}
+              </div>
+              <div class="gdh-prog-row">
+                <div class="gdh-prog-track"><div class="gdh-prog-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
+                <span class="gdh-prog-pct">{{ goal.current }}/{{ goal.target }} {{ goal.unit }}</span>
+                <span class="gdh-prog-num">{{ goal.progress }}%</span>
+              </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="gdh-tabs">
+              <button class="gdh-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M5 5.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Overview
+              </button>
+              <button class="gdh-tab" :class="{ active: activeTab === 'comments' }" @click="activeTab = 'comments'">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 4l6 5 6-5M2 4h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4z" stroke="currentColor" stroke-width="1.4"/></svg>
+                Comments
+                <span class="gdh-tab-badge">{{ goal.comments.length }}</span>
+              </button>
+              <button class="gdh-tab" :class="{ active: activeTab === 'activity' }" @click="activeTab = 'activity'">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Activity
+              </button>
+            </div>
+          </div>
+
+          <div class="gd-main">
 
           <!-- OVERVIEW TAB -->
           <template v-if="activeTab === 'overview'">
@@ -290,7 +302,7 @@ function linkProject(project: import('~/shared/projects').Project) {
                   <div class="gd-kpi-top">
                     <div class="gd-kpi-name">{{ kpi.name }}</div>
                     <span class="gdh-status-chip" :class="kpi.statusClass" style="font-size:10px">
-                      <span class="gdh-dot"/>{{ kpi.statusLabel ?? kpi.status }}
+                      <span class="gdh-dot"/>{{ kpi.statusLabel ?? kpiStatusLabel(kpi.status) }}
                     </span>
                   </div>
                   <div class="gd-kpi-nums">
@@ -384,18 +396,20 @@ function linkProject(project: import('~/shared/projects').Project) {
           </template>
 
         </div>
+        </div><!-- /gd-left-col -->
 
         <!-- RIGHT PANEL -->
         <div class="gd-side" v-show="showSide">
-          <div class="gd-side-top">
-            <button class="gd-side-toggle" @click="showSide = false" title="Hide panel">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-                <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
-              </svg>
-            </button>
-          </div>
           <div class="gd-side-card">
+            <div class="gd-side-card-hdr">
+              <span class="gd-panel-title">Properties</span>
+              <button class="gd-side-toggle" @click="showSide = false" title="Hide panel">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+                </svg>
+              </button>
+            </div>
 
             <!-- Properties -->
             <div class="gd-panel-sec">
@@ -503,18 +517,18 @@ function linkProject(project: import('~/shared/projects').Project) {
 .gdh-tab:not(.active) .gdh-tab-badge { background:#F3F4F6; color:#9CA3AF; }
 
 /* ── BODY ── */
-.gd-body { flex:1; display:grid; grid-template-columns:1fr 300px; background:#fff; min-height:0; overflow:hidden; position:relative; }
+.gd-body { flex:1; display:grid; grid-template-columns:1fr 300px; min-height:0; overflow:hidden; position:relative; background:#fff; }
 .gd-body--collapsed { grid-template-columns:1fr; }
-.gd-main { padding:24px 32px; overflow-y:auto; background:#fff; }
-.gd-side { padding:18px 12px 16px; overflow-y:auto; background:#fff; }
-.gd-side-top { display:flex; justify-content:flex-end; margin-bottom:8px; }
-.gd-side-toggle { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; border:1px solid #E5E7EB; background:#fff; color:#6B7280; cursor:pointer; }
+.gd-left-col { display:flex; flex-direction:column; overflow:hidden; min-height:0; background:#fff; }
+.gd-main { padding:24px 32px; overflow-y:auto; flex:1; }
+.gd-side { padding:20px 12px 16px; overflow-y:auto; background:#fff; }
+.gd-side-card-hdr { display:flex; align-items:center; justify-content:space-between; padding:8px 16px 4px; }
+.gd-side-toggle { display:flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px; border:1px solid #E5E7EB; background:#fff; color:#6B7280; cursor:pointer; }
 .gd-side-toggle:hover { background:#F3F4F6; color:#111827; }
 .gd-side-card { background:#fff; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; }
 .gd-side-reopen { position:absolute; top:16px; right:16px; display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; border:1px solid #E5E7EB; background:#fff; color:#6B7280; cursor:pointer; }
 .gd-side-reopen:hover { background:#F3F4F6; color:#111827; }
 .gd-panel-sec { padding:14px 16px; border-top:1px solid #E5E7EB; }
-.gd-panel-sec:first-child { border-top:none; }
 .gd-panel-hdr { margin-bottom:8px; }
 .gd-panel-title { font-size:10.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#9CA3AF; }
 

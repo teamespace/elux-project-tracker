@@ -106,6 +106,7 @@ onBeforeUnmount(() => {
               </button>
             </div>
           </div>
+          <UButton variant="ghost" color="neutral" size="xs" square icon="ph:arrow-square-out" title="Open detail page" @click="navigateTo(`/tasks/${state.taskId}`); close()" />
           <UButton variant="ghost" color="neutral" size="xs" square icon="ph:x" title="Close" @click="close" />
         </div>
 

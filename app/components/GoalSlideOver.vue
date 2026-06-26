@@ -76,6 +76,7 @@ const goal = computed(() => state.value.draft ?? (state.value.goalId ? goalById(
               </button>
             </div>
           </div>
+          <UButton variant="ghost" color="neutral" size="xs" square icon="ph:arrow-square-out" title="Open detail page" @click="navigateTo(`/goals/${state.goalId}`); close()" />
           <UButton variant="ghost" color="neutral" size="xs" square icon="ph:x" title="Close" @click="close" />
         </div>
 

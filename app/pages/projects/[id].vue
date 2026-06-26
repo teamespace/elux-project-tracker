@@ -404,8 +404,8 @@ function addAttachmentUrl() {
     attachmentError.value = 'Please enter a valid URL'
     return
   }
-  proj.value.attachments.push({
-    id: proj.value.attachments.length + 1,
+  proj.value!.attachments.push({
+    id: proj.value!.attachments.length + 1,
     name: url,
     size: 'Link',
     type: 'file',
@@ -431,8 +431,8 @@ function handleFiles(files: FileList | null) {
       attachmentError.value = `File "${file.name}" exceeds 10 MB limit`
       continue
     }
-    proj.value.attachments.push({
-      id: proj.value.attachments.length + 1,
+    proj.value!.attachments.push({
+      id: proj.value!.attachments.length + 1,
       name: file.name,
       size: formatBytes(file.size),
       type: 'file',
@@ -457,8 +457,8 @@ function triggerFileUpload() {
 }
 
 function removeAttachment(id: number) {
-  const idx = proj.value.attachments.findIndex(a => a.id === id)
-  if (idx !== -1) proj.value.attachments.splice(idx, 1)
+  const idx = proj.value!.attachments.findIndex(a => a.id === id)
+  if (idx !== -1) proj.value!.attachments.splice(idx, 1)
 }
 
 function submitLink() {
@@ -697,7 +697,12 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
         <!-- ── ATTACHMENTS TAB ── -->
         <template v-if="activeTab === 'attachments'">
           <div class="pd-section">
-            <div class="pd-slabel">Attachments</div>
+            <div class="pd-task-hdr">
+              <div class="pd-slabel" style="margin:0">Attachments</div>
+              <button class="pd-add-task-btn" style="padding:6px 12px;font-size:12px" @click="showAttachmentForm = !showAttachmentForm">
+                {{ showAttachmentForm ? 'Cancel' : 'Add attachment' }}
+              </button>
+            </div>
             <div v-if="proj.attachments.length" class="pd-attach-list">
               <div v-for="att in proj.attachments" :key="att.id" class="pd-attach-row">
                 <div class="pd-attach-icon">
@@ -706,19 +711,45 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
                   <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6L9 2z" stroke="#9CA3AF" stroke-width="1.4"/><path d="M9 2v4h4" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
                 </div>
                 <div class="pd-attach-info">
-                  <div class="pd-attach-name">{{ att.name }}</div>
+                  <a v-if="att.size === 'Link'" :href="att.name" target="_blank" rel="noopener" class="pd-attach-name pd-attach-name--link">{{ att.name }}</a>
+                  <div v-else class="pd-attach-name">{{ att.name }}</div>
                   <div class="pd-attach-size">{{ att.size }}</div>
                 </div>
-                <button class="pd-attach-dl">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v8M5 8l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <button class="pd-tdelete" title="Remove" @click="removeAttachment(att.id)">
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                 </button>
               </div>
             </div>
             <div v-else class="pd-empty">No attachments yet.</div>
-            <div class="pd-add-task">
+
+            <!-- add attachment form -->
+            <div v-if="showAttachmentForm" class="pd-add-attach-form">
+              <div class="pd-add-link-row">
+                <input v-model="newAttachmentUrl" class="pd-add-task-input" placeholder="Paste URL…" @keydown.enter.prevent="addAttachmentUrl">
+                <button class="pd-add-task-btn" @click="addAttachmentUrl">Add link</button>
+              </div>
+              <div
+                class="pd-dropzone"
+                :class="{ active: isDragging }"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="onDrop"
+                @click="triggerFileUpload"
+              >
+                <input ref="fileInput" type="file" multiple class="pd-file-input" @change="onFileChange">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="pd-dropzone-text">Drop files here or click to upload</span>
+                <span class="pd-dropzone-hint">Max 10 MB per file</span>
+              </div>
+              <div v-if="attachmentError" class="pd-attach-error">{{ attachmentError }}</div>
+            </div>
+
+            <button v-else class="pd-add-task" @click="showAttachmentForm = true">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
               Add attachment
-            </div>
+            </button>
           </div>
         </template>
 
@@ -1141,6 +1172,24 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
 .pd-attach-size { font-size:11px; color:#9CA3AF; }
 .pd-attach-dl { width:24px; height:24px; border-radius:5px; border:1px solid #E5E7EB; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#6B7280; }
 .pd-attach-dl:hover { background:#F3F4F6; }
+.pd-attach-name--link { color:#3B82F6; text-decoration:none; word-break:break-all; }
+.pd-attach-name--link:hover { text-decoration:underline; }
+.pd-tdelete { width:22px; height:22px; border-radius:5px; border:none; background:transparent; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9CA3AF; }
+.pd-tdelete:hover { background:#FEE2E2; color:#EF4444; }
+
+/* add attachment form */
+.pd-add-attach-form { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+.pd-add-link-row { display:flex; gap:8px; }
+.pd-add-task-input { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:8px 12px; font-size:12.5px; color:#111827; outline:none; }
+.pd-add-task-input:focus { border-color:#D1D5DB; box-shadow:0 0 0 2px rgba(59,130,246,.08); }
+.pd-add-task-btn { border:1px solid #E5E7EB; background:#fff; color:#111827; font-size:12px; font-weight:500; border-radius:8px; padding:7px 12px; cursor:pointer; white-space:nowrap; }
+.pd-add-task-btn:hover { background:#F9FAFB; border-color:#D1D5DB; }
+.pd-dropzone { display:flex; flex-direction:column; align-items:center; gap:6px; border:1.5px dashed #E5E7EB; border-radius:10px; padding:18px; cursor:pointer; transition:border-color .15s, background .15s; }
+.pd-dropzone:hover, .pd-dropzone.active { border-color:#3B82F6; background:#F8FAFC; }
+.pd-dropzone-text { font-size:12px; color:#6B7280; }
+.pd-dropzone-hint { font-size:11px; color:#9CA3AF; }
+.pd-file-input { position:absolute; left:-9999px; opacity:0; width:1px; height:1px; }
+.pd-attach-error { font-size:12px; color:#EF4444; background:#FEF2F2; border:1px solid #FECACA; border-radius:8px; padding:8px 10px; }
 
 /* empty state */
 .pd-empty { font-size:13px; color:#9CA3AF; padding:12px 0; }
