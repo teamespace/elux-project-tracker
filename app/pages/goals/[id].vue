@@ -1,21 +1,22 @@
 // styled: agent-2
 <script setup lang="ts">
-definePageMeta({ layout: 'default', title: 'Goal', middleware: 'auth' })
+definePageMeta({ layout: false, title: 'Goal', middleware: 'auth' })
 
 const route = useRoute()
 const id = route.params.id as string
-const activeTab = ref('overview')
+const activeTab = ref<'overview' | 'comments' | 'activity'>('overview')
 
 interface GKpi { id: number; name: string; current: number; target: number; unit: string; status: string; statusClass: string; statusLabel?: string; owner: string; oInit: string; oBg: string; oColor: string; dueDate: string }
 interface GProject { id: string; name: string; key: string; status: string; statusClass: string; progress: number; tasks: number }
 interface GComment { author: string; aInit: string; aBg: string; aColor: string; time: string; text: string }
+interface GActivity { id: number; author: string; aInit: string; aBg: string; aColor: string; time: string; text: string; target?: string }
 interface GGoal {
   id: string; title: string; description: string; category: string; categoryIcon: string
   owner: string; oInit: string; oBg: string; oColor: string
   dueDate: string; createdDate: string
   status: string; statusClass: string; statusLabel: string
   current: number; target: number; unit: string; progress: number
-  kpis: GKpi[]; linkedProjects: GProject[]; comments: GComment[]
+  kpis: GKpi[]; linkedProjects: GProject[]; comments: GComment[]; activity: GActivity[]
 }
 
 const db: GGoal[] = [
@@ -36,6 +37,11 @@ const db: GGoal[] = [
     comments: [
       { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 10 · 9:00am', text: '900 shots down, 100 to go! On track for year-end.' },
     ],
+    activity: [
+      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Today · 10:15 AM', text: 'Updated progress to', target: '90%' },
+      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 10 · 9:00am', text: 'Commented on goal' },
+      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jan 1 · 8:30am', text: 'Created goal', target: '1000 Dribbble Shots' },
+    ],
   },
   {
     id: 'goal-2', title: '50 Blog Posts Published', description: 'Publish 50 technical and product blog posts across engineering and design channels.',
@@ -51,6 +57,11 @@ const db: GGoal[] = [
     comments: [
       { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 15 · 11:30am', text: 'Falling behind on Q2 targets. Need to write 3 posts this week.' },
     ],
+    activity: [
+      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Yesterday · 3:20 PM', text: 'Flagged goal as', target: 'At Risk' },
+      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jun 15 · 11:30am', text: 'Commented on goal' },
+      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jan 1 · 8:45am', text: 'Created goal', target: '50 Blog Posts Published' },
+    ],
   },
   {
     id: 'goal-3', title: '100 API Endpoints Documented', description: 'Document all 100 public API endpoints with full examples, schemas, and error codes.',
@@ -60,14 +71,19 @@ const db: GGoal[] = [
     status: 'on-track', statusClass: 'gs-track', statusLabel: 'On Track',
     current: 67, target: 100, unit: 'endpoints', progress: 67,
     kpis: [
-      { id: 1, name: 'Endpoints documented', current: 67, target: 100, unit: 'endpoints', status: 'on-track', statusClass: 'gs-track', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
-      { id: 2, name: 'Coverage score', current: 72, target: 95, unit: '%', status: 'at-risk', statusClass: 'gs-risk', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
+      { id: 1, name: 'Endpoints documented', current: 67, target: 100, unit: 'endpoints', status: 'on-track', statusClass: 'gs-track', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', aColor: '#DC2626', dueDate: 'Sep 2026' },
+      { id: 2, name: 'Coverage score', current: 72, target: 95, unit: '%', status: 'at-risk', statusClass: 'gs-risk', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', aColor: '#DC2626', dueDate: 'Sep 2026' },
     ],
     linkedProjects: [
       { id: 'p6', name: 'API Gateway v2', key: 'API', status: 'delayed', statusClass: 'gs-delayed', progress: 15, tasks: 12 },
     ],
     comments: [
       { author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 20 · 3:00pm', text: 'Core endpoints done. Working on error code schemas now.' },
+    ],
+    activity: [
+      { id: 1, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 20 · 3:00pm', text: 'Commented on goal' },
+      { id: 2, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Jun 18 · 11:00 AM', text: 'Linked project', target: 'API Gateway v2' },
+      { id: 3, author: 'Dito', aInit: 'D', aBg: '#FEE2E2', aColor: '#DC2626', time: 'Mar 1 · 9:15am', text: 'Created goal', target: '100 API Endpoints Documented' },
     ],
   },
   {
@@ -86,6 +102,11 @@ const db: GGoal[] = [
     comments: [
       { author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 5 · 10:00am', text: 'All 48 items checked off. Beta is ready to ship!' },
     ],
+    activity: [
+      { id: 1, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 5 · 10:00am', text: 'Marked goal as', target: 'Completed' },
+      { id: 2, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Jul 1 · 4:30 PM', text: 'Updated progress to', target: '100%' },
+      { id: 3, author: 'Rasya', aInit: 'RA', aBg: '#DBEAFE', aColor: '#2563EB', time: 'Apr 1 · 9:00am', text: 'Created goal', target: 'Beta Launch Checklist' },
+    ],
   },
 ]
 
@@ -101,245 +122,283 @@ function barColorObj(pct: number): Record<string, string> {
 </script>
 
 <template>
-  <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1">
-
-    <!-- GOAL HEADER -->
-    <div class="gdh">
-      <div class="gdh-title-row">
-        <div>
+  <NuxtLayout name="default">
+    <template #header>
+      <AppHeader>
+        <template #breadcrumb>
           <div class="gdh-crumb">
             <NuxtLink to="/goals" class="gdh-crumb-link">Goals</NuxtLink>
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="gdh-crumb-cur">{{ goal.title }}</span>
           </div>
-          <div class="gdh-title-row2">
-            <div class="gdh-cat-icon">
-              <!-- clock icon -->
-              <svg v-if="goal.categoryIcon === 'clock'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <!-- file icon -->
-              <svg v-else-if="goal.categoryIcon === 'file'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <!-- code icon -->
-              <svg v-else-if="goal.categoryIcon === 'code'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-              <!-- bolt icon -->
-              <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div class="gdh-title">{{ goal.title }}</div>
-            <span class="gdh-status-chip" :class="goal.statusClass">
-              <svg v-if="goal.status === 'completed'" width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span v-else class="gdh-dot"/>
-              {{ goal.statusLabel }}
-            </span>
-          </div>
-        </div>
-        <div class="gdh-actions">
-          <button class="gdh-btn-ghost">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="13" r="1.5" fill="currentColor"/></svg>
-            More
-          </button>
-          <button class="gdh-btn-primary">Save changes</button>
-        </div>
-      </div>
+        </template>
+      </AppHeader>
+    </template>
 
-      <!-- meta row -->
-      <div class="gdh-meta">
-        <div class="gdh-meta-item">
-          <div class="gdh-av" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
-          <span>{{ goal.owner }}</span>
-        </div>
-        <div class="gdh-meta-item">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Due {{ goal.dueDate }}
-        </div>
-        <div class="gdh-meta-item">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4h4.5l-3.5 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4.5L8 2z" stroke="#9CA3AF" stroke-width="1.4" stroke-linejoin="round"/></svg>
-          {{ goal.category }}
-        </div>
-        <div class="gdh-prog-row">
-          <div class="gdh-prog-track"><div class="gdh-prog-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
-          <span class="gdh-prog-pct">{{ goal.current }}/{{ goal.target }} {{ goal.unit }}</span>
-          <span class="gdh-prog-num">{{ goal.progress }}%</span>
-        </div>
-      </div>
+    <div style="margin:-20px -24px 0;display:flex;flex-direction:column;flex:1;min-height:0">
 
-      <!-- TABS -->
-      <div class="gdh-tabs">
-        <div class="gdh-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M5 5.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Overview
-        </div>
-        <div class="gdh-tab" :class="{ active: activeTab === 'comments' }" @click="activeTab = 'comments'">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 4l6 5 6-5M2 4h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4z" stroke="currentColor" stroke-width="1.4"/></svg>
-          Comments
-          <span class="gdh-tab-badge">{{ goal.comments.length }}</span>
-        </div>
-        <div class="gdh-tab" :class="{ active: activeTab === 'activity' }" @click="activeTab = 'activity'">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Activity
-        </div>
-      </div>
-    </div>
-
-    <!-- BODY -->
-    <div class="gd-body">
-      <!-- LEFT -->
-      <div class="gd-main">
-
-        <!-- Description -->
-        <div class="gd-section">
-          <div class="gd-slabel">Description</div>
-          <div class="gd-desc">{{ goal.description }}</div>
-        </div>
-
-        <!-- KPIs -->
-        <div class="gd-section">
-          <div class="gd-kpi-hdr">
-            <div class="gd-slabel" style="margin-bottom:0">KPIs</div>
-            <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Add KPI
-            </button>
-          </div>
-
-          <div v-if="goal.kpis.length === 0" class="gd-empty-box">No KPIs defined yet.</div>
-          <div v-else class="gd-kpi-grid">
-            <div v-for="kpi in goal.kpis" :key="kpi.id" class="gd-kpi-card">
-              <div class="gd-kpi-top">
-                <div class="gd-kpi-name">{{ kpi.name }}</div>
-                <span class="gdh-status-chip" :class="kpi.statusClass" style="font-size:10px">
-                  <span class="gdh-dot"/>{{ kpi.statusLabel ?? kpi.status }}
-                </span>
+      <!-- GOAL HEADER -->
+      <div class="gdh">
+        <div class="gdh-title-row">
+          <div>
+            <div class="gdh-title-row2">
+              <div class="gdh-cat-icon">
+                <!-- clock icon -->
+                <svg v-if="goal.categoryIcon === 'clock'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <!-- file icon -->
+                <svg v-else-if="goal.categoryIcon === 'file'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <!-- code icon -->
+                <svg v-else-if="goal.categoryIcon === 'code'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <!-- bolt icon -->
+                <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
-              <div class="gd-kpi-nums">
-                <span class="gd-kpi-cur">{{ kpi.current }}</span>
-                <span class="gd-kpi-sep">/</span>
-                <span class="gd-kpi-tgt">{{ kpi.target }} {{ kpi.unit }}</span>
-              </div>
-              <div class="gd-kpi-bar-wrap">
-                <div class="gd-kpi-bar"><div class="gd-kpi-fill" :style="{ width: kpiDonePct(kpi) + '%', ...barColorObj(kpiDonePct(kpi)) }"/></div>
-                <span class="gd-kpi-pct">{{ kpiDonePct(kpi) }}%</span>
-              </div>
-              <div class="gd-kpi-foot">
-                <div class="gd-tav" :style="{ background: kpi.oBg, color: kpi.oColor }">{{ kpi.oInit }}</div>
-                <span class="gd-kpi-owner">{{ kpi.owner }}</span>
-                <span class="gd-kpi-due">· Due {{ kpi.dueDate }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Linked Projects -->
-        <div class="gd-section">
-          <div class="gd-kpi-hdr">
-            <div class="gd-slabel" style="margin-bottom:0">Linked Projects</div>
-            <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Add project
-            </button>
-          </div>
-
-          <div v-if="goal.linkedProjects.length === 0" class="gd-empty-box">No projects linked yet.</div>
-          <div v-else class="gd-lp-list">
-            <NuxtLink v-for="lp in goal.linkedProjects" :key="lp.id" :to="`/projects/${lp.id}`" class="gd-lp-row">
-              <div class="gd-lp-key">{{ lp.key }}</div>
-              <div class="gd-lp-name">{{ lp.name }}</div>
-              <span class="gdh-status-chip" :class="lp.statusClass" style="font-size:10.5px">
-                <span class="gdh-dot"/>{{ lp.status }}
+              <div class="gdh-title">{{ goal.title }}</div>
+              <span class="gdh-status-chip" :class="goal.statusClass">
+                <svg v-if="goal.status === 'completed'" width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span v-else class="gdh-dot"/>
+                {{ goal.statusLabel }}
               </span>
-              <div class="gd-lp-prog">
-                <div class="gd-lp-track"><div class="gd-lp-fill" :style="{ width: lp.progress + '%', ...barColorObj(lp.progress) }"/></div>
-                <span class="gd-lp-pct">{{ lp.progress }}%</span>
-              </div>
-              <div class="gd-lp-tasks">{{ lp.tasks }} tasks</div>
-            </NuxtLink>
+            </div>
+          </div>
+          <div class="gdh-actions">
+            <button class="gdh-btn-ghost">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="13" r="1.5" fill="currentColor"/></svg>
+              More
+            </button>
+            <button class="gdh-btn-primary">Save changes</button>
           </div>
         </div>
 
-        <!-- Comments -->
-        <div class="gd-section">
-          <div class="gd-slabel">Comments</div>
-          <div v-for="(c, i) in goal.comments" :key="i" class="gd-comment">
-            <div class="gd-cav" :style="{ background: c.aBg, color: c.aColor }">{{ c.aInit }}</div>
-            <div class="gd-cbody">
-              <div class="gd-chead"><span class="gd-cauthor">{{ c.author }}</span><span class="gd-ctime">{{ c.time }}</span></div>
-              <div class="gd-ctext">{{ c.text }}</div>
-            </div>
+        <!-- meta row -->
+        <div class="gdh-meta">
+          <div class="gdh-meta-item">
+            <div class="gdh-av" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
+            <span>{{ goal.owner }}</span>
           </div>
-          <div v-if="goal.comments.length === 0" class="gd-empty-txt">No comments yet.</div>
-          <div class="gd-cinput-row">
-            <div class="gd-cav" style="background:#DBEAFE;color:#2563EB">RA</div>
-            <div class="gd-cinput">Add a comment...</div>
-            <div class="gd-send">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-6-5 12-2-5-5-1z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
+          <div class="gdh-meta-item">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9CA3AF" stroke-width="1.4"/><path d="M5 1v3M11 1v3M2 7h12" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Due {{ goal.dueDate }}
+          </div>
+          <div class="gdh-meta-item">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4h4.5l-3.5 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4.5L8 2z" stroke="#9CA3AF" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            {{ goal.category }}
+          </div>
+          <div class="gdh-prog-row">
+            <div class="gdh-prog-track"><div class="gdh-prog-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
+            <span class="gdh-prog-pct">{{ goal.current }}/{{ goal.target }} {{ goal.unit }}</span>
+            <span class="gdh-prog-num">{{ goal.progress }}%</span>
           </div>
         </div>
-      </div>
 
-      <!-- RIGHT PANEL -->
-      <div class="gd-side" v-show="showSide">
-        <div class="gd-side-top">
-          <button class="gd-side-toggle" @click="showSide = false" title="Hide panel">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
-            </svg>
+        <!-- TABS -->
+        <div class="gdh-tabs">
+          <button class="gdh-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M5 5.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Overview
+          </button>
+          <button class="gdh-tab" :class="{ active: activeTab === 'comments' }" @click="activeTab = 'comments'">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 4l6 5 6-5M2 4h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4z" stroke="currentColor" stroke-width="1.4"/></svg>
+            Comments
+            <span class="gdh-tab-badge">{{ goal.comments.length }}</span>
+          </button>
+          <button class="gdh-tab" :class="{ active: activeTab === 'activity' }" @click="activeTab = 'activity'">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Activity
           </button>
         </div>
-        <div class="gd-side-card">
-
-          <!-- Properties -->
-          <div class="gd-panel-sec">
-            <div class="gd-panel-hdr">
-              <span class="gd-panel-title">Properties</span>
-            </div>
-            <div class="gd-prop-row">
-              <div class="gd-prop-lbl">Status</div>
-              <div class="gd-prop-val"><span class="gdh-status-chip" :class="goal.statusClass"><span class="gdh-dot"/>{{ goal.statusLabel }}</span></div>
-            </div>
-            <div class="gd-prop-row">
-              <div class="gd-prop-lbl">Owner</div>
-              <div class="gd-prop-val" style="display:flex;align-items:center;gap:6px">
-                <div class="gd-tav" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
-                {{ goal.owner }}
-              </div>
-            </div>
-            <div class="gd-prop-row">
-              <div class="gd-prop-lbl">Due Date</div>
-              <div class="gd-prop-val">{{ goal.dueDate }}</div>
-            </div>
-            <div class="gd-prop-row">
-              <div class="gd-prop-lbl">Created</div>
-              <div class="gd-prop-val muted">{{ goal.createdDate }}</div>
-            </div>
-            <div class="gd-prop-row">
-              <div class="gd-prop-lbl">Category</div>
-              <div class="gd-prop-val">{{ goal.category }}</div>
-            </div>
-          </div>
-
-          <!-- Progress -->
-          <div class="gd-panel-sec">
-            <div class="gd-panel-hdr">
-              <span class="gd-panel-title">Progress</span>
-            </div>
-            <div class="gd-progress-block">
-              <div class="gd-prog-bar"><div class="gd-prog-bar-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
-              <div class="gd-prog-lbl">{{ goal.current }} / {{ goal.target }} {{ goal.unit }} · {{ goal.progress }}%</div>
-            </div>
-          </div>
-
-        </div><!-- /gd-side-card -->
       </div>
 
-      <!-- reopen -->
-      <button v-if="!showSide" class="gd-side-reopen" @click="showSide = true" title="Show panel">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-          <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
-        </svg>
-      </button>
+      <!-- BODY -->
+      <div class="gd-body" :class="{ 'gd-body--collapsed': !showSide }">
+        <!-- LEFT -->
+        <div class="gd-main">
+
+          <!-- OVERVIEW TAB -->
+          <template v-if="activeTab === 'overview'">
+
+            <!-- Description -->
+            <div class="gd-section">
+              <div class="gd-slabel">Description</div>
+              <div class="gd-desc">{{ goal.description }}</div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="gd-section">
+              <div class="gd-kpi-hdr">
+                <div class="gd-slabel" style="margin-bottom:0">KPIs</div>
+                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Add KPI
+                </button>
+              </div>
+
+              <div v-if="goal.kpis.length === 0" class="gd-empty-box">No KPIs defined yet.</div>
+              <div v-else class="gd-kpi-grid">
+                <div v-for="kpi in goal.kpis" :key="kpi.id" class="gd-kpi-card">
+                  <div class="gd-kpi-top">
+                    <div class="gd-kpi-name">{{ kpi.name }}</div>
+                    <span class="gdh-status-chip" :class="kpi.statusClass" style="font-size:10px">
+                      <span class="gdh-dot"/>{{ kpi.statusLabel ?? kpi.status }}
+                    </span>
+                  </div>
+                  <div class="gd-kpi-nums">
+                    <span class="gd-kpi-cur">{{ kpi.current }}</span>
+                    <span class="gd-kpi-sep">/</span>
+                    <span class="gd-kpi-tgt">{{ kpi.target }} {{ kpi.unit }}</span>
+                  </div>
+                  <div class="gd-kpi-bar-wrap">
+                    <div class="gd-kpi-bar"><div class="gd-kpi-fill" :style="{ width: kpiDonePct(kpi) + '%', ...barColorObj(kpiDonePct(kpi)) }"/></div>
+                    <span class="gd-kpi-pct">{{ kpiDonePct(kpi) }}%</span>
+                  </div>
+                  <div class="gd-kpi-foot">
+                    <div class="gd-tav" :style="{ background: kpi.oBg, color: kpi.oColor }">{{ kpi.oInit }}</div>
+                    <span class="gd-kpi-owner">{{ kpi.owner }}</span>
+                    <span class="gd-kpi-due">· Due {{ kpi.dueDate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linked Projects -->
+            <div class="gd-section">
+              <div class="gd-kpi-hdr">
+                <div class="gd-slabel" style="margin-bottom:0">Linked Projects</div>
+                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Add project
+                </button>
+              </div>
+
+              <div v-if="goal.linkedProjects.length === 0" class="gd-empty-box">No projects linked yet.</div>
+              <div v-else class="gd-lp-list">
+                <NuxtLink v-for="lp in goal.linkedProjects" :key="lp.id" :to="`/projects/${lp.id}`" class="gd-lp-row">
+                  <div class="gd-lp-key">{{ lp.key }}</div>
+                  <div class="gd-lp-name">{{ lp.name }}</div>
+                  <span class="gdh-status-chip" :class="lp.statusClass" style="font-size:10.5px">
+                    <span class="gdh-dot"/>{{ lp.status }}
+                  </span>
+                  <div class="gd-lp-prog">
+                    <div class="gd-lp-track"><div class="gd-lp-fill" :style="{ width: lp.progress + '%', ...barColorObj(lp.progress) }"/></div>
+                    <span class="gd-lp-pct">{{ lp.progress }}%</span>
+                  </div>
+                  <div class="gd-lp-tasks">{{ lp.tasks }} tasks</div>
+                </NuxtLink>
+              </div>
+            </div>
+
+          </template>
+
+          <!-- COMMENTS TAB -->
+          <template v-if="activeTab === 'comments'">
+            <div class="gd-section">
+              <div class="gd-slabel">Comments</div>
+              <div v-for="(c, i) in goal.comments" :key="i" class="gd-comment">
+                <div class="gd-cav" :style="{ background: c.aBg, color: c.aColor }">{{ c.aInit }}</div>
+                <div class="gd-cbody">
+                  <div class="gd-chead"><span class="gd-cauthor">{{ c.author }}</span><span class="gd-ctime">{{ c.time }}</span></div>
+                  <div class="gd-ctext">{{ c.text }}</div>
+                </div>
+              </div>
+              <div v-if="goal.comments.length === 0" class="gd-empty-txt">No comments yet.</div>
+              <div class="gd-cinput-row">
+                <div class="gd-cav" style="background:#DBEAFE;color:#2563EB">RA</div>
+                <div class="gd-cinput">Add a comment...</div>
+                <button class="gd-send">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l12-6-5 12-2-5-5-1z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+          </template>
+
+          <!-- ACTIVITY TAB -->
+          <template v-if="activeTab === 'activity'">
+            <div class="gd-section">
+              <div class="gd-slabel">Activity</div>
+              <div v-if="goal.activity.length" class="gd-act-list">
+                <div v-for="a in goal.activity" :key="a.id" class="gd-act-row">
+                  <div class="gd-act-av" :style="{ background: a.aBg, color: a.aColor }">{{ a.aInit }}</div>
+                  <div class="gd-act-body">
+                    <span class="gd-act-name">{{ a.author }}</span>
+                    <span class="gd-act-time">· {{ a.time }}</span>
+                    <div class="gd-act-text">
+                      {{ a.text }}
+                      <span v-if="a.target" class="gd-act-target">{{ a.target }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="gd-empty-txt">No activity yet.</div>
+            </div>
+          </template>
+
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="gd-side" v-show="showSide">
+          <div class="gd-side-top">
+            <button class="gd-side-toggle" @click="showSide = false" title="Hide panel">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+              </svg>
+            </button>
+          </div>
+          <div class="gd-side-card">
+
+            <!-- Properties -->
+            <div class="gd-panel-sec">
+              <div class="gd-panel-hdr">
+                <span class="gd-panel-title">Properties</span>
+              </div>
+              <div class="gd-prop-row">
+                <div class="gd-prop-lbl">Status</div>
+                <div class="gd-prop-val"><span class="gdh-status-chip" :class="goal.statusClass"><span class="gdh-dot"/>{{ goal.statusLabel }}</span></div>
+              </div>
+              <div class="gd-prop-row">
+                <div class="gd-prop-lbl">Owner</div>
+                <div class="gd-prop-val" style="display:flex;align-items:center;gap:6px">
+                  <div class="gd-tav" :style="{ background: goal.oBg, color: goal.oColor }">{{ goal.oInit }}</div>
+                  {{ goal.owner }}
+                </div>
+              </div>
+              <div class="gd-prop-row">
+                <div class="gd-prop-lbl">Due Date</div>
+                <div class="gd-prop-val">{{ goal.dueDate }}</div>
+              </div>
+              <div class="gd-prop-row">
+                <div class="gd-prop-lbl">Created</div>
+                <div class="gd-prop-val muted">{{ goal.createdDate }}</div>
+              </div>
+              <div class="gd-prop-row">
+                <div class="gd-prop-lbl">Category</div>
+                <div class="gd-prop-val">{{ goal.category }}</div>
+              </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="gd-panel-sec">
+              <div class="gd-panel-hdr">
+                <span class="gd-panel-title">Progress</span>
+              </div>
+              <div class="gd-progress-block">
+                <div class="gd-prog-bar"><div class="gd-prog-bar-fill" :style="{ width: goal.progress + '%', ...barColorObj(goal.progress) }"/></div>
+                <div class="gd-prog-lbl">{{ goal.current }} / {{ goal.target }} {{ goal.unit }} · {{ goal.progress }}%</div>
+              </div>
+            </div>
+
+          </div><!-- /gd-side-card -->
+        </div>
+
+        <!-- reopen -->
+        <button v-if="!showSide" class="gd-side-reopen" @click="showSide = true" title="Show panel">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M10.5 2.5v11" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+        </button>
+      </div>
     </div>
-  </div>
+  </NuxtLayout>
 </template>
 
 <style scoped>
@@ -382,7 +441,7 @@ function barColorObj(pct: number): Record<string, string> {
 
 /* tabs */
 .gdh-tabs { display:flex; align-items:center; border-top:1px solid #F3F4F6; margin-top:4px; }
-.gdh-tab { display:flex; align-items:center; gap:5px; padding:0 2px; height:38px; margin-right:20px; font-size:12.5px; font-weight:500; color:#9CA3AF; cursor:pointer; border-bottom:2px solid transparent; user-select:none; }
+.gdh-tab { display:flex; align-items:center; gap:5px; padding:0 2px; height:38px; margin-right:20px; font-size:12.5px; font-weight:500; color:#9CA3AF; cursor:pointer; border:none; border-bottom:2px solid transparent; user-select:none; background:transparent; font-family:inherit; }
 .gdh-tab:hover { color:#4B5563; }
 .gdh-tab.active { color:oklch(60.6% 0.25 292.717); border-bottom-color:oklch(60.6% 0.25 292.717); }
 .gdh-tab-badge { font-size:10px; font-weight:600; background:oklch(96% 0.04 292.717); color:oklch(60.6% 0.25 292.717); padding:1px 5px; border-radius:10px; }
@@ -448,7 +507,7 @@ function barColorObj(pct: number): Record<string, string> {
 
 /* empty states */
 .gd-empty-box { border:1px dashed #E5E7EB; border-radius:8px; padding:24px; text-align:center; color:#9CA3AF; font-size:13px; }
-.gd-empty-txt { color:#9CA3AF; font-size:13px; margin-bottom:16px; }
+.gd-empty-txt { color:#9CA3AF; font-size:13px; padding:12px 0; }
 
 /* comments */
 .gd-comment { display:flex; gap:10px; margin-bottom:16px; }
@@ -461,8 +520,18 @@ function barColorObj(pct: number): Record<string, string> {
 .gd-cinput-row { display:flex; gap:10px; align-items:flex-start; margin-top:16px; }
 .gd-cinput { flex:1; border:1px solid #E5E7EB; border-radius:8px; padding:9px 14px; font-size:13px; color:#9CA3AF; cursor:text; min-height:40px; }
 .gd-cinput:hover { border-color:#D1D5DB; }
-.gd-send { width:32px; height:32px; background:oklch(60.6% 0.25 292.717); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; margin-top:1px; }
+.gd-send { width:32px; height:32px; background:oklch(60.6% 0.25 292.717); border:none; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; margin-top:1px; padding:0; }
 .gd-send:hover { background:oklch(52% 0.27 292.717); }
+
+/* activity */
+.gd-act-list { display:flex; flex-direction:column; gap:14px; }
+.gd-act-row { display:flex; align-items:flex-start; gap:10px; }
+.gd-act-av { width:28px; height:28px; border-radius:50%; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.gd-act-body { flex:1; }
+.gd-act-name { font-size:12.5px; font-weight:600; color:#111827; }
+.gd-act-time { font-size:11px; color:#9CA3AF; margin-left:5px; }
+.gd-act-text { font-size:12.5px; color:#4B5563; margin-top:1px; }
+.gd-act-target { font-style:italic; color:#111827; }
 
 /* ── PROPERTIES ── */
 .gd-prop-row { display:flex; align-items:center; justify-content:space-between; min-height:30px; border-radius:6px; padding:2px 4px; margin-bottom:1px; cursor:pointer; }
