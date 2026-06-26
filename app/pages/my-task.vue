@@ -326,7 +326,6 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
 
       <!-- List / Table toggle -->
       <div class="proj-view-switcher flex items-center gap-3">
-        <span class="text-[12px] text-gray-500">{{ allFilteredTasks.length }} tasks</span>
         <button class="proj-view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">List</button>
         <button class="proj-view-btn" :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'">Table</button>
       </div>
@@ -416,7 +415,7 @@ const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
               </button>
               <div
                 v-if="actionOpen === `list-${task.id}`"
-                class="task-action-dd"
+                class="task-action-dd task-action-dd--right"
                 @click.stop
               >
                 <button class="task-action-item" @click.stop="viewTask(task, group.id)">
