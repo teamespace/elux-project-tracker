@@ -71,8 +71,8 @@ const db: GGoal[] = [
     status: 'on-track', statusClass: 'gs-track', statusLabel: 'On Track',
     current: 67, target: 100, unit: 'endpoints', progress: 67,
     kpis: [
-      { id: 1, name: 'Endpoints documented', current: 67, target: 100, unit: 'endpoints', status: 'on-track', statusClass: 'gs-track', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', aColor: '#DC2626', dueDate: 'Sep 2026' },
-      { id: 2, name: 'Coverage score', current: 72, target: 95, unit: '%', status: 'at-risk', statusClass: 'gs-risk', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', aColor: '#DC2626', dueDate: 'Sep 2026' },
+      { id: 1, name: 'Endpoints documented', current: 67, target: 100, unit: 'endpoints', status: 'on-track', statusClass: 'gs-track', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
+      { id: 2, name: 'Coverage score', current: 72, target: 95, unit: '%', status: 'at-risk', statusClass: 'gs-risk', owner: 'Dito', oInit: 'D', oBg: '#FEE2E2', oColor: '#DC2626', dueDate: 'Sep 2026' },
     ],
     linkedProjects: [
       { id: 'p6', name: 'API Gateway v2', key: 'API', status: 'delayed', statusClass: 'gs-delayed', progress: 15, tasks: 12 },
@@ -110,7 +110,7 @@ const db: GGoal[] = [
   },
 ]
 
-const goal = computed(() => db.find(g => g.id === id) ?? db[0])
+const goal = computed(() => db.find(g => g.id === id) ?? db[0]!)
 const kpiDonePct = (kpi: GKpi) => Math.round((kpi.current / kpi.target) * 100)
 const showSide = ref(true)
 
@@ -118,6 +118,64 @@ function barColorObj(pct: number): Record<string, string> {
   if (pct >= 80) return { background: '#22C55E' }
   if (pct >= 50) return { background: 'oklch(60.6% 0.25 292.717)' }
   return { background: '#F59E0B' }
+}
+
+const { open: openKpiSlideOver } = useKpiSlideOver()
+const { open: openProjectLinkSlideOver } = useProjectLinkSlideOver()
+
+function addKpi(payload: import('~/components/KpiCreateContent.vue').KpiPayload) {
+  const g = goal.value
+  if (!g) return
+  g.kpis.push({
+    id: g.kpis.length + 1,
+    name: payload.name,
+    current: payload.current,
+    target: payload.target,
+    unit: payload.unit,
+    status: payload.status,
+    statusClass: payload.statusClass,
+    statusLabel: payload.statusLabel,
+    owner: payload.owner.name,
+    oInit: payload.owner.initials,
+    oBg: payload.owner.bg,
+    oColor: payload.owner.color,
+    dueDate: payload.dueDate,
+  })
+  g.activity.unshift({
+    id: Date.now(),
+    author: g.owner,
+    aInit: g.oInit,
+    aBg: g.oBg,
+    aColor: g.oColor,
+    time: 'Just now',
+    text: 'Added KPI',
+    target: payload.name,
+  })
+}
+
+function linkProject(project: import('~/shared/projects').Project) {
+  const g = goal.value
+  if (!g) return
+  if (g.linkedProjects.some(p => p.id === project.id)) return
+  g.linkedProjects.push({
+    id: project.id,
+    name: project.name,
+    key: project.key,
+    status: project.status,
+    statusClass: project.status,
+    progress: project.progress,
+    tasks: project.openTasks,
+  })
+  g.activity.unshift({
+    id: Date.now(),
+    author: g.owner,
+    aInit: g.oInit,
+    aBg: g.oBg,
+    aColor: g.oColor,
+    time: 'Just now',
+    text: 'Linked project',
+    target: project.name,
+  })
 }
 </script>
 
@@ -160,13 +218,7 @@ function barColorObj(pct: number): Record<string, string> {
               </span>
             </div>
           </div>
-          <div class="gdh-actions">
-            <button class="gdh-btn-ghost">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="3" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="13" r="1.5" fill="currentColor"/></svg>
-              More
-            </button>
-            <button class="gdh-btn-primary">Save changes</button>
-          </div>
+          <div class="gdh-actions" />
         </div>
 
         <!-- meta row -->
@@ -226,7 +278,7 @@ function barColorObj(pct: number): Record<string, string> {
             <div class="gd-section">
               <div class="gd-kpi-hdr">
                 <div class="gd-slabel" style="margin-bottom:0">KPIs</div>
-                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
+                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px" @click="openKpiSlideOver">
                   <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                   Add KPI
                 </button>
@@ -263,7 +315,7 @@ function barColorObj(pct: number): Record<string, string> {
             <div class="gd-section">
               <div class="gd-kpi-hdr">
                 <div class="gd-slabel" style="margin-bottom:0">Linked Projects</div>
-                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px">
+                <button class="gdh-btn-ghost" style="height:26px;padding:0 10px;font-size:11.5px" @click="openProjectLinkSlideOver">
                   <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                   Add project
                 </button>
@@ -398,6 +450,9 @@ function barColorObj(pct: number): Record<string, string> {
         </button>
       </div>
     </div>
+
+    <KpiSlideOver @submit="addKpi" />
+    <ProjectLinkSlideOver :linked-ids="goal.linkedProjects.map(p => p.id)" @link="linkProject" />
   </NuxtLayout>
 </template>
 
