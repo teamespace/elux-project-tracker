@@ -1,0 +1,2761 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Elux Project Tracker API",
+    "version": "1.0.0",
+    "description": "Complete API for the Elux Project Tracker application. Manages goals, projects, tasks, subtasks, comments, documents, templates, time entries, notifications, and user management."
+  },
+  "servers": [
+    {
+      "url": "https://pt.eluxemang.top",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session",
+        "description": "Session cookie set after login. Required for all endpoints except /api/auth/login and /api/auth/logout."
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "user-rasya" },
+          "name": { "type": "string" },
+          "initials": { "type": "string" },
+          "avatar": { "type": "string", "nullable": true },
+          "role": { "type": "string", "enum": ["admin", "manager", "member", "intern"] },
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "UserBrief": {
+        "type": "object",
+        "properties": {
+          "initials": { "type": "string" },
+          "name": { "type": "string" },
+          "avatar": { "type": "string", "nullable": true }
+        }
+      },
+      "Goal": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "statusLabel": { "type": "string" },
+          "progress": { "type": "integer" },
+          "ownerId": { "type": "string", "nullable": true },
+          "quarter": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "owner": { "$ref": "#/components/schemas/UserBrief" },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "color": { "type": "string" }
+              }
+            }
+          },
+          "kpis": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KPI" }
+          },
+          "linkedProjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "project": { "type": "string" },
+                "status": { "type": "string" },
+                "statusLabel": { "type": "string" },
+                "progress": { "type": "integer" },
+                "taskCount": { "type": "integer" }
+              }
+            }
+          },
+          "activity": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ActivityItem" }
+          }
+        }
+      },
+      "GoalDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Goal" },
+          {
+            "type": "object",
+            "properties": {
+              "comments": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        ]
+      },
+      "KPI": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "goalId": { "type": "string" },
+          "name": { "type": "string" },
+          "currentValue": { "type": "string" },
+          "targetValue": { "type": "string" },
+          "progress": { "type": "integer" },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "statusLabel": { "type": "string" },
+          "ownerId": { "type": "string", "nullable": true },
+          "dueDate": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "owner": { "$ref": "#/components/schemas/UserBrief" }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "statusLabel": { "type": "string" },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "priorityLabel": { "type": "string" },
+          "progress": { "type": "integer" },
+          "openTasks": { "type": "integer" },
+          "atRiskTasks": { "type": "integer" },
+          "doneT": { "type": "integer" },
+          "totalT": { "type": "integer" },
+          "dueDate": { "type": "string" },
+          "createdDate": { "type": "string" },
+          "ownerId": { "type": "string", "nullable": true },
+          "riskLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+          "riskReason": { "type": "string" },
+          "color": { "type": "string" },
+          "category": { "type": "string" },
+          "labels": { "type": "string" },
+          "attachCount": { "type": "integer" },
+          "commentCount": { "type": "integer" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "assignees": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "seed": { "type": "string" },
+                "bg": { "type": "string" },
+                "name": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "ProjectDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Project" },
+          {
+            "type": "object",
+            "properties": {
+              "owner": { "$ref": "#/components/schemas/UserBrief" },
+              "assignees": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "userId": { "type": "string" },
+                    "seed": { "type": "string" },
+                    "bg": { "type": "string" },
+                    "name": { "type": "string" }
+                  }
+                }
+              },
+              "childTasks": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Task" }
+              },
+              "comments": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Comment" }
+              },
+              "activities": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ActivityItem" }
+              }
+            }
+          }
+        ]
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["todo", "in-progress", "in-review", "done", "overdue"] },
+          "statusLabel": { "type": "string" },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "priorityLabel": { "type": "string" },
+          "assigneeId": { "type": "string", "nullable": true },
+          "projectId": { "type": "string", "nullable": true },
+          "projectName": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "dueType": { "type": "string", "enum": ["today", "week", "overdue", "none", "all"] },
+          "progress": { "type": "integer" },
+          "commentCount": { "type": "integer" },
+          "attachmentCount": { "type": "integer" },
+          "done": { "type": "boolean" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": { "type": "string" },
+                "color": { "type": "string" }
+              }
+            }
+          },
+          "assignee": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "initials": { "type": "string" },
+              "name": { "type": "string" },
+              "avatar": { "type": "string", "nullable": true }
+            },
+            "nullable": true
+          },
+          "subtasks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Subtask" }
+          }
+        }
+      },
+      "TaskDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Task" },
+          {
+            "type": "object",
+            "properties": {
+              "comments": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        ]
+      },
+      "Subtask": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "taskId": { "type": "string" },
+          "title": { "type": "string" },
+          "done": { "type": "boolean" },
+          "dueDate": { "type": "string" },
+          "assigneeName": { "type": "string" },
+          "sortOrder": { "type": "integer" }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "parentType": { "type": "string", "enum": ["task", "project", "goal"] },
+          "parentId": { "type": "string" },
+          "authorId": { "type": "string" },
+          "text": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "$ref": "#/components/schemas/UserBrief" }
+        }
+      },
+      "Doc": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "goalId": { "type": "string", "nullable": true },
+          "projectId": { "type": "string", "nullable": true },
+          "taskId": { "type": "string", "nullable": true },
+          "createdBy": { "type": "string" },
+          "labels": { "type": "string" },
+          "isPublic": { "type": "boolean" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "author": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "initials": { "type": "string" },
+              "name": { "type": "string" },
+              "avatar": { "type": "string", "nullable": true }
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Template": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "entityType": { "type": "string", "enum": ["epic", "task"] },
+          "payload": { "type": "string", "description": "JSON string of prefilled fields" },
+          "createdBy": { "type": "string" },
+          "isGlobal": { "type": "boolean" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "TimeEntry": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "taskId": { "type": "string" },
+          "userId": { "type": "string" },
+          "hours": { "type": "number" },
+          "note": { "type": "string" },
+          "loggedDate": { "type": "string", "format": "date" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/UserBrief" }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "userId": { "type": "string" },
+          "actorId": { "type": "string", "nullable": true },
+          "entityType": { "type": "string", "enum": ["task", "project", "goal", "comment"] },
+          "entityId": { "type": "string" },
+          "action": { "type": "string", "enum": ["assigned", "commented", "status_changed", "mentioned", "blocked", "unblocked"] },
+          "message": { "type": "string" },
+          "isRead": { "type": "boolean" },
+          "createdAt": { "type": "string" },
+          "actor": { "$ref": "#/components/schemas/UserBrief" }
+        }
+      },
+      "ActivityItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "actor": { "$ref": "#/components/schemas/UserBrief" },
+          "action": { "type": "string" },
+          "target": { "type": "string" },
+          "time": { "type": "string" },
+          "entityType": { "type": "string" },
+          "entityId": { "type": "string" },
+          "actorId": { "type": "string", "nullable": true },
+          "actorName": { "type": "string" },
+          "actorInitials": { "type": "string" },
+          "actorAvatar": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string" }
+        }
+      },
+      "CriticalIssue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "subtitle": { "type": "string" },
+          "project": { "type": "string" },
+          "assigneeName": { "type": "string" },
+          "priority": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "priorityLabel": { "type": "string" },
+          "status": { "type": "string", "enum": ["Overdue", "At Risk", "Not Started", "Resolved"] },
+          "statusLabel": { "type": "string" },
+          "createdAt": { "type": "string" }
+        }
+      },
+      "TeamMember": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "initials": { "type": "string" },
+          "avatar": { "type": "string", "nullable": true },
+          "role": { "type": "string" },
+          "todo": { "type": "integer" },
+          "inProgress": { "type": "integer" },
+          "done": { "type": "integer" },
+          "assigned": { "type": "integer" },
+          "capacity": { "type": "integer" },
+          "status": { "type": "string", "enum": ["overloaded", "capacity", "balanced", "available"] },
+          "statusLabel": { "type": "string" }
+        }
+      },
+      "Dashboard": {
+        "type": "object",
+        "properties": {
+          "stats": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer" },
+              "done": { "type": "integer" },
+              "inProgress": { "type": "integer" },
+              "overdue": { "type": "integer" },
+              "atRisk": { "type": "integer" },
+              "totalProjects": { "type": "integer" }
+            }
+          },
+          "criticalIssues": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CriticalIssue" }
+          },
+          "activity": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ActivityItem" }
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Task" }
+          },
+          "projects": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Project" }
+          },
+          "goals": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Goal" }
+          }
+        }
+      },
+      "OkResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" }
+        }
+      },
+      "IdResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "statusCode": { "type": "integer" },
+          "statusMessage": { "type": "string" }
+        }
+      },
+      "CreateGoalRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "statusLabel": { "type": "string" },
+          "progress": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "ownerId": { "type": "string" },
+          "quarter": { "type": "string" },
+          "dueDate": { "type": "string" }
+        }
+      },
+      "UpdateGoalRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "statusLabel": { "type": "string" },
+          "progress": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "ownerId": { "type": "string" },
+          "quarter": { "type": "string" },
+          "dueDate": { "type": "string" }
+        }
+      },
+      "CreateProjectRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "key": { "type": "string", "minLength": 1, "maxLength": 10 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "ownerId": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "color": { "type": "string" },
+          "category": { "type": "string" },
+          "riskLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+          "riskReason": { "type": "string" },
+          "assignees": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "UpdateProjectRequest": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string", "minLength": 1, "maxLength": 10 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["on-track", "at-risk", "delayed", "not-started"] },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "ownerId": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "color": { "type": "string" },
+          "category": { "type": "string" },
+          "riskLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+          "riskReason": { "type": "string" },
+          "assignees": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["todo", "in-progress", "in-review", "done", "overdue"] },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "assigneeId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "projectName": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "dueType": { "type": "string", "enum": ["today", "week", "overdue", "none", "all"] },
+          "done": { "type": "boolean" }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "status": { "type": "string", "enum": ["todo", "in-progress", "in-review", "done", "overdue"] },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "assigneeId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "projectName": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "dueType": { "type": "string", "enum": ["today", "week", "overdue", "none", "all"] },
+          "done": { "type": "boolean" }
+        }
+      },
+      "CreateCommentRequest": {
+        "type": "object",
+        "required": ["parentType", "parentId", "text"],
+        "properties": {
+          "parentType": { "type": "string", "enum": ["task", "project", "goal"] },
+          "parentId": { "type": "string" },
+          "text": { "type": "string", "minLength": 1, "maxLength": 5000 }
+        }
+      },
+      "UpdateCommentRequest": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1, "maxLength": 5000 }
+        }
+      },
+      "CreateDocRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "content": { "type": "string" },
+          "goalId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "taskId": { "type": "string" },
+          "labels": { "type": "string" },
+          "isPublic": { "type": "boolean" }
+        }
+      },
+      "UpdateDocRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "content": { "type": "string" },
+          "goalId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "taskId": { "type": "string" },
+          "labels": { "type": "string" },
+          "isPublic": { "type": "boolean" }
+        }
+      },
+      "CreateTemplateRequest": {
+        "type": "object",
+        "required": ["name", "entityType"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "description": { "type": "string" },
+          "entityType": { "type": "string", "enum": ["epic", "task"] },
+          "payload": { "type": "string", "description": "JSON string of prefilled fields" },
+          "isGlobal": { "type": "boolean" }
+        }
+      },
+      "ApplyTemplateRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "assigneeId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "projectName": { "type": "string" },
+          "dueDate": { "type": "string" }
+        }
+      },
+      "ApplyTemplateResponse": {
+        "type": "object",
+        "properties": {
+          "taskId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "ok": { "type": "boolean" }
+        }
+      },
+      "CreateTimeEntryRequest": {
+        "type": "object",
+        "required": ["taskId", "hours", "loggedDate"],
+        "properties": {
+          "taskId": { "type": "string" },
+          "hours": { "type": "number", "minimum": 0.1, "maximum": 168 },
+          "note": { "type": "string", "maxLength": 500 },
+          "loggedDate": { "type": "string", "description": "ISO date string" }
+        }
+      },
+      "AddDependencyRequest": {
+        "type": "object",
+        "required": ["dependsOnTaskId"],
+        "properties": {
+          "dependsOnTaskId": { "type": "string" }
+        }
+      },
+      "TaskDependencies": {
+        "type": "object",
+        "properties": {
+          "blockedBy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "status": { "type": "string" }
+              }
+            }
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "status": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "AddMyDayRequest": {
+        "type": "object",
+        "required": ["taskId"],
+        "properties": {
+          "taskId": { "type": "string" }
+        }
+      },
+      "UpdateSubtaskRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "done": { "type": "boolean" },
+          "dueDate": { "type": "string" },
+          "assigneeName": { "type": "string" },
+          "sortOrder": { "type": "integer" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "CreateMemberRequest": {
+        "type": "object",
+        "required": ["name", "email", "password", "role"],
+        "properties": {
+          "name": { "type": "string", "minLength": 2 },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "role": { "type": "string", "enum": ["admin", "manager", "member", "intern"] }
+        }
+      },
+      "CreateMemberResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "MyDayResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "ok": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "Auth", "description": "Authentication endpoints (no session required)" },
+    { "name": "Goals", "description": "Goal management" },
+    { "name": "Projects", "description": "Project management" },
+    { "name": "Tasks", "description": "Task management" },
+    { "name": "Subtasks", "description": "Subtask management" },
+    { "name": "Comments", "description": "Comment management" },
+    { "name": "Docs", "description": "Document management" },
+    { "name": "Templates", "description": "Template management" },
+    { "name": "Time", "description": "Time tracking" },
+    { "name": "MyDay", "description": "My Day feature" },
+    { "name": "Notifications", "description": "User notifications" },
+    { "name": "Users", "description": "User listing" },
+    { "name": "Members", "description": "Member/user creation" },
+    { "name": "Dashboard", "description": "Dashboard overview" },
+    { "name": "Team", "description": "Team overview and workload" },
+    { "name": "Search", "description": "Global search" },
+    { "name": "Activity", "description": "Activity feed" },
+    { "name": "CriticalIssues", "description": "Critical issues listing" },
+    { "name": "MyWork", "description": "Current user's assigned tasks" }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "description": "Authenticate with email and password. Sets session cookie on success.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout",
+        "description": "Clears the user session.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get current user",
+        "description": "Returns the authenticated user's session info. Requires session cookie.",
+        "responses": {
+          "200": {
+            "description": "Current user data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "initials": { "type": "string" },
+                    "avatar": { "type": "string", "nullable": true },
+                    "role": { "type": "string", "enum": ["admin", "manager", "member", "intern"] }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/goals": {
+      "get": {
+        "tags": ["Goals"],
+        "summary": "List all goals",
+        "description": "Returns all goals with enriched owner, labels, KPIs, and linked projects.",
+        "responses": {
+          "200": {
+            "description": "Array of goals",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Goal" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Goals"],
+        "summary": "Create a goal",
+        "description": "Create a new goal. Requires admin or manager role.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateGoalRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goal created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/goals/{id}": {
+      "get": {
+        "tags": ["Goals"],
+        "summary": "Get goal detail",
+        "description": "Returns a single goal with full detail including comments and activity.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Goal ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goal detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GoalDetail" }
+              }
+            }
+          },
+          "404": {
+            "description": "Goal not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Goals"],
+        "summary": "Update a goal",
+        "description": "Update an existing goal. Requires admin or manager role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Goal ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateGoalRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goal updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Goals"],
+        "summary": "Delete a goal",
+        "description": "Delete a goal. Requires admin role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Goal ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goal deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Goal not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "List all projects",
+        "description": "Returns all projects with their assignees.",
+        "responses": {
+          "200": {
+            "description": "Array of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Project" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create a project",
+        "description": "Create a new project. Requires admin or manager role.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateProjectRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get project detail",
+        "description": "Returns a single project with owner, assignees, child tasks, comments, and activities.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Project ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectDetail" }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Update a project",
+        "description": "Update an existing project. Requires admin or manager role. Assignees array replaces all existing assignees.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Project ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateProjectRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Projects"],
+        "summary": "Delete a project",
+        "description": "Delete a project. Requires admin role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Project ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "List tasks",
+        "description": "Returns all tasks, optionally filtered by projectId, assigneeId, or status.",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by project ID"
+          },
+          {
+            "name": "assigneeId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by assignee user ID"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["todo", "in-progress", "in-review", "done", "overdue"] },
+            "description": "Filter by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Tasks"],
+        "summary": "Create a task",
+        "description": "Create a new task. Requires authenticated user (admin, manager, or member).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{id}": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get task detail",
+        "description": "Returns a single task with subtasks, labels, and comments.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskDetail" }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Tasks"],
+        "summary": "Update a task",
+        "description": "Update an existing task. Requires authentication. Members can only edit their own tasks. Updates project progress when status changes to done.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (members can only edit own tasks)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Delete a task",
+        "description": "Delete a task. Admins/managers can delete any task; members can only delete their own.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{id}/dependencies": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get task dependencies",
+        "description": "Returns both tasks that block this task and tasks that this task blocks.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dependencies",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskDependencies" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Tasks"],
+        "summary": "Add a dependency",
+        "description": "Add a dependency between tasks. Validates no circular dependencies. Requires admin or manager role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddDependencyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dependency added",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or circular dependency",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{id}/dependencies/{depId}": {
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Remove a dependency",
+        "description": "Remove a specific dependency from a task. Requires admin or manager role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Task ID"
+          },
+          {
+            "name": "depId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Dependency task ID to remove"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dependency removed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subtasks/{id}": {
+      "put": {
+        "tags": ["Subtasks"],
+        "summary": "Update a subtask",
+        "description": "Update a subtask's title, done status, due date, assignee, or sort order. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Subtask ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateSubtaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subtask updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Subtasks"],
+        "summary": "Delete a subtask",
+        "description": "Delete a subtask. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Subtask ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subtask deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments": {
+      "post": {
+        "tags": ["Comments"],
+        "summary": "Create a comment",
+        "description": "Add a comment to a task, project, or goal. Requires authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCommentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments/{id}": {
+      "patch": {
+        "tags": ["Comments"],
+        "summary": "Update a comment",
+        "description": "Edit comment text. Only the author or admin can edit. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Comment ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCommentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (only author or admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Comments"],
+        "summary": "Delete a comment",
+        "description": "Delete a comment. Only the author or admin can delete. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Comment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (only author or admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs": {
+      "get": {
+        "tags": ["Docs"],
+        "summary": "List documents",
+        "description": "Returns all documents, optionally filtered by projectId or goalId.",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by project ID"
+          },
+          {
+            "name": "goalId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by goal ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Doc" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Docs"],
+        "summary": "Create a document",
+        "description": "Create a new document. Requires authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateDocRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs/{id}": {
+      "get": {
+        "tags": ["Docs"],
+        "summary": "Get document detail",
+        "description": "Returns a single document with author info.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Document ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Doc" }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Docs"],
+        "summary": "Update a document",
+        "description": "Update an existing document. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Document ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateDocRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Docs"],
+        "summary": "Delete a document",
+        "description": "Delete a document. Requires admin or manager role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Document ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/templates": {
+      "get": {
+        "tags": ["Templates"],
+        "summary": "List templates",
+        "description": "Returns templates accessible to the current user (global templates + own templates). Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Array of templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Template" }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Templates"],
+        "summary": "Create a template",
+        "description": "Create a new template. Requires admin or manager role.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTemplateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/templates/{id}": {
+      "delete": {
+        "tags": ["Templates"],
+        "summary": "Delete a template",
+        "description": "Delete a template. Only the creator or admin can delete. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Template ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (only creator or admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/templates/{id}/apply": {
+      "post": {
+        "tags": ["Templates"],
+        "summary": "Apply a template",
+        "description": "Apply a template to create a task (entityType=task) or project (entityType=epic). Requires admin or manager role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Template ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplyTemplateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template applied",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApplyTemplateResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin or manager)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/time": {
+      "get": {
+        "tags": ["Time"],
+        "summary": "List time entries",
+        "description": "Returns all time entries, optionally filtered by taskId or userId.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by task ID"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by user ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of time entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TimeEntry" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Time"],
+        "summary": "Create a time entry",
+        "description": "Log time against a task. Requires authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTimeEntryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Time entry created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IdResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/time/{id}": {
+      "delete": {
+        "tags": ["Time"],
+        "summary": "Delete a time entry",
+        "description": "Delete a time entry. Only the owner or admin can delete. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Time entry ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Time entry deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (only owner or admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Time entry not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my-day": {
+      "get": {
+        "tags": ["MyDay"],
+        "summary": "Get My Day tasks",
+        "description": "Returns the current user's My Day tasks for a given date. Requires authentication.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "schema": { "type": "string", "format": "date" },
+            "description": "Date in ISO format (YYYY-MM-DD). Defaults to today."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of tasks for the day",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["MyDay"],
+        "summary": "Add task to My Day",
+        "description": "Add a task to the current user's My Day for today. If already exists, returns existing entry. Requires authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddMyDayRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task added to My Day",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MyDayResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my-day/{id}": {
+      "delete": {
+        "tags": ["MyDay"],
+        "summary": "Remove task from My Day",
+        "description": "Remove a task from the current user's My Day. Users can only remove their own entries. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "My Day entry ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task removed from My Day",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or not owned by user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get notifications",
+        "description": "Returns the current user's latest 50 notifications. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Array of notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Notification" }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/read-all": {
+      "patch": {
+        "tags": ["Notifications"],
+        "summary": "Mark all notifications read",
+        "description": "Marks all notifications for the current user as read. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "All notifications marked read",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "patch": {
+        "tags": ["Notifications"],
+        "summary": "Mark a notification as read",
+        "description": "Marks a single notification as read.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Notification ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked read",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OkResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List all users",
+        "description": "Returns all users (without password hashes).",
+        "responses": {
+          "200": {
+            "description": "Array of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/members": {
+      "post": {
+        "tags": ["Members"],
+        "summary": "Create a new member",
+        "description": "Create a new user account. Requires admin role.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMemberRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateMemberResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed (name, email, password, or role issues)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires admin)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "409": {
+            "description": "User with this email already exists",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Get dashboard data",
+        "description": "Returns dashboard stats, critical issues, and recent activity.",
+        "responses": {
+          "200": {
+            "description": "Dashboard data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Dashboard" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/team": {
+      "get": {
+        "tags": ["Team"],
+        "summary": "Get team overview",
+        "description": "Returns all users with their workload stats (todo, in progress, done counts) and capacity status.",
+        "responses": {
+          "200": {
+            "description": "Array of team members with stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TeamMember" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search across tasks, projects, and goals",
+        "description": "Searches by title/name across tasks, projects, and goals. Requires at least 2 characters.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "minLength": 2 },
+            "description": "Search query string (min 2 characters)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results across entities",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SearchResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/activity": {
+      "get": {
+        "tags": ["Activity"],
+        "summary": "Get activity feed",
+        "description": "Returns recent activity entries, ordered by most recent first.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20 },
+            "description": "Maximum number of entries to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of activity items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ActivityItem" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/critical-issues": {
+      "get": {
+        "tags": ["CriticalIssues"],
+        "summary": "List critical issues",
+        "description": "Returns all critical issues.",
+        "responses": {
+          "200": {
+            "description": "Array of critical issues",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CriticalIssue" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my-work": {
+      "get": {
+        "tags": ["MyWork"],
+        "summary": "Get current user's tasks",
+        "description": "Returns all tasks assigned to the current user. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Array of tasks assigned to current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

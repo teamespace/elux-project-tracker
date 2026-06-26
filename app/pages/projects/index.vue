@@ -113,9 +113,14 @@ function editProject(p: Proj) {
   })
 }
 
-function deleteProject(id: string) {
+async function deleteProject(id: string) {
   closeActions()
-  allProjects.value = allProjects.value.filter(p => p.id !== id)
+  try {
+    await $fetch(`/api/projects/${id}`, { method: 'DELETE' })
+    allProjects.value = allProjects.value.filter(p => p.id !== id)
+  } catch (e) {
+    console.error('Failed to delete project:', e)
+  }
 }
 
 onMounted(() => {
