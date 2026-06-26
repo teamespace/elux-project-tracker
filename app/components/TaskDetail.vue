@@ -13,6 +13,7 @@ import {
   type TaskStatus,
 } from '~/shared/board'
 import { getAvatar } from '~/shared/avatar'
+import { taskDetails as myTaskDetails, findTaskById, groups } from '~/shared/my-tasks'
 
 interface Comment {
   id: string
@@ -235,7 +236,34 @@ const activeTab = ref('comments')
 
 const task = computed<Task | null>(() => {
   if (props.mode === 'create' || !props.taskId) return null
-  return tasks.find(t => t.id === props.taskId) ?? null
+  const boardTask = tasks.find(t => t.id === props.taskId)
+  if (boardTask) return boardTask
+  const myTask = findTaskById(props.taskId)
+  if (myTask) {
+    const g = groups.find(grp => grp.tasks.some(gt => gt.id === props.taskId))
+    const statusMap: Record<string, TaskStatus> = { overdue: 'in-progress', inprogress: 'in-progress', todo: 'todo', inreview: 'in-review', completed: 'done' }
+    const taskStatus: TaskStatus = g ? (statusMap[g.id] as TaskStatus) ?? 'todo' : 'todo'
+    return {
+      id: myTask.id,
+      title: myTask.title,
+      description: myTask.description ?? '',
+      status: taskStatus,
+      statusLabel: taskStatus === 'todo' ? 'To Do' : taskStatus === 'in-progress' ? 'In Progress' : taskStatus === 'in-review' ? 'In Review' : 'Done',
+      priority: myTask.priority,
+      priorityLabel: myTask.priorityLabel,
+      assignee: { id: `u-${myTask.id}`, initials: myTask.assignee?.initials ?? '?', name: myTask.assignee?.name ?? 'Unassigned' },
+      epicId: '',
+      epicName: myTask.project,
+      projectId: `proj-${myTask.project.toLowerCase().replace(/\s+/g, '-')}`,
+      projectName: myTask.project,
+      dueDate: '',
+      dueDateLabel: myTask.due,
+      progress: myTask.progress ?? 0,
+      comments: 0,
+      attachments: 0,
+    }
+  }
+  return null
 })
 
 const taskKey = computed(() => {
@@ -284,7 +312,7 @@ function loadData() {
 
   const id = props.taskId
   const t = id ? tasks.find(item => item.id === id) : undefined
-  const d = id ? taskDetails[id] : undefined
+  const d = id ? (taskDetails[id] ?? myTaskDetails[id] as unknown as TaskDetailExtras) : undefined
 
   if (t) {
     form.value = {
@@ -302,6 +330,50 @@ function loadData() {
       notionUrl: d?.notionUrl ?? '',
       figmaUrl: d?.figmaUrl ?? '',
     }
+  }
+  else if (d && id) {
+    const myTask = findTaskById(id)
+    const g = groups.find(grp => grp.tasks.some(gt => gt.id === id))
+    const statusMap: Record<string, TaskStatus> = {
+      overdue: 'in-progress', inprogress: 'in-progress', todo: 'todo', inreview: 'in-review', completed: 'done',
+    }
+    const taskStatus: TaskStatus = g ? (statusMap[g.id] as TaskStatus) ?? 'todo' : 'todo'
+    form.value = {
+      title: myTask?.title ?? (d as any).title ?? id,
+      status: taskStatus,
+      assignee: myTask?.assignee?.name ?? '',
+      priority: (myTask?.priority as TaskPriority) ?? 'medium',
+      dueDate: myTask?.due ?? '',
+      project: myTask?.project ?? '',
+      startDate: d.startDate ?? '',
+      type: d.type ?? 'Task',
+      labels: myTask?.labels?.map(l => l.text) ?? (d.labels ?? []),
+      description: (d as any).fullDescription || myTask?.description || '',
+      link: d.link ?? '',
+      notionUrl: d.notionUrl ?? '',
+      figmaUrl: d.figmaUrl ?? '',
+    }
+    subtasks.value = d.subtasks ? d.subtasks.map(s => ({ ...s })) : []
+    comments.value = d.comments ? d.comments.map(c => ({
+      id: c.id,
+      author: { id: `u-${c.author.name ?? c.author.initials}`, initials: c.author.initials ?? '', name: c.author.name ?? '' },
+      text: c.text,
+      time: c.time,
+    })) : []
+    attachments.value = d.attachments ? d.attachments.map(a => ({
+      id: a.id,
+      name: a.name,
+      size: 0,
+      type: a.type,
+    })) : []
+    activities.value = d.activities ? d.activities.map(a => ({
+      id: a.id,
+      actor: { id: `u-${a.actor.name ?? a.actor.initials}`, initials: a.actor.initials ?? '', name: a.actor.name ?? '' },
+      text: a.text,
+      time: a.time,
+    })) : []
+    activeTab.value = 'comments'
+    return
   }
   else {
     form.value = emptyForm()
