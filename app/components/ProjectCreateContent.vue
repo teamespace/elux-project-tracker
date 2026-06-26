@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { people, statusOptions, priorityOptions, findPerson, avatarColor, projects } from '~/shared/projects'
-import type { ProjectStatus, ProjectPriority, Person, ProjectChildTask } from '~/shared/projects'
+import { statusOptions, priorityOptions } from '~/shared/projects'
+import type { ProjectStatus, ProjectPriority } from '~/shared/projects'
 
 const props = defineProps<{
   mode?: 'create' | 'edit' | 'view'
   initialData?: Record<string, unknown>
 }>()
 
-const emit = defineEmits<{ close: [] }>()
+const emit = defineEmits<{ close: []; saved: [] }>()
 
 const isView = computed(() => props.mode === 'edit' || props.mode === 'view')
 const isEdit = computed(() => props.mode === 'edit')
+const { user } = useUserSession()
 
 const initialStatus: ProjectStatus = (props.initialData?.status as ProjectStatus) ?? 'not-started'
 const initialPriority: ProjectPriority = (props.initialData?.priority as ProjectPriority) ?? 'medium'
-const initialOwner = (props.initialData?.owner as { name?: string } | undefined)?.name ?? people[0]?.name ?? ''
-const initialAssignees = (props.initialData?.assignees as unknown[] | undefined)?.map((a) => (a as { name?: string }).name).filter((n): n is string => Boolean(n)) ?? [people[0]?.name ?? '']
+const initialOwner = (props.initialData?.owner as { name?: string } | undefined)?.name ?? user.value?.name ?? ''
+const initialAssignees = (props.initialData?.assignees as unknown[] | undefined)?.map((a) => (a as { name?: string }).name).filter((n): n is string => Boolean(n)) ?? (user.value?.name ? [user.value.name] : [])
 
 /* ── form state ── */
 const form = reactive({
@@ -95,35 +96,53 @@ function removeAssignee(name: string) {
 
 function submit() {
   if (isEdit.value && props.initialData?.id) {
-    const existing = projects.find(p => p.id === props.initialData!.id)
-    if (existing) {
-      existing.name = form.name
-      existing.description = form.description
-      existing.status = form.status
-      existing.statusLabel = statusOpt.value?.label ?? existing.statusLabel
-      existing.priority = form.priority
-      existing.priorityLabel = priorityOpt.value?.label ?? existing.priorityLabel
-      existing.owner = findPerson(form.owner) ?? existing.owner
-      existing.createdDate = form.start
-      existing.dueDate = form.due
-      existing.labels = form.labels
-      existing.category = form.category
-      existing.links = {
-        attach: existing.links?.attach ?? '',
-        notion: form.notion,
-        figma: form.figma,
-      }
-      existing.assignees = form.assignees.map(name => findPerson(name)).filter((p): p is Person => p !== null)
-      existing.childTasks = childTasks.map(t => ({ ...t, dueDate: '', assignee: '' })) as ProjectChildTask[]
-    }
+    $fetch(`/api/projects/${props.initialData.id}`, {
+      method: 'PUT',
+      body: {
+        name: form.name,
+        description: form.description,
+        status: form.status,
+        statusLabel: statusOpt.value?.label,
+        priority: form.priority,
+        priorityLabel: priorityOpt.value?.label,
+        dueDate: form.due,
+        category: form.category,
+        labels: form.labels,
+      },
+    }).then(() => {
+      refreshNuxtData('projects')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to update project:', err)
+    })
   }
   else if (isView.value) {
-    console.log('Update project', props.initialData?.id, { ...form, childTasks })
+    console.log('View project', props.initialData?.id)
+    emit('close')
   }
   else {
-    console.log('Create project', { ...form, childTasks })
+    $fetch('/api/projects', {
+      method: 'POST',
+      body: {
+        name: form.name,
+        description: form.description,
+        status: form.status,
+        statusLabel: statusOpt.value?.label ?? 'NOT STARTED',
+        priority: form.priority,
+        priorityLabel: priorityOpt.value?.label ?? 'Medium',
+        ownerId: user.value?.id ?? null,
+        dueDate: form.due,
+        color: 'bg-blue-500',
+        category: form.category,
+        labels: form.labels,
+      },
+    }).then(() => {
+      refreshNuxtData('projects')
+      emit('close')
+    }).catch((err) => {
+      console.error('Failed to create project:', err)
+    })
   }
-  emit('close')
 }
 </script>
 
