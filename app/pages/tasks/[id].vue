@@ -61,6 +61,12 @@ const newSubtaskTitle = ref('')
 const newSubtaskAssignee = ref('')
 const newCommentText = ref('')
 
+const newAttachmentUrl = ref('')
+const attachmentError = ref('')
+const showAttachmentForm = ref(false)
+const isDragging = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
+
 function addSubtask() {
   const title = newSubtaskTitle.value.trim()
   if (!title) return
@@ -89,6 +95,79 @@ function addComment() {
     time: 'Just now',
   })
   newCommentText.value = ''
+}
+
+function isValidUrl(str: string) {
+  try {
+    new URL(str)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+function addAttachmentUrl() {
+  const url = newAttachmentUrl.value.trim()
+  if (!url) return
+  if (!isValidUrl(url)) {
+    attachmentError.value = 'Please enter a valid URL'
+    return
+  }
+  attachments.value.push({
+    id: `a-${Date.now()}`,
+    name: url,
+    size: 'Link',
+    type: 'file',
+  })
+  newAttachmentUrl.value = ''
+  attachmentError.value = ''
+}
+
+function formatBytes(bytes: number) {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
+}
+
+function handleFiles(files: FileList | null) {
+  if (!files) return
+  attachmentError.value = ''
+  const maxSize = 10 * 1024 * 1024
+  for (const file of Array.from(files)) {
+    if (file.size > maxSize) {
+      attachmentError.value = `File "${file.name}" exceeds 10 MB limit`
+      continue
+    }
+    attachments.value.push({
+      id: `a-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: file.name,
+      size: formatBytes(file.size),
+      type: 'file',
+    })
+  }
+}
+
+function onFileChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  handleFiles(target.files)
+  if (target) target.value = ''
+}
+
+function onDrop(e: DragEvent) {
+  e.preventDefault()
+  isDragging.value = false
+  handleFiles(e.dataTransfer?.files ?? null)
+}
+
+function triggerFileUpload() {
+  fileInput.value?.click()
+}
+
+function removeAttachment(id: string) {
+  attachments.value = attachments.value.filter(a => a.id !== id)
 }
 
 const userOptions = [
@@ -325,6 +404,14 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
           <!-- ══ BODY ══ -->
           <div class="pd-body">
             <div class="pd-main">
+              <!-- ── DESCRIPTION ── -->
+              <div class="pd-section">
+                <div class="pd-slabel">
+                  Description
+                </div>
+                <div class="pd-desc">{{ detail?.fullDescription }}</div>
+              </div>
+
               <!-- ── SUBTASKS TAB ── -->
               <template v-if="activeTab === 'subtasks'">
                 <div class="pd-section">
@@ -444,8 +531,13 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
               <!-- ── ATTACHMENTS TAB ── -->
               <template v-if="activeTab === 'attachments'">
                 <div class="pd-section">
-                  <div class="pd-slabel">
-                    Attachments
+                  <div class="pd-task-hdr">
+                    <div class="pd-slabel" style="margin:0">
+                      Attachments
+                    </div>
+                    <button class="pd-add-task-btn" style="padding:6px 12px;font-size:12px" @click="showAttachmentForm = !showAttachmentForm">
+                      {{ showAttachmentForm ? 'Cancel' : 'Add attachment' }}
+                    </button>
                   </div>
                   <div v-if="attachments.length" class="pd-attach-list">
                     <div v-for="file in attachments" :key="file.id" class="pd-attach-row">
@@ -464,24 +556,52 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
                         </svg>
                       </div>
                       <div class="pd-attach-info">
-                        <div class="pd-attach-name">{{ file.name }}</div>
+                        <a v-if="file.size === 'Link'" :href="file.name" target="_blank" rel="noopener" class="pd-attach-name pd-attach-name--link">{{ file.name }}</a>
+                        <div v-else class="pd-attach-name">{{ file.name }}</div>
                         <div class="pd-attach-size">{{ file.size }}</div>
                       </div>
+                      <button class="pd-tdelete" title="Remove" @click="removeAttachment(file.id)">
+                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                   <div v-else class="pd-empty">
                     No attachments yet.
                   </div>
+
+                  <!-- add attachment form -->
+                  <div v-if="showAttachmentForm" class="pd-add-attach-form">
+                    <div class="pd-add-link-row">
+                      <input v-model="newAttachmentUrl" class="pd-add-task-input" placeholder="Paste URL…" @keydown.enter.prevent="addAttachmentUrl">
+                      <button class="pd-add-task-btn" @click="addAttachmentUrl">
+                        Add link
+                      </button>
+                    </div>
+
+                    <div
+                      class="pd-dropzone"
+                      :class="{ active: isDragging }"
+                      @dragover.prevent="isDragging = true"
+                      @dragleave.prevent="isDragging = false"
+                      @drop.prevent="onDrop"
+                      @click="triggerFileUpload"
+                    >
+                      <input ref="fileInput" type="file" multiple class="pd-file-input" @change="onFileChange">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      <span class="pd-dropzone-text">Drop files here or click to upload</span>
+                      <span class="pd-dropzone-hint">Max 10 MB per file</span>
+                    </div>
+
+                    <div v-if="attachmentError" class="pd-attach-error">
+                      {{ attachmentError }}
+                    </div>
+                  </div>
                 </div>
               </template>
-
-              <!-- ── DESCRIPTION ── -->
-              <div class="pd-section">
-                <div class="pd-slabel">
-                  Description
-                </div>
-                <div class="pd-desc">{{ detail?.fullDescription }}</div>
-              </div>
             </div>
           </div>
         </div>
@@ -909,14 +1029,28 @@ onUnmounted(() => document.removeEventListener('click', closeAll))
 
 /* attachments */
 .pd-attach-list { border:1px solid #E5E7EB; border-radius:8px; overflow:hidden; }
-.pd-attach-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #F3F4F6; }
+.pd-attach-row { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #F3F4F6; position:relative; }
 .pd-attach-row:last-child { border-bottom:none; }
 .pd-attach-icon { width:28px; height:28px; border-radius:6px; background:#F3F4F6; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.pd-attach-info { flex:1; }
-.pd-attach-name { font-size:12.5px; color:#111827; font-weight:500; }
+.pd-attach-info { flex:1; min-width:0; }
+.pd-attach-name { font-size:12.5px; color:#111827; font-weight:500; word-break:break-all; }
+.pd-attach-name--link { color:oklch(60.6% 0.25 292.717); text-decoration:none; }
+.pd-attach-name--link:hover { text-decoration:underline; }
 .pd-attach-size { font-size:11px; color:#9CA3AF; }
+.pd-attach-row .pd-tdelete { display:none; }
+.pd-attach-row:hover .pd-tdelete { display:flex; }
 .pd-attach-dl { width:24px; height:24px; border-radius:5px; border:1px solid #E5E7EB; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#6B7280; }
 .pd-attach-dl:hover { background:#F3F4F6; }
+
+/* add attachment form */
+.pd-add-attach-form { display:flex; flex-direction:column; gap:12px; padding-top:14px; }
+.pd-add-attach-form .pd-add-link-row { display:flex; gap:8px; }
+.pd-dropzone { border:2px dashed #E5E7EB; border-radius:10px; padding:24px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; background:#fff; transition:border-color .15s, background .15s; position:relative; }
+.pd-dropzone:hover, .pd-dropzone.active { border-color:oklch(60.6% 0.25 292.717); background:oklch(96% 0.04 292.717); }
+.pd-dropzone-text { font-size:13px; font-weight:500; color:#4B5563; }
+.pd-dropzone-hint { font-size:11.5px; color:#9CA3AF; }
+.pd-file-input { position:absolute; opacity:0; width:0; height:0; }
+.pd-attach-error { font-size:12px; color:#DC2626; background:#FEF2F2; padding:8px 10px; border-radius:6px; }
 
 /* empty state */
 .pd-empty { font-size:13px; color:#9CA3AF; padding:12px 0; }
