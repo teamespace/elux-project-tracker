@@ -1,4 +1,4 @@
-import { useDB, eq, sql } from '../../utils/db'
+import { useDB, eq } from '../../utils/db'
 import { comments } from '../../database/schema'
 import { requireAuth } from '../../utils/permissions'
 import { logActivity } from '../../utils/activity'
@@ -27,7 +27,6 @@ export default defineEventHandler(async (event) => {
 
   await db.update(comments).set({
     text: result.data.text,
-    updatedAt: sql`(datetime('now'))`,
   }).where(eq(comments.id, id))
 
   await logActivity(event, 'edited comment', 'comment', id)
